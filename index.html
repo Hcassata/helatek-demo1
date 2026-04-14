@@ -1,0 +1,1819 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Helatek I+D+I · DEMO — Software de Formulación de Helados</title>
+<style>
+  :root {
+    --azul: #375a8c; --azul2: #2563a8; --azul3: #4a90d9;
+    --celeste: #e8f4fd; --blanco: #fff; --gris: #f5f6fa;
+    --gris2: #d1d5db; --gris3: #6b7280; --verde: #16a34a;
+    --rojo: #dc2626; --naranja: #f59e0b;
+    --sidebar-bg: #1a2744;
+    --sidebar-hover: #2563a8;
+    --sidebar-active: #2563a8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+  body { display: flex; height: 100vh; overflow: hidden; background: var(--gris); font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; }
+
+  /* SIDEBAR */
+  #sidebar { width: 200px; min-width: 200px; background: var(--azul); display: flex; flex-direction: column; padding: 0;  }
+  .logo { text-align: center; padding: 20px 10px 12px; color: white; border-bottom: 1px solid var(--gris2); }
+  .logo .ico { font-size: 40px; }
+  .logo h1 { font-size: 20px; font-weight: bold;   color: white; }
+  .logo p { font-size: 9px; color: var(--azul3); margin-top: 3px;   }
+  .sep { height: 1px; background: var(--azul2); margin: 10px 15px; }
+  .nav-btn { display: block; width: 100%; text-align: left; padding: 12px 22px; background: transparent;
+    border: none; color: white; font-size: 13px; cursor: pointer; transition: all 0.2s;
+     }
+  .nav-btn:hover { background: var(--azul2); color: white;  }
+  .nav-btn.active { background: var(--azul2); color: white; border-left-color: var(--azul2); font-weight: 600; }
+  .sidebar-bottom { margin-top: auto; text-align: center; padding: 10px; font-size: 10px; color: var(--gris3); border-top: 1px solid var(--gris2); }
+
+  /* MAIN */
+  #main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+  .page { display: none; flex-direction: column; height: 100%; }
+  .page.active { display: flex; }
+  .page-header { background: white; padding: 16px 28px; border-bottom: 1px solid var(--gris2); display: flex; align-items: center; gap: 12px; }
+  .page-header h2 { font-size: 21px; font-weight: bold; color: var(--azul);   }
+  .page-header span { font-size: 12px; color: var(--gris3); }
+
+  /* BUTTONS */
+  .btn { padding: 7px 16px; border: none; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: 600; transition: opacity 0.15s; }
+  .btn:hover { opacity: 0.85; }
+  .btn-blue { background: var(--azul2); color: white; }
+  .btn-green { background: var(--verde); color: white; }
+  .btn-red { background: var(--rojo); color: white; }
+  .btn-orange { background: var(--naranja); color: white; }
+  .btn-gray { background: var(--gris3); color: white; }
+  .btn-sm { padding: 4px 10px; font-size: 12px; }
+
+  /* INICIO */
+  #pg-inicio { padding: 0; }
+  .stats-row { display: flex; gap: 16px; padding: 20px 24px 10px; }
+  .stat-card { background: white; border-radius: 10px; padding: 20px 28px; text-align: center; min-width: 150px;   }
+  .stat-card .num { font-size: 36px; font-weight: bold; }
+  .stat-card .lbl { font-size: 12px; color: var(--gris3); margin-top: 4px; }
+  .quick { padding: 10px 24px 0; }
+  .quick h3 { font-size: 14px; font-weight: bold; color: var(--azul); margin-bottom: 8px; }
+  .quick-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+  .recent { padding: 16px 24px; flex: 1; overflow-y: auto; }
+  .recent h3 { font-size: 14px; font-weight: bold; color: var(--azul); margin-bottom: 8px; }
+  .recent-item { background: white; padding: 10px 16px; border-radius: 6px; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
+  .recent-item .name { font-weight: 600; font-size: 13px; color: var(--azul); }
+  .recent-item .desc { font-size: 11px; color: var(--gris3); }
+
+  /* INGREDIENTES */
+  .toolbar { padding: 10px 20px; background: var(--gris); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; border-bottom: 1px solid var(--gris2); }
+  .toolbar input, .toolbar select { padding: 6px 10px; border: 1px solid var(--gris2); border-radius: 5px; font-size: 13px; }
+  .tbl-wrap { flex: 1; overflow: auto; padding: 0 20px 20px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; background: white; border-radius: 8px; overflow: hidden; margin-top: 10px; }
+  th { background: var(--azul); color: white; padding: 8px 10px; text-align: left; cursor: pointer; user-select: none; white-space: nowrap; }
+  th:hover { background: var(--azul2); }
+  td { padding: 7px 10px; border-bottom: 1px solid #f0f0f0; white-space: nowrap; }
+  tr:hover td { background: var(--celeste); }
+  tr.totales-row:hover td { background: #1a2744 !important; color: white !important; }
+  tr.totales-row td { color: white; }
+  tr.sel td { background: #FFF3E8 !important; color: var(--azul2); }
+  tr:nth-child(even) td { background: #fafbfc; }
+  .tbl-actions { padding: 8px 20px; display: flex; gap: 8px; background: var(--gris); border-top: 1px solid var(--gris2); }
+
+  /* FORMULAS */
+  .form-split { flex: 1; display: flex; overflow: hidden; }
+  .form-lista { width: 280px; min-width: 280px; border-right: 1px solid var(--gris2); display: flex; flex-direction: column; background: white; }
+  .form-lista h3 { padding: 12px 16px 6px; font-size: 13px; font-weight: bold; color: var(--azul); border-bottom: 1px solid var(--gris2);   }
+  #lista-formulas { flex: 1; overflow-y: auto; list-style: none; }
+  #lista-formulas li { padding: 10px 16px; cursor: pointer; border-bottom: 1px solid #f5f5f5; font-size: 13px; }
+  #lista-formulas li:hover { background: var(--celeste); }
+  #lista-formulas li.sel { background: var(--celeste); font-weight: 600; color: var(--azul2); border-right: 3px solid var(--azul2); }
+  .form-lista-btns { padding: 8px 12px; display: flex; gap: 6px; border-top: 1px solid var(--gris2); flex-wrap: wrap; }
+  .form-detalle { flex: 1; overflow-y: auto; background: var(--gris); }
+  .detalle-box { background: white; margin: 12px; border-radius: 8px; overflow: hidden; }
+  .detalle-hdr { background: var(--azul); color: white; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .detalle-hdr h3 { font-size: 14px; }
+  .detalle-info { padding: 8px 16px; font-size: 12px; color: var(--gris3); border-bottom: 1px solid var(--gris2); }
+  .equil-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 10px 16px; }
+  .eq-item { display: flex; align-items: center; gap: 6px; }
+  .eq-lbl { font-size: 11px; color: var(--azul); font-weight: 600; min-width: 100px; }
+  .eq-val { font-size: 13px; font-weight: bold; }
+  .eq-val.ok { color: var(--verde); }
+  .eq-val.bad { color: var(--rojo); }
+  .total-bar { padding: 8px 16px; background: var(--celeste); border-top: 1px solid #fde68a; font-size: 12px; }
+
+  /* MODAL */
+  .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+  .modal-bg.open { display: flex; }
+  .modal { background: white; border-radius: 10px; width: 90%; max-width: 620px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
+  .modal-hdr { background: var(--azul); color: white; padding: 14px 20px; font-size: 16px; font-weight: bold;   }
+  .modal-body { flex: 1; overflow-y: auto; padding: 16px 20px; }
+  .modal-foot { padding: 12px 20px; border-top: 1px solid var(--gris2); display: flex; gap: 8px; justify-content: flex-end; }
+  .form-row { display: flex; align-items: center; margin-bottom: 10px; gap: 10px; }
+  .form-row label { min-width: 140px; font-size: 13px; font-weight: 600; color: var(--azul); }
+  .form-row input, .form-row select, .form-row textarea { flex: 1; padding: 7px 10px; border: 1px solid var(--gris2); border-radius: 5px; font-size: 13px; }
+  .form-row textarea { height: 60px; resize: vertical; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
+
+  /* EDIT FORMULA MODAL */
+  .edit-split { display: flex; gap: 12px; }
+  .edit-left { width: 240px; min-width: 240px; }
+  .edit-right { flex: 1; overflow: hidden; }
+  #ing-selector { width: 100%; height: 180px; font-size: 12px; border: 1px solid var(--gris2); border-radius: 5px; }
+  .ing-sel-item { padding: 4px 8px; cursor: pointer; }
+  .ing-sel-item:hover { background: var(--celeste); }
+  .ing-sel-item.sel { background: var(--celeste); color: var(--azul2); font-weight: 600; }
+  #formula-ing-table { font-size: 12px; }
+  #formula-ing-table td { padding: 5px 8px; }
+
+  /* CONFIG */
+  .cfg-section { background: white; border-radius: 8px; padding: 16px 20px; margin: 12px 20px; }
+  .cfg-section h3 { font-size: 14px; font-weight: bold; color: var(--azul); margin-bottom: 12px; border-bottom: 1px solid var(--gris2); padding-bottom: 6px;  }
+  .lim-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 24px; }
+  .lim-row { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .lim-row label { min-width: 130px; font-weight: 600; color: var(--azul); }
+  .lim-row input { width: 70px; padding: 4px 8px; border: 1px solid var(--gris2); border-radius: 4px; font-size: 12px; }
+  .lim-row span { font-size: 11px; color: var(--gris3); }
+
+  /* ══ Modal editar fórmula grande ══ */
+  #modal-edit-formula .modal {
+    max-width: 1150px !important;
+    width: 97vw !important;
+    max-height: 92vh !important;
+  }
+  #modal-edit-formula .modal-body {
+    padding: 14px 18px 6px !important;
+  }
+  /* edit-split es la clase real del modal (no form-split) */
+  #modal-edit-formula .edit-split {
+    gap: 16px !important;
+  }
+  #modal-edit-formula .edit-left {
+    width: 250px !important;
+    min-width: 230px !important;
+  }
+  #modal-edit-formula .edit-right {
+    overflow-x: auto !important;
+  }
+  /* Buscador más grande */
+  #ef-buscar-ing {
+    padding: 7px 10px !important;
+    font-size: 13px !important;
+    border: 1.5px solid var(--azul2) !important;
+    border-radius: 6px !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+  }
+  #ing-selector { height: 280px !important; overflow-y: auto !important; }
+  /* Columna % más visible */
+  #ef-ing-tbody input[type=number] {
+    width: 68px !important; font-size: 13px !important;
+    padding: 4px 6px !important; border: 1.5px solid var(--gris2) !important;
+    border-radius: 5px !important; text-align: right !important;
+    font-weight: 700 !important; color: var(--azul2) !important;
+  }
+  #ef-ing-tbody input[type=number]:focus {
+    border-color: var(--azul2) !important; outline: none !important;
+    box-shadow: 0 0 0 2px rgba(37,99,168,0.2) !important;
+  }
+  #ef-ing-tbody td { padding: 6px 8px !important; }
+  /* eq-val colores */
+  .eq-val.ok { color: var(--verde) !important; }
+  .eq-val.bad { color: var(--rojo) !important; font-weight:900 !important; }
+  /* Barra totales doble línea */
+  #ef-totales { min-height: 50px !important; }
+
+
+  /* Atajos en sidebar */
+  .sidebar-atajos { padding:8px 12px 0;font-size:10px;color:#5580a8;line-height:1.8; }
+  .sidebar-atajos kbd { background:#1e3a5f;padding:1px 4px;border-radius:3px;color:#a8c4e0;font-size:9px; }
+
+
+  /* ── Drag & Drop ingredientes ── */
+  .drag-handle {
+    cursor: grab;
+    color: #94a3b8;
+    font-size: 16px;
+    padding: 0 6px;
+    user-select: none;
+    text-align: center;
+  }
+  .drag-handle:hover { color: var(--azul); }
+  .ef-row-dragging { opacity: 0.35; background: #dbeafe !important; }
+  .ef-row-over { border-top: 2px solid var(--azul2) !important; }
+
+
+  /* ── DEMO MODE ── */
+  .demo-banner {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    color: white; text-align: center; padding: 7px 16px;
+    font-size: 12px; font-weight: 700; letter-spacing: 2px;
+    position: sticky; top: 0; z-index: 9999;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .demo-badge {
+    background: #dc2626; color: white; font-size: 9px;
+    font-weight: 800; letter-spacing: 1px;
+    padding: 2px 6px; border-radius: 3px; margin-left: 6px;
+  }
+
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="logo" style="padding:16px 10px 12px;text-align:center">
+    <!-- SVG logo dos círculos estilo ANHA -->
+    <svg viewBox="0 0 100 78" width="130" height="101" xmlns="http://www.w3.org/2000/svg" style="margin:0 auto;display:block;overflow:visible">
+      <!-- Círculo izquierdo: más grande y más alto -->
+      <circle cx="36" cy="32" r="32" fill="#D4607A" opacity="0.82"/>
+      <!-- Círculo derecho: más pequeño y más abajo -->
+      <circle cx="68" cy="46" r="25" fill="#F2A93B" opacity="0.80"/>
+    </svg>
+    <div style="margin-top:4px;font-size:17px;font-weight:700;color:white;letter-spacing:2px;font-family:Georgia,serif">HELATEK</div>
+    <div style="font-size:8px;color:#a8c4e0;letter-spacing:3px;margin-top:2px">I+D+I</div>
+    <div style="font-size:7px;color:#6b8db0;margin-top:1px;font-style:italic">del helado artesano</div>
+  </div>
+  <div class="sep"></div>
+  <button class="nav-btn active" onclick="showPage('inicio')">🏠  Inicio</button>
+  <button class="nav-btn" onclick="showPage('ingredientes')">🧪  Ingredientes</button>
+  <button class="nav-btn" onclick="showPage('formulas')">📋  Fórmulas</button>
+  <button class="nav-btn" onclick="showPage('familias')">👨‍👩‍👧  Familias</button>
+  <button class="nav-btn" onclick="showPage('config')">⚙️  Configuración</button>
+  <div style="margin:6px 12px;background:#dc2626;color:white;font-size:9px;font-weight:800;letter-spacing:2px;padding:3px 0;border-radius:3px;text-align:center">DEMO</div>
+  <div class="sidebar-atajos">
+    <strong style="color:#7aa0c8">ATAJOS</strong><br>
+    <kbd>Alt+F</kbd> Fórmulas &nbsp; <kbd>Alt+I</kbd> Ingredientes<br>
+    <kbd>Alt+N</kbd> Nueva fórmula &nbsp; <kbd>Esc</kbd> Cerrar
+  </div>
+  <div class="sidebar-bottom">Helatek I+D+I v1.0</div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+
+  <!-- INICIO -->
+  <div id="pg-inicio" class="page active">
+    <div class="page-header"><h2>🏠 Helatek I+D</h2><span>Software profesional de formulación de helados artesanales</span></div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="num" id="stat-ing" style="color:var(--azul2)">0</div><div class="lbl">🧪 Ingredientes</div></div>
+      <div class="stat-card"><div class="num" id="stat-form" style="color:var(--verde)">0</div><div class="lbl">📋 Fórmulas</div></div>
+      <div class="stat-card"><div class="num" id="stat-fam" style="color:var(--naranja)">0</div><div class="lbl">👨‍👩‍👧 Familias</div></div>
+    </div>
+    <div class="quick">
+      <h3>Accesos Rápidos</h3>
+      <div class="quick-btns">
+        <button class="btn btn-blue" onclick="showPage('formulas');setTimeout(abrirNuevaFormula,100)">➕ Nueva Fórmula</button>
+        <button class="btn btn-green" onclick="showPage('ingredientes');setTimeout(abrirNuevoIngrediente,100)" style="display:none">➕ Nuevo Ingrediente</button>
+        <button class="btn btn-orange" onclick="showPage('formulas')">📋 Ver Fórmulas</button>
+      </div>
+    </div>
+    <div class="recent">
+      <h3>Últimas Fórmulas</h3>
+      <div id="recent-list"></div>
+    </div>
+  </div>
+
+  <!-- INGREDIENTES -->
+  <div id="pg-ingredientes" class="page">
+    <div class="page-header"><h2>🧪 Ingredientes</h2><span>Gestión completa de ingredientes y parámetros nutricionales</span></div>
+    <div class="toolbar">
+      <!-- DEMO: añadir ingredientes deshabilitado -->
+      <input type="text" id="ing-buscar" placeholder="🔍 Buscar..." oninput="renderIngredientes()" style="width:180px">
+      <select id="ing-fam-filtro" onchange="renderIngredientes()"><option value="">Todas las familias</option></select>
+    </div>
+    <div class="tbl-wrap">
+      <table id="ing-table">
+        <thead><tr>
+          <th onclick="sortTable('ing-table',0)">Nombre</th>
+          <th onclick="sortTable('ing-table',1)">Familia</th>
+          <th onclick="sortTable('ing-table',2)">Azúcares</th>
+          <th onclick="sortTable('ing-table',3)">MG Láctea</th>
+          <th onclick="sortTable('ing-table',4)">Otras Grasas</th>
+          <th onclick="sortTable('ing-table',5)">SLNG</th>
+          <th onclick="sortTable('ing-table',6)">Proteína</th>
+          <th onclick="sortTable('ing-table',7)">Lactosa</th>
+          <th onclick="sortTable('ing-table',8)">Ot.Sólidos</th>
+          <th onclick="sortTable('ing-table',9)">Alcohol</th>
+          <th onclick="sortTable('ing-table',10)">PAC</th>
+          <th onclick="sortTable('ing-table',10)">POD</th>
+          <th onclick="sortTable('ing-table',11)">Kcal</th>
+          <th onclick="sortTable('ing-table',12)">Precio</th>
+        </tr></thead>
+        <tbody id="ing-tbody"></tbody>
+      </table>
+    </div>
+    <div class="tbl-actions">
+      <button class="btn btn-blue btn-sm" onclick="editarIngredienteSelec()">✏️ Editar</button>
+      <button class="btn btn-red btn-sm" onclick="eliminarIngredienteSelec()">🗑️ Eliminar</button>
+    </div>
+  </div>
+
+  <!-- FORMULAS -->
+  <div id="pg-formulas" class="page">
+    <div class="page-header"><h2>📋 Fórmulas</h2><span>Creación y edición de recetas de helado</span></div>
+    <div class="toolbar">
+      <button class="btn btn-green" onclick="abrirNuevaFormula()">➕ Nueva Fórmula</button>
+      <span id="demo-counter" style="font-size:11px;color:#dc2626;font-weight:700;margin-left:10px"></span>
+      <input type="text" id="form-buscar" placeholder="🔍 Buscar..." oninput="renderFormulas()" style="width:200px">
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <button class="btn btn-blue" onclick="exportarFormulas()" title="Guardar fórmulas en archivo JSON externo">💾 Exportar</button>
+        <label class="btn btn-green" style="cursor:pointer" title="Cargar fórmulas desde JSON y actualizar con ingredientes actuales">
+          📂 Importar
+          <input type="file" accept=".json" style="display:none" onchange="importarFormulas(event)">
+        </label>
+      </div>
+    </div>
+    <div class="form-split">
+      <div class="form-lista">
+        <h3>Lista de Fórmulas</h3>
+        <ul id="lista-formulas"></ul>
+        <div class="form-lista-btns">
+          <button class="btn btn-blue btn-sm" onclick="editarFormula()">✏️ Editar</button>
+          <button class="btn btn-red btn-sm" onclick="eliminarFormula()">🗑️ Eliminar</button>
+          <button class="btn btn-orange btn-sm" onclick="duplicarFormula()">📄 Duplicar</button>
+        </div>
+      </div>
+      <div class="form-detalle" id="form-detalle">
+        <div style="padding:40px;text-align:center;color:var(--gris3)">Selecciona una fórmula para ver su detalle</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAMILIAS -->
+  <div id="pg-familias" class="page">
+    <div class="page-header"><h2>👨‍👩‍👧 Familias</h2><span>Clasificación de ingredientes por grupos</span></div>
+    <div class="toolbar">
+      <button class="btn btn-green" onclick="nuevaFamilia()">➕ Nueva Familia</button>
+    </div>
+    <div class="tbl-wrap">
+      <table id="fam-table">
+        <thead><tr><th>Nombre</th><th># Ingredientes</th><th>Descripción</th></tr></thead>
+        <tbody id="fam-tbody"></tbody>
+      </table>
+    </div>
+    <div class="tbl-actions">
+      <button class="btn btn-blue btn-sm" onclick="editarFamiliaSelec()">✏️ Editar</button>
+      <button class="btn btn-red btn-sm" onclick="eliminarFamiliaSelec()">🗑️ Eliminar</button>
+    </div>
+  </div>
+
+  <!-- CONFIG -->
+  <div id="pg-config" class="page">
+    <div class="page-header"><h2>⚙️ Configuración</h2><span>Empresa y límites de equilibrios</span></div>
+    <div class="cfg-section">
+      <h3>🏢 Datos de la Empresa</h3>
+      <div class="form-row"><label>Nombre empresa:</label><input id="cfg-empresa" type="text"></div>
+      <div class="form-row"><label>Calle:</label><input id="cfg-calle" type="text"></div>
+      <div class="form-row"><label>Población:</label><input id="cfg-poblacion" type="text"></div>
+      <div class="form-row"><label>Provincia:</label><input id="cfg-provincia" type="text"></div>
+    </div>
+    <div class="cfg-section">
+      <h3>📊 Límites de Equilibrios</h3>
+      <p style="font-size:12px;color:var(--gris3);margin-bottom:10px">Verde = dentro del rango, Rojo = fuera del rango</p>
+      <div class="lim-grid" id="lim-grid"></div>
+    </div>
+    <div style="padding:0 20px 20px">
+      <button class="btn btn-green" onclick="guardarConfig()">💾 Guardar Configuración</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL INGREDIENTE -->
+<div class="modal-bg" id="modal-ing">
+  <div class="modal" style="max-width:760px">
+    <div class="modal-hdr" id="modal-ing-titulo">Ingrediente</div>
+    <div class="modal-body" style="padding:12px 20px">
+      <input type="hidden" id="ing-edit-id">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;margin-bottom:10px">
+        <div class="form-row"><label style="min-width:130px">Ingrediente *</label><input id="ing-nombre" type="text" placeholder="Nombre"></div>
+        <div class="form-row"><label style="min-width:130px">Familia</label><select id="ing-familia" style="flex:1;padding:7px 10px;border:1px solid var(--gris2);border-radius:5px;font-size:13px"></select></div>
+      </div>
+      <div style="border:1px solid var(--gris2);border-radius:6px;padding:12px;background:#fafbfc">
+        <div style="font-size:11px;font-weight:bold;color:var(--gris3);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Información</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 20px">
+          <div class="form-row" style="margin:0"><label style="min-width:160px;font-size:13px">Azúcares</label><input id="ing-azucares" type="number" step="0.01" value="0" style="width:90px;padding:5px 8px;border:1px solid var(--gris2);border-radius:4px;font-size:13px;text-align:right"></div>
+          <div class="form-row" style="margin:0"><label style="min-width:160px;font-size:13px">Materia Grasa Láctea</label><input id="ing-mg" type="number" step="0.01" value="0" style="width:90px;padding:5px 8px;border:1px solid var(--gris2);border-radius:4px;font-size:13px;text-align:right"></div>
+          <div class="form-row" style="margin:0"><label style="min-width:160px;font-size:13px">Otras Grasas</label><input id="ing-og" type="number" step="0.01" value="0" style="width:90px;padding:5px 8px;border:1px solid var(--gris2);border-radius:4px;font-size:13px;text-align:right"></div>
+          <div class="form-row" style="margin:0"><label style="min-width:160px;font-size:13px">ESML ó SLNG</label><input id="ing-esml" type="number" step="0.01" value="0" style="width:90px;padding:5px 8px;border:1px solid var(--gris2);border-radius:4px;font-size:13px;text-align:right"></div>
+          <div class="form-row" style="margin:0"><label style="min-width:160px;font-size:13px">Proteínas</label><input id="ing-prot" type="number" step="0.01" value="0" style="width:90px;padding:5px 8px;border:1px solid var(--gris2);border-radius:4px;font-size:13px;text-align:right"></div>
+          <div class="form-row" style="margin:0"><label style="min-width:160px;font-size:13px">Lactosa</label><input id="ing-lact" type="number" step="0.01" value="0" style="width:90px;padding:5px 8px;border:1px solid var(--gris2);border-radius:4px;font-size:13px;text-align:right"></div>
+          <div class="form-row" style="margin:0"><label style="min-width:160px;font-size:13px">Otros Sólidos</label><input id="ing-os" type="number" step="0.01" value="0" style="width:90px;padding:5px 8px;border:1px solid var(--gris2);border-radius:4px;font-size:13px;text-align:right"></div>
+          <div class="form-row" style="margin:0"><label style="min-width:160px;font-size:13px">Alcohol</label><input id="ing-alcohol" type="number" step="0.01" value="0" style="width:90px;padding:5px 8px;border:1px solid var(--gris2);border-radius:4px;font-size:13px;text-align:right"></div>
+          <div class="form-row" style="margin:0"><label style="min-width:160px;font-size:13px">Poder Anticongelante (PAC)</label><input id="ing-pac" type="number" step="0.001" value="0" style="width:90px;padding:5px 8px;border:1px solid var(--gris2);border-radius:4px;font-size:13px;text-align:right"></div>
+          <div class="form-row" style="margin:0"><label style="min-width:160px;font-size:13px">Dulzor Relativo (POD)</label><input id="ing-pod" type="number" step="0.01" value="0" style="width:90px;padding:5px 8px;border:1px solid var(--gris2);border-radius:4px;font-size:13px;text-align:right"></div>
+          <div class="form-row" style="margin:0"><label style="min-width:160px;font-size:13px">Kcal / gr</label><input id="ing-kcal" type="number" step="0.01" value="0" style="width:90px;padding:5px 8px;border:1px solid var(--gris2);border-radius:4px;font-size:13px;text-align:right"></div>
+          <div class="form-row" style="margin:0"><label style="min-width:160px;font-size:13px">Precio Kg</label><input id="ing-precio" type="number" step="0.01" value="0" style="width:90px;padding:5px 8px;border:1px solid var(--gris2);border-radius:4px;font-size:13px;text-align:right"></div>
+          <div class="form-row" style="margin:0"><label style="min-width:160px;font-size:13px">Orden Pasteurización</label><input id="ing-orden-past" type="number" step="1" value="0" style="width:90px;padding:5px 8px;border:1px solid var(--gris2);border-radius:4px;font-size:13px;text-align:right"></div>
+          <div class="form-row" style="margin:0"><label style="min-width:160px;font-size:13px">Peso Molecular Azúcares</label><input id="ing-peso-mol" type="number" step="1" value="1" style="width:90px;padding:5px 8px;border:1px solid var(--gris2);border-radius:4px;font-size:13px;text-align:right"></div>
+        </div>
+      </div>
+      <div style="margin-top:8px">
+        <label style="font-size:13px;font-weight:600;color:var(--azul);display:block;margin-bottom:4px">Comentarios</label>
+        <textarea id="ing-comentarios" style="width:100%;height:60px;padding:6px 10px;border:1px solid var(--gris2);border-radius:5px;font-size:13px;resize:vertical"></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-gray" onclick="cerrarModal('modal-ing')">✖ Cancelar</button>
+      <button class="btn btn-green" onclick="guardarIngrediente()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NUEVA FORMULA -->
+<div class="modal-bg" id="modal-nueva-formula">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-hdr">Nueva Fórmula</div>
+    <div class="modal-body">
+      <div class="form-row"><label>Nombre *</label><input id="nf-nombre" type="text" placeholder="Nombre de la fórmula"></div>
+      <div class="form-row"><label>Descripción</label><input id="nf-desc" type="text"></div>
+      <div class="form-row"><label>Peso deseado (g)</label><input id="nf-peso" type="number" value="1000"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-gray" onclick="cerrarModal('modal-nueva-formula')">✖ Cancelar</button>
+      <button class="btn btn-green" onclick="crearFormula()">✅ Crear</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR FORMULA -->
+<div class="modal-bg" id="modal-edit-formula">
+  <div class="modal" style="max-width:960px;width:96vw">
+    <div class="modal-hdr" id="modal-ef-titulo" style="background:var(--azul)">✏️ Editar Fórmula</div>
+    <div class="modal-body">
+      <div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+        <div class="form-row" style="flex:2;margin:0"><label style="min-width:90px">Descripción</label><input id="ef-desc" type="text"></div>
+        <div class="form-row" style="margin:0"><label style="min-width:110px">Peso deseado (kg)</label><input id="ef-peso" type="number" value="0" step="0.1" min="0" style="width:90px" oninput="renderEfIngredientes()" title="Introduce los kg a producir para ver el peso de cada ingrediente"></div>
+      </div>
+      <div class="edit-split">
+        <!-- Left: ingredient selector -->
+        <div class="edit-left">
+          <div style="font-size:12px;font-weight:bold;color:var(--azul);margin-bottom:4px">Añadir Ingrediente</div>
+          <input type="text" id="ef-buscar-ing" placeholder="🔍 Buscar ingrediente..." style="width:100%;padding:5px 8px;border:1px solid var(--gris2);border-radius:4px;font-size:12px;margin-bottom:4px" oninput="renderSelectorIngredientes()" onkeydown="if(event.key==='Enter')añadirIngredienteFormula()">
+          <div id="ing-selector" style="height:240px;overflow-y:auto;border:1px solid var(--gris2);border-radius:5px"></div>
+          <div style="display:flex;align-items:center;gap:6px;margin-top:6px">
+            <label style="font-size:12px;font-weight:600;color:var(--azul)">Porcentaje:</label>
+            <input id="ef-pct" type="number" step="0.01" value="5.00" style="width:80px;padding:5px;border:1px solid var(--gris2);border-radius:4px;font-size:12px" onkeydown="if(event.key==='Enter')añadirIngredienteFormula()">
+            <span style="font-size:12px">%</span>
+            <button class="btn btn-green btn-sm" onclick="añadirIngredienteFormula()">➕ Añadir</button>
+          </div>
+        </div>
+        <!-- Right: formula ingredients -->
+        <div class="edit-right" style="overflow:auto">
+          <div style="font-size:12px;font-weight:bold;color:var(--azul);margin-bottom:4px">Ingredientes en la Fórmula</div>
+          <div style="overflow-x:auto">
+            <table id="formula-ing-table" style="width:100%;min-width:500px">
+              <thead><tr style="background:var(--azul);color:white">
+                <th style="padding:6px 4px;width:24px"></th>
+                <th style="padding:6px 8px;text-align:left">Ingrediente</th>
+                <th style="padding:6px 8px">%</th>
+                <th style="padding:6px 8px;background:#1a3a6e">Peso(g)</th>
+                <th style="padding:6px 8px">AZ</th>
+                <th style="padding:6px 8px">MG</th>
+                <th style="padding:6px 8px">OG</th>
+                <th style="padding:6px 8px;background:#1e3a6e">GT</th>
+                <th style="padding:6px 8px">SLNG</th>
+                <th style="padding:6px 8px">PROT</th>
+                <th style="padding:6px 8px">LACT</th>
+                <th style="padding:6px 8px">OS</th>
+                <th style="padding:6px 8px">ST</th>
+                <th style="padding:6px 8px">PAC</th>
+                <th style="padding:6px 8px">POD</th>
+                <th style="padding:6px 8px"></th>
+              </tr></thead>
+              <tbody id="ef-ing-tbody"></tbody>
+            </table>
+          </div>
+          <div id="ef-totales" style="margin-top:6px;padding:8px;background:#fefce8;border:1px solid #fde68a;border-radius:5px;font-size:12px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot" style="justify-content:space-between;align-items:center">
+      <span id="autosave-ind" style="font-size:11px;color:var(--verde);opacity:0;transition:opacity 1s">✅ Guardado automáticamente</span>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-gray" onclick="pararAutosave();guardarFormula()">✖ Cerrar y Guardar</button>
+        <button class="btn btn-green" onclick="pararAutosave();guardarFormula()">💾 Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL FAMILIA -->
+<div class="modal-bg" id="modal-familia">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-hdr" id="modal-fam-titulo">Familia</div>
+    <div class="modal-body">
+      <input type="hidden" id="fam-edit-id">
+      <div class="form-row"><label>Nombre *</label><input id="fam-nombre" type="text"></div>
+      <div class="form-row"><label>Descripción</label><input id="fam-desc" type="text"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-gray" onclick="cerrarModal('modal-familia')">✖ Cancelar</button>
+      <button class="btn btn-green" onclick="guardarFamilia()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATOS INICIALES - EXTRAÍDOS DE LA BASE DE DATOS ORIGINAL
+// ============================================================
+const DEFAULT_FAMILIAS = [
+  "Aguas","Azucares","Bases","Chocolates","Edulcorantes","Especias",
+  "Estabilizantes","Fibra","Frutas","Frutos Secos","Grasas","Huevos",
+  "Lacteos","Licores","Pastas Semielaboradas","Polioles","Quesos","Varios"
+];
+
+// Ingredientes: [nombre, familia, AZ, MG, OG, ESML, PROT, LACT, OS, PAC, POD, KCAL, PRECIO, COMENTARIOS]
+const DEFAULT_INGREDIENTES = [
+  // AGUAS
+  ["Agua","Aguas",0,0,0,0,0,0,0,0,0,0,0,""],
+  ["Agua 1","Aguas",0,0,0,0,0,0,0,0,0,0,0,""],
+  ["Horchata de chufa","Aguas",0,0,2.5,0,0,0,2.5,0,0,0,0,""],
+  ["Infusion de Te","Aguas",0,0,0,0,0,0,0,0,0,0,0,""],
+
+  // AZUCARES
+  ["Azucar Invertido 70","Azucares",70,0,0,0,0,0,0,-1.22,125,2.80,0,""],
+  ["Azucar Invertido 80","Azucares",80,0,0,0,0,0,0,-1.22,125,3.20,0,""],
+  ["Caramelo 100%","Azucares",100,0,0,0,0,0,0,-0.64,100,3.20,0,""],
+  ["Caramelo Liquido 80%","Azucares",80,0,0,0,0,0,0,-0.64,100,3.20,0,""],
+  ["Dextrosa","Azucares",92,0,0,0,0,0,0,-1.22,70,3.68,0,""],
+  ["Dextrosa 1","Azucares",92,0,0,0,0,0,0,-1.22,70,3.68,0,""],
+  ["Fructosa","Azucares",100,0,0,0,0,0,0,-1.22,170,4.00,0,""],
+  ["Gelatina frio absolut cristal","Azucares",64,0,0,0,0,0,0,-0.55,80,0,0,""],
+  ["Glucosa 20 DE 1","Azucares",95,0,0,0,0,0,0,-0.24,16,0,0,""],
+  ["Glucosa 21 DE","Azucares",95,0,0,0,0,0,0,-0.24,16,0,0,""],
+  ["Glucosa 38 DE","Azucares",95,0,0,0,0,0,0,-0.46,30,3.80,0,""],
+  ["Glucosa 38 DE 1","Azucares",95,0,0,0,0,0,0,-0.46,30,0,0,""],
+  ["Jarabe Alta Fructosa 55%","Azucares",77,0,0,0,0,0,0,-1.10,125,0,0,""],
+  ["Jarabe Glucosa 25 DE","Azucares",80,0,0,0,0,0,0,-0.30,28,3.20,0,""],
+  ["Jarabe Glucosa 32 DE","Azucares",80,0,0,0,0,0,0,-0.39,40,3.20,0,""],
+  ["Jarabe Glucosa 42 DE","Azucares",80,0,0,0,0,0,0,-0.50,40,3.20,0,""],
+  ["Jarabe Glucosa 52 DE","Azucares",80,0,0,0,0,0,0,-0.63,58,3.20,0,""],
+  ["Jarabe Glucosa 62 DE","Azucares",80,0,0,0,0,0,0,-0.75,60,3.20,0,""],
+  ["Jarabe Glucosa 68 DE","Azucares",80,0,0,0,0,0,0,-0.82,72,3.20,0,""],
+  ["Lactosa","Azucares",0,0,0,0,0,100,0,-0.64,15,4.00,0,""],
+  ["Maltodextrina 10 DE","Azucares",95,0,0,0,0,0,0,-0.12,11,0,0,""],
+  ["Maltodextrina 15 DE","Azucares",95,0,0,0,0,0,0,-0.19,17,0,0,""],
+  ["Maltodextrina 18","Azucares",95,0,0,0,0,0,0,-0.22,21,3.80,0,""],
+  ["Maltodextrina 5 DE","Azucares",95,0,0,0,0,0,0,-0.06,6,0,0,""],
+  ["Miel","Azucares",80,0,0,0,0,0,0,-1.22,125,3.20,0,""],
+  ["Sacarosa","Azucares",100,0,0,0,0,0,0,-0.64,100,4.00,0,""],
+  ["Sacarosa 1","Azucares",100,0,0,0,0,0,0,-0.64,100,0,0,""],
+  ["Sal","Azucares",100,0,0,0,0,0,0,-0.64,0,0,0,""],
+
+  // BASES
+  ["Base 100 Leche","Bases",30,0,27,26.5,12.5,14,7,-0.98,60.15,4.69,0,""],
+  ["Base 100 sin Lacteos","Bases",73,0,16,0,0,0,6,-1.00,58,4.36,0,""],
+  ["Base 100 Sorbetes","Bases",70,0,17,6.23,3.71,2.51,4,-1.08,66.45,4.58,0,""],
+  ["Base 50 Sorbetes","Bases",80,0,0,0,0,0,20,-1.22,70,3.68,0,""],
+  ["Base Sept Multi","Bases",20,0.11,0,10,4.02,5.97,1.59,-0.71,77.70,0,0,""],
+  ["PALETA BASE LECHE PREMIUM","Bases",18.65,9.02,0,9.36,3.76,5.60,1.22,-0.56,58,0,0,""],
+
+  // CHOCOLATES
+  ["Cacao 22-24","Chocolates",0,0,23,0,0,0,72,0,0,2.07,0,""],
+  ["CALLEBAUT 70-30-38","Chocolates",30,0,38,0,0,0,32,-0.64,100,0,0,""],
+  ["CALLEBAUT 811","Chocolates",42.8,0,36.6,0,0,0,20.6,-0.64,100,5.50,0,""],
+  ["CALLEBAUT POWER 80","Chocolates",15.9,0,44.5,0,0,0,39.6,-0.64,100,0,0,""],
+  ["CALLEBAUT VELVET BLANCO","Chocolates",44,6,34,16,7,9,0,-0.64,79.60,0,0,""],
+  ["CALLEBAUT W2NV BLANCO","Chocolates",49,0,29,16,7,9,0,-0.64,80,0,0,""],
+  ["Chocolate Blanco Nepal Chocovic","Chocolates",42,4,31,23,8.6,12.98,0,-0.64,79.60,0,0,""],
+  ["Cobertura 70% Ocumare Choco Vic","Chocolates",29,0,42,0,0,0,29,-0.64,100,4.94,0,""],
+  ["Cobertura Chocovic Tobago 64%","Chocolates",34.8,0,36.69,0,0,0,28,-0.64,100,4.70,0,""],
+  ["Cobertura Clavileño 50%","Chocolates",50,0,30,0,0,0,20,-0.64,100,4.70,0,""],
+  ["COBERTURA GOLD CALLEBAUT","Chocolates",30,7.1,30,28.3,8,20.3,4.6,-0.64,66,5.71,0,""],
+  ["COBERTURA RUBY CALLEBAUT","Chocolates",48.6,0,35.9,0,0,0,14.15,-0.64,80,0,0,""],
+  ["Cobertura Valor 70%","Chocolates",30,0,35,0,0,0,34,-0.64,100,4.39,0,""],
+  ["Manteca de Cacao","Chocolates",0,0,100,0,0,0,0,0,0,9.00,0,""],
+  ["Pasta de Cacao","Chocolates",0,0,55,0,0,0,45,0,0,5.00,0,""],
+  ["Cacao PLUS VanHouten","Chocolates",2.3,0,35.1,0,0,0,58.1,-0.64,100,0,0,""],
+
+  // EDULCORANTES
+  ["Acesulfame K","Edulcorantes",100,0,0,0,0,0,0,0,5000,0,0,""],
+  ["Estevia","Edulcorantes",100,0,0,0,0,0,0,0,5000,4.00,0,""],
+  ["Sacarina","Edulcorantes",100,0,0,0,0,0,0,0,0,0,0,""],
+
+  // ESPECIAS
+  ["Wasabi","Especias",0,0,0,0,0,0,100,0,0,0,0,""],
+
+  // ESTABILIZANTES
+  ["Cremodan SE-30","Estabilizantes",0,0,0,0,0,0,100,0,0,6.00,0,""],
+  ["Cremodan SIM VEG","Estabilizantes",0,0,0,0,0,0,100,0,0,0,0,""],
+  ["Cremodan SL-28","Estabilizantes",0,0,0,0,0,0,100,0,0,0,0,""],
+  ["Cremodan SL-29","Estabilizantes",0,0,0,0,0,0,100,0,0,30.00,0,""],
+  ["Emulsionante Emulift","Estabilizantes",0,0,50,0,0,0,0,0,0,0,0,""],
+  ["Goma Guar","Estabilizantes",0,0,0,0,0,0,100,0,0,0,0,""],
+  ["Harina de Garrofin, Tara y Xantana","Estabilizantes",0,0,0,0,0,0,100,0,0,0,0,""],
+  ["Hojas gelatina","Estabilizantes",0,0,0,0,100,0,0,0,0,0,0,""],
+  ["Lecitina","Estabilizantes",0,0,100,0,0,0,0,0,0,0,0,""],
+  ["Pectina","Estabilizantes",0,0,0,0,0,0,100,0,0,0,0,""],
+  ["Sorbetline 216","Estabilizantes",0,0,0,0,0,0,100,0,0,0,0,""],
+  ["Vandoburin","Estabilizantes",0,0,0,0,0,0,100,0,0,0,0,""],
+
+  // FIBRA
+  ["Harina de Trigo","Fibra",0,0,0,0,0,0,100,0,0,0,0,""],
+  ["Inulina","Fibra",10,0,0,0,0,0,90,-0.64,100,1.30,0,""],
+  ["Levadura fresca","Fibra",0,0,0,0,0,0,100,0,0,0,0,""],
+  ["Mango Arotz","Fibra",13.9,0,0,0,0,0,4,-0.64,100,0,0,""],
+  ["Polidextrosa","Fibra",96,0,0,0,0,0,0,-0.64,0,1.00,0,""],
+
+  // FRUTAS
+  ["Aguacate","Frutas",1.8,0,22.2,0,0,0,7.5,-0.64,100,2.23,0,""],
+  ["Albaricoque","Frutas",9.35,0,0,0,0,0,0,-0.84,100,0,0,""],
+  ["Alcaparras","Frutas",2.1,0,0,0,0,0,7.9,-0.64,100,0,0,""],
+  ["Arandanos Ponthier","Frutas",19,0,0,0,0,0,0,-0.64,100,0,0,""],
+  ["Cebolla","Frutas",5.2,0,0,0,0,0,2.2,-0.64,100,0.23,0,""],
+  ["Cereza Natural","Frutas",13.5,0,0,0,0,0,1.5,-1.22,125,0.58,0,""],
+  ["COCO AROTZ","Frutas",9.01,0,22.08,0,0,0,11,-0.64,100,0,0,""],
+  ["Coco Desecado","Frutas",6.4,0,36,0,0,0,10.5,-0.64,100,3.51,0,""],
+  ["Crema de Coco Nature Fruits","Frutas",2.5,0,23.75,0,0,0,0,-0.64,100,0,0,""],
+  ["Frambuesa Natural","Frutas",8,0,0,0,0,0,7.5,-1.22,125,0.32,0,""],
+  ["Fresa Boiron","Frutas",18,0,0,0,0,0,0,-0.64,100,0,0,""],
+  ["Fresa Natural","Frutas",5,0,0,0,0,0,4,-1.22,125,0.32,0,""],
+  ["Kiwi Natural","Frutas",9,0,0,0,0,0,6,-1.22,125,0.54,0,""],
+  ["MANDARINA AROTZ","Frutas",12,0,0,0,0,0,3.6,-0.64,100,0,0,""],
+  ["Mandarina Boiron","Frutas",11,0,0,0,0,0,0,-0.64,100,0,0,""],
+  ["Mango Natural","Frutas",15,0,0,0,0,0,1.5,-0.64,100,0.60,0,""],
+  ["Manzana Granny Smith","Frutas",10.5,0,0,0,0,0,1.5,-0.64,125,42.00,0,""],
+  ["Maracuya Arotz","Frutas",7.3,0,0,0,0,0,0,-0.64,100,0,0,""],
+  ["Melocoton Natural","Frutas",9,0,0,0,0,0,1.4,-0.64,100,0.37,0,""],
+  ["Melon Arotz","Frutas",14.7,0,0.19,0,0,0,2,-0.64,100,0,0,""],
+  ["Melon Verde Natural","Frutas",13.1,0,0,0,0,0,0.8,-1.22,125,0.52,0,""],
+  ["Mermeladas","Frutas",65,0,0,0,0,0,0,-0.64,100,2.60,0,""],
+  ["Mora Natural","Frutas",6,0,0,0,0,0,9,-1.22,125,0.35,0,""],
+  ["Pasion Ponthier (Maracuya)","Frutas",21,0,0,0,0,0,0,0.64,100,0,0,""],
+  ["Pepinillo encurtido","Frutas",2.6,0,0,0,0,0,5.7,-0.64,100,0,0,""],
+  ["Pera Natural","Frutas",11.7,0,0,0,0,0,2.2,-1.22,125,0.46,0,""],
+  ["Piña Arotz","Frutas",18.1,0,0,0,0,0,1.1,-0.64,100,0,0,""],
+  ["Piña en su Jugo del Monte","Frutas",15.5,0,0,0,0,0,1.2,-0.64,100,0.70,0,""],
+  ["Platano Natural","Frutas",18,0,0,0,0,0,3,-0.90,112,0.85,0,""],
+  ["Pomelo Natural","Frutas",11,0,0,0,0,0,1,-1.00,112,0.30,0,""],
+  ["Pullpa Lichi","Frutas",19,0,0.43,0,0,0,1.3,-0.64,100,0,0,""],
+  ["Pulpa Cereza Garnier","Frutas",18,0,0,0,0,0,4,-0.64,100,0.72,0,""],
+  ["Pulpa Frambuesa Garnier","Frutas",22,0,0,0,0,0,0,-0.64,100,0.88,0,""],
+  ["Pulpa Fruta Pasion Garnier","Frutas",16,0,0,0,0,0,4,-0.64,100,0.64,0,""],
+  ["Pulpa Mango Garnier","Frutas",17,0,0,0,0,0,6,-0.64,100,0.68,0,""],
+  ["PULPA MANZANA GRANNU SMITH","Frutas",13.8,0,0,0,0,0,1.9,-0.90,125,51.00,0,""],
+  ["Pure frutos del bosque Arotz","Frutas",17.1,0,0,0,0,0,2,-0.64,100,0,0,""],
+  ["Pure Mango Boiron","Frutas",19,0,0,0,0,0,0,-0.64,100,0,0,""],
+  ["Pure Melocoton Arotz","Frutas",15.8,0,0,0,0,0,1.3,-0.64,100,66.00,0,""],
+  ["Sandia Boiron","Frutas",9,0,0,0,0,0,0,-0.64,100,0,0,""],
+  ["Sandia Natural","Frutas",4.5,0,0,0,0,0,0.3,-0.90,112,0.32,0,""],
+  ["Yuzu Ponthier","Frutas",8,0,0,0,0,0,0,-0.64,100,0,0,""],
+  ["Zumo Limon Fira","Frutas",8,0,0,0,0,0,2.1,-0.64,100,0.32,0,""],
+  ["Zumo Limon Franver","Frutas",8,0,0,0,0,0,0,-0.64,100,0,0,""],
+  ["Zumo Limon Natural","Frutas",2.4,0,0,0,0,0,5.6,-1.22,125,0.25,0,""],
+  ["Zumo Mandarina Natural","Frutas",12.5,0,0,0,0,0,1.9,-0.95,112,0.37,0,""],
+  ["Zumo Naranja Natural","Frutas",8.4,0,0,0,0,0,3.3,-1.00,112,0.40,0,""],
+  ["Zumo Piña","Frutas",12,0,0,0,0,0,4,-1.00,112,0.50,0,""],
+  ["ZUMON LIMON NATURAL +10","Frutas",12.4,0,0,0,0,0,5.6,-1.22,125,0,0,""],
+
+  // FRUTOS SECOS
+  ["Chufa Seca","Frutos Secos",20,0,23.1,0,2,0,41.1,-0.64,1,0,0,""],
+  ["Coco Rallado","Frutos Secos",0,0,30,0,0,0,70,0,0,0,0,""],
+  ["Pasas marecadas","Frutos Secos",80,0,35,0,0,0,0,-0.64,100,0,0,""],
+  ["Pasta Almendra","Frutos Secos",0,0,53.5,0,0,0,38.8,-0.64,100,5.76,0,""],
+  ["Pasta Anacardo","Frutos Secos",0,0,46,0,0,0,51,-0.64,100,5.70,0,""],
+  ["Pasta Avellana","Frutos Secos",0,0,62,0,0,0,30.1,-0.64,100,6.46,0,""],
+  ["Pasta Avellana Pregel","Frutos Secos",0,0,62,0,0,0,30.1,0,0,6.46,0,""],
+  ["PASTA DE CACAHUETE","Frutos Secos",0,0,53,0,0,0,44,-0.64,100,0,0,""],
+  ["Pasta Macadamia","Frutos Secos",0,0,76,0,0,0,29,-0.64,100,7.20,0,""],
+  ["Pasta Nuez","Frutos Secos",0,0,63.8,0,0,0,31.5,-0.64,100,6.74,0,""],
+  ["Pasta Piñon","Frutos Secos",0,0,51,0,0,0,42,-0.64,100,5.70,0,""],
+  ["Pasta Pistacho","Frutos Secos",0,0,53,0,0,0,39.9,-0.64,100,6.00,0,""],
+  ["Turron 70%","Frutos Secos",26.5,0,38,0,0,0,30,-0.93,112.5,4.48,0,""],
+  ["TURRON SIN AZUCAR","Frutos Secos",3.5,0,37,0,0,0,33,-0.93,112.5,0,0,""],
+
+  // GRASAS
+  ["Aceite Girasol","Grasas",0,0,100,0,0,0,0,0,0,0,0,""],
+  ["Aceite Oliva","Grasas",0,0,100,0,0,0,0,0,0,9.00,0,""],
+  ["Grasa Coco Hidrogenada","Grasas",0,0,100,0,0,0,0,0,0,9.00,0,""],
+  ["Mantequilla Anhidra","Grasas",0,100,0,0,0,0,0,0,0,9.00,0,""],
+  ["Margarina","Grasas",0,0,80,0,0,0,0,0,0,7.76,0,""],
+
+  // HUEVOS
+  ["Clara Huevo","Huevos",0,0,0,0,15,0,0,0,0,0.60,0,""],
+  ["Huevo Entero","Huevos",0,0,10,0,15,0,0,0,0,1.50,0,""],
+  ["Yema","Huevos",0,0,32,0,0,0,18,0,0,3.60,0,""],
+  ["Yema 25%","Huevos",25,0,24,0,0,0,13.5,-0.64,100,0,0,""],
+  ["Yema 35%","Huevos",35,0,20.8,0,0,0,11.7,-0.64,100,0,0,""],
+  ["Yema Kelmy","Huevos",50,0,16,0,0,0,9,-0.64,100,3.80,0,""],
+
+  // LACTEOS
+  ["Dulce de Leche S.Ignacio","Lacteos",47.4,5.9,0,18.1,5.5,12.6,0,-0.64,100,3.49,0,""],
+  ["Leche Condensada","Lacteos",43,9,0,22,8.8,13.2,0,-0.64,100,3.41,0,""],
+  ["Leche de Cabra","Lacteos",0,3.9,0,8.5,3.7,4.8,0,-0.64,15,0.70,0,""],
+  ["Leche de coco","Lacteos",2.5,0,17,0,0.5,0,0.7,-0.64,100,0,0,""],
+  ["Leche de Oveja","Lacteos",0,6.3,0,10,5.3,4.7,0,-0.64,15,0.97,0,""],
+  ["Leche de Soja","Lacteos",2.7,0,1.7,0,3.1,0,1.9,-1.22,170,0,0,""],
+  ["Leche Desnatada UHT","Lacteos",0,0.2,0,9.4,3.25,4.9,0,0,0,0,0,""],
+  ["Leche Entera 3,5 MG","Lacteos",0,3.5,0,9,3.5,5.5,0,-0.64,15,0.68,0,""],
+  ["Leche Omega 3 Puleva","Lacteos",0,2.2,0,8.7,3.5,5.2,0,-0.64,15,0,0,""],
+  ["Leche Polvo 1% MG","Lacteos",0,1,0,87,35,52,8,-0.64,15,3.88,0,""],
+  ["Leche polvo 1% rectificada","Lacteos",0,1,0,83,33,50,8,-0.64,15,3.41,0,""],
+  ["Leche Polvo 1% Sin Lactosa","Lacteos",53,1,0,34,34,0,8,-1.22,50,0,0,""],
+  ["Leche Polvo 26% MG","Lacteos",0,26,0,72,28.8,43.2,0,-0.64,15,4.83,0,""],
+  ["Leche polvo 26% rectificada","Lacteos",0,26,0,66,25,36,7,-0.64,15,0,0,""],
+  ["Mantequilla","Lacteos",0,84,0,0,0,0,0,0,0,7.56,0,""],
+  ["Nata 35 MG","Lacteos",0,35,0,6,2.4,3.6,0,-0.64,15,3.39,0,""],
+  ["Nata Liofilizada","Lacteos",0,75,0,0,0,0,20,0,0,0,0,""],
+  ["Prebiotico Pascual","Lacteos",0.4,1.1,0,11.4,2.4,7,2,-0.64,15,0,0,""],
+  ["Proteina Lactea","Lacteos",0,0,0,88,88,0,6,0,0,3.60,0,""],
+  ["Yogur Entero","Lacteos",0,3.2,0,9.2,3.7,5.5,0,-0.64,15,0.63,0,""],
+  ["Yogur Liofilizado","Lacteos",0,3,0,97,28,69,0,-0.64,15,4.15,0,""],
+  ["Yogurt ACTIVIA","Lacteos",0,3.7,0,6.9,3.1,3.8,0,-0.64,15,0,0,""],
+  ["Yogurt Entero DANONE","Lacteos",0,2.9,0,0,3.3,4.2,0,-0.64,15,0,0,""],
+
+  // LICORES
+  ["ADVOCAT","Licores",38,0,0,0,0,0,0,-0.64,100,0,0,""],
+  ["Cava 12","Licores",0,0,0,0,0,0,0,-0.64,100,0.65,0,""],
+  ["Cerveza","Licores",4,0,0,0,0,0,0.4,-0.64,100,0.45,0,""],
+  ["Destilado sin Azucar 35","Licores",0,0,0,0,0,0,0,-0.64,0,0,0,""],
+  ["Destilado sin Azucar 40","Licores",0,0,0,0,0,0,0,-0.64,0,0,0,""],
+  ["Destilado sin Azucar 45","Licores",0,0,0,0,0,0,0,-0.64,0,0,0,""],
+  ["Destilado sin Azucar 70","Licores",0,0,0,0,0,0,0,-0.64,0,0,0,""],
+  ["Licor COINTREAU","Licores",35,0,0,0,0,0,0,-0.64,100,0,0,""],
+  ["Licor Dulce 20","Licores",30,0,0,0,0,0,0,-0.64,100,1.20,0,""],
+  ["Licor Dulce 25","Licores",30,0,0,0,0,0,0,-0.64,100,1.20,0,""],
+  ["Licor Dulce 30","Licores",30,0,0,0,0,0,0,-0.64,100,1.20,0,""],
+  ["Licor Dulce 40","Licores",30,0,0,0,0,0,0,-0.64,100,0,0,""],
+  ["Licor Herbero","Licores",25,0,0,0,0,0,0,-0.64,100,0,0,""],
+  ["Mosto de uva","Licores",15.3,0,0,0,0,0,0,-0.64,100,0,0,""],
+  ["Vinagre","Licores",0,0,0,0,0,0,3,0,0,0.04,0,""],
+  ["Vino dulce 16% evaporado","Licores",27,0,0,0,0,0,0,-0.64,10,0,0,""],
+  ["Vino Dulce 16","Licores",20,0,0,0,0,0,0,-0.64,100,0.80,0,""],
+  ["Vino Dulce 20","Licores",20,0,0,0,0,0,0,-0.64,100,0.80,0,""],
+  ["Vino Tinto 12","Licores",0,0,0,0,0,0,0,-0.64,100,0,0,""],
+
+  // PASTAS SEMIELABORADAS
+  ["Albaricoque Ponthier","Pastas Semielaboradas",19.35,0,0,0,0,0,0,-0.64,100,0,0,""],
+  ["Arconsa Gr21 Zumo","Pastas Semielaboradas",8.47,0,0,0,0,0,0.33,-0.64,100,0,0,""],
+  ["Frambuesa Ponthier","Pastas Semielaboradas",19,0,0,0,0,0,0,-0.64,100,0,0,""],
+  ["Gr20 Limon Arconsa","Pastas Semielaboradas",64,0,0.01,0,0,0,1.5,-0.64,100,0,0,""],
+  ["Mirtillo Ponthier (arandanos)","Pastas Semielaboradas",19,0,0,0,0,0,0,100,-0.64,0,0,""],
+  ["Nutella","Pastas Semielaboradas",56.7,0,31.6,0,0,0,10,-0.64,100,7.00,0,""],
+  ["Pasta Regaliz","Pastas Semielaboradas",45,0,0,0,0,0,45,-0.64,100,0,0,""],
+  ["PASTA TIRAMISU AROMITALIA","Pastas Semielaboradas",39,0,5,0,0,0,2.5,-0.64,100,0,0,""],
+  ["Pastas Saborizantes","Pastas Semielaboradas",80,0,0,0,0,0,0,-0.50,40,3.20,0,""],
+
+  // POLIOLES
+  ["Glicerina Alimentaria","Polioles",100,0,0,0,0,0,0,-2.56,0,0,0,""],
+  ["Maltitol","Polioles",100,0,0,0,0,0,0,-0.64,80,2.40,0,""],
+  ["Manitol","Polioles",100,0,0,0,0,0,0,-1.22,50,2.40,0,""],
+  ["Sorbitol","Polioles",100,0,0,0,0,0,0,-1.22,50,2.40,0,""],
+  ["Xylitol","Polioles",100,0,0,0,0,0,0,-1.45,100,2.40,0,""],
+
+  // QUESOS
+  ["Mato Cadi","Quesos",0,10.13,0,11.52,7.94,3.58,0.5,0,15,1.37,0,""],
+  ["Queso Arias o Filadelfia","Quesos",0,26.5,0,9.5,6,3.5,2,-0.64,15,2.50,0,""],
+  ["Queso Brie 50%MG SS","Quesos",0,27.9,0,22.7,22.6,0.1,3.9,-0.64,15,3.42,0,""],
+  ["Queso Camembert 50%MG SS","Quesos",0,25.7,0,20.6,20.5,0.1,3.7,-0.64,15,3.14,0,""],
+  ["Queso Cheddar","Quesos",0,32.2,0,25.8,25.4,0.4,5.7,-0.64,15,3.93,0,""],
+  ["Queso de Cabra 45 %MG SS","Quesos",0,21.8,0,21.1,21,0.1,3.1,-0.64,15,2.81,0,""],
+  ["Queso Emmental","Quesos",0,29.7,0,28.7,28.7,0,5.9,0,0,3.82,0,""],
+  ["Queso Fresco 50%MG SS","Quesos",0,23.6,0,17.2,13.8,3.4,2.2,-0.64,15,2.81,0,""],
+  ["Queso Fresco 85%MG SS","Quesos",0,31.5,0,13.9,11.3,2.6,1.8,-0.64,15,3.40,0,""],
+  ["Queso Gorgonzola","Quesos",0,31.2,0,19.4,19.4,0,17,0,0,3.60,0,""],
+  ["Queso Gouda 45%MG SS","Quesos",0,29.2,0,25.5,25.5,0,7.9,0,0,3.65,0,""],
+  ["Queso Gruyer","Quesos",0,32.3,0,29.8,29.8,0,4.7,0,0,4.10,0,""],
+  ["Queso Idiazabal","Quesos",0,34.98,0,0,0,0,36.9,0,0,4.42,0,""],
+  ["Queso Manchego Curado","Quesos",0,32,0,0,0,1.1,30,-0.64,0,0,0,""],
+  ["Queso Mascarpone","Quesos",0,47,0,7.9,7.6,0.3,0,-0.64,0,4.53,0,""],
+  ["Queso Mozzarela","Quesos",0,16.1,0,19.9,19.9,0,4,0,0,2.25,0,""],
+  ["Queso Parmesano","Quesos",0,32.7,0,35.7,35.6,0.1,8.8,-0.64,15,3.75,0,""],
+  ["Queso Quark (Danone)","Quesos",0,6,0,12.6,9.2,3.4,2.4,-0.64,100,1.00,0,""],
+  ["Queso Requeson 20%MG","Quesos",0,5.1,0,15.2,12.5,2.7,1.7,-0.64,15,1.07,0,""],
+  ["Queso Roncal","Quesos",0,32,0,33,32,1,0,0,0,4.20,0,""],
+  ["Queso Roquefort","Quesos",0,30.6,0,21.5,21.5,0,8.5,0,0,3.61,0,""],
+  ["Queso San Millan","Quesos",0,19.5,0,10.5,7,3.5,0,0,15,0,0,""],
+  ["REQUESON VACA","Quesos",0,6.4,0,13.35,10.05,3.3,0.15,-0.64,16,0,0,""],
+
+  // VARIOS
+  ["Acido Citrico","Varios",0,0,0,0,0,0,100,0,0,0,0,""],
+  ["Anchoas en Aceite","Varios",0,0,9.35,0,0,0,27.4,0,0,2.00,0,""],
+  ["arroz sushi","Varios",0.1,0,0,0,6.6,0,78,-0.64,0,0,0,""],
+  ["Atun en Aceite","Varios",0,0,12.6,0,0,0,0,0,0,2.00,0,""],
+  ["CAFE","Varios",0,0,0.2,0,0,0,60,-0.64,100,0,0,""],
+  ["Calabaza","Varios",3.9,0,0,0,0,0,6.1,-1.08,114,1.50,0,""],
+  ["DONUT","Varios",20,0,24,0,0,0,32,-0.64,100,0,0,""],
+  ["Galleta Maria","Varios",25.5,0,19,0,0,0,55.5,-0.64,100,0,0,""],
+  ["Gamba","Varios",0,0,2,0,0,0,21,0,0,1.00,0,""],
+  ["Hierbabuena","Varios",0,0,0,0,0,0,0,0,0,0,0,""],
+  ["Higos Secos","Varios",29,0,0,0,0,0,0,-0.64,100,0,0,""],
+  ["Huevas atun","Varios",0,0,6.42,0,0,0,24.3,0,0,1.55,0,""],
+  ["Jamon Iberico","Varios",0,0,19,0,0,0,32,0,0,1.71,0,""],
+  ["Ketchup","Varios",24,0,0,0,0,0,2.1,-0.64,100,1.00,0,""],
+  ["Melocoton el Almibar","Varios",18,0,0,0,0,0,0,-0.64,100,0,0,""],
+  ["Mentol Japones Cristal","Varios",10,0,0,0,0,0,90,-0.64,100,0,0,""],
+  ["Mermelada Albaricoque","Varios",44,0,0,0,0,0,0,-0.64,100,0,0,""],
+  ["Mostaza","Varios",6.4,0,4.4,0,0,0,4.7,-0.64,100,0.84,0,""],
+  ["Nescafe Clasic","Varios",9,0,0.2,0,0,0,59.1,-0.64,100,0.66,0,""],
+  ["Panettone","Varios",24.37,12.87,9.48,0,0,0,29.1,-0.64,100,320,0,""],
+  ["Pasta Lotus","Varios",36.8,0,38.1,0,0,0,24.44,-0.64,100,0,0,""],
+  ["Pimiento Rojo","Varios",1,0,0,0,0,0,5,-0.64,0,0,0,""],
+  ["Pisto IBARRA","Varios",3.5,0,1.2,0,1,0,3.5,-0.64,100,0,0,""],
+  ["Salmon Ahumado","Varios",0,0,12,0,0,0,19,0,0,1.00,0,""],
+  ["Seven Up","Varios",11,0,0,0,0,0,0,-0.64,100,0,0,""],
+  ["Sorbato Potasico","Varios",0,0,0,0,0,0,100,0,0,0,0,""],
+  ["Tomate","Varios",3,0,0,0,0,0,5,-0.64,100,0,0,""],
+  ["Tomate Frito Orlando","Varios",9.76,0,3.9,0,0,0,4.32,-0.64,100,0.77,0,""],
+  ["Tomate licuado","Varios",2.8,0,0,0,0,0,3,-0.64,100,0,0,""],
+  ["Tomate Natural Solis","Varios",5.3,0,0,0,0,0,2.6,-0.64,100,0.26,0,""],
+  ["Tonica Schweppes","Varios",7.5,0,0,0,0,0,0,-0.64,100,0,0,""],
+  ["Veteado Frutos del bosque","Varios",45.24,0,0,0,0,0,0,-0.64,100,0,0,""],
+  ["Veteado mango maracuya","Varios",46.2,0,0,0,0,0,0,-0.64,100,0,0,""],
+  ["Zanahoria Cruda","Varios",7,0,0,0,0,0,6,-0.64,100,0,0,""],
+  ["PALETA VEGANA BASE","Varios",25.17,0,12.9,0,0.38,0,0.87,0.50,70,0,0,""],
+  ["LIJASDOUIASD","Varios",0,0,0,0,0,0,0,0,0,0,0,""],
+];
+
+// ============================================================
+// ESTADO DE LA APP (localStorage para persistencia)
+// ============================================================
+let familias = [], ingredientes = [], formulas = [];
+let ingSelId = null, formSelId = null;
+let efIngredientes = []; // ingredientes de la fórmula siendo editada
+let efFormulaId = null;
+let sortDir = {};
+
+function loadData() {
+  const savedFam = localStorage.getItem('hk_familias');
+  const savedIng = localStorage.getItem('hk_ingredientes');
+  const savedForm = localStorage.getItem('hk_formulas');
+  if (savedFam) {
+    familias = JSON.parse(savedFam);
+    ingredientes = JSON.parse(savedIng);
+    formulas = JSON.parse(savedForm);
+  } else {
+    // Primera vez: cargar datos por defecto
+    familias = DEFAULT_FAMILIAS.map((n,i) => ({id:i+1, nombre:n, descripcion:''}));
+    let nextId = 1;
+    ingredientes = DEFAULT_INGREDIENTES.map(d => ({
+      id: nextId++, nombre:d[0], familia:d[1], azucares:d[2], mg:d[3],
+      og:d[4], esml:d[5], proteinas:d[6], lactosa:d[7], os:d[8],
+      alcohol:0, pac:d[9], pod:d[10], kcal:d[11], precio:d[12],
+      orden_past:d[14]||0, peso_mol_az:d[15]||1, comentarios:d[16]||''
+    }));
+    formulas = [];
+    saveData();
+  }
+}
+
+function saveData() {
+  localStorage.setItem('hk_familias', JSON.stringify(familias));
+  localStorage.setItem('hk_ingredientes', JSON.stringify(ingredientes));
+  localStorage.setItem('hk_formulas', JSON.stringify(formulas));
+}
+
+let cfg = {};
+function loadConfig() {
+  const saved = localStorage.getItem('hk_config');
+  const VERSION = '2.3';
+  let loaded = saved ? JSON.parse(saved) : null;
+  // Force reset limits if version changed
+  if (!loaded || loaded.version !== VERSION) {
+    loaded = null;
+  }
+  cfg = loaded ? loaded : {
+    version: VERSION,
+    empresa:'Helatek I+D+I', calle:'', poblacion:'', provincia:'',
+    limites: {
+      minAz:17, maxAz:23, minMg:6, maxMg:12, minEsml:8, maxEsml:12,
+      minProt:0, maxProt:3.5, minLact:0, maxLact:5,
+      minST:30, maxST:42, minPOD:17, maxPOD:22, minPAC:-14, maxPAC:-10
+    }
+  };
+}
+function saveConfig() {
+  cfg.version = '2.3';
+  localStorage.setItem('hk_config', JSON.stringify(cfg));
+}
+
+// ============================================================
+// NAVEGACIÓN
+// ============================================================
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('pg-'+id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    if (b.textContent.toLowerCase().includes(id.slice(0,4))) b.classList.add('active');
+  });
+  if (id==='inicio') renderInicio();
+  if (id==='ingredientes') renderIngredientes();
+  if (id==='formulas') renderFormulas();
+  if (id==='familias') renderFamilias();
+  if (id==='config') renderConfig();
+}
+
+// ============================================================
+// INICIO
+// ============================================================
+function renderInicio() {
+  document.getElementById('stat-ing').textContent = ingredientes.length;
+  document.getElementById('stat-form').textContent = formulas.length;
+  document.getElementById('stat-fam').textContent = familias.length;
+  const rl = document.getElementById('recent-list');
+  const recent = [...formulas].slice(-8).reverse();
+  rl.innerHTML = recent.length ? recent.map(f => `
+    <div class="recent-item">
+      <div><div class="name">📋 ${f.nombre}</div><div class="desc">${f.descripcion||''}</div></div>
+      <button class="btn btn-sm" style="background:var(--azul2);color:white;border:none;border-radius:5px;padding:4px 12px;cursor:pointer;font-size:12px" onclick="showPage('formulas');setTimeout(()=>selFormula(${f.id}),150)">Abrir</button>
+    </div>`).join('') : '<div style="color:var(--gris3);padding:10px">No hay fórmulas todavía. ¡Crea tu primera fórmula!</div>';
+}
+
+// ============================================================
+// INGREDIENTES
+// ============================================================
+function renderIngredientes() {
+  // Rellenar select familias
+  const sel = document.getElementById('ing-fam-filtro');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">Todas las familias</option>' +
+    familias.map(f => `<option value="${f.nombre}"${f.nombre===cur?' selected':''}>${f.nombre}</option>`).join('');
+
+  const busq = document.getElementById('ing-buscar').value.toLowerCase();
+  const fam = document.getElementById('ing-fam-filtro').value;
+  let lista = ingredientes.filter(i =>
+    (!busq || i.nombre.toLowerCase().includes(busq)) &&
+    (!fam || i.familia === fam)
+  ).sort((a,b)=>a.nombre.localeCompare(b.nombre));
+
+  document.getElementById('ing-tbody').innerHTML = lista.map(i => `
+    <tr onclick="selIngrediente(${i.id})" ondblclick="abrirEditarIngrediente(${i.id})" id="ing-row-${i.id}">
+      <td>${i.nombre}</td><td>${i.familia}</td>
+      <td style="text-align:right">${f1(i.azucares)}</td>
+      <td style="text-align:right">${f1(i.mg)}</td>
+      <td style="text-align:right">${f1(i.og)}</td>
+      <td style="text-align:right">${f1(i.esml)}</td>
+      <td style="text-align:right">${f1(i.proteinas)}</td>
+      <td style="text-align:right">${f1(i.lactosa)}</td>
+      <td style="text-align:right">${f1(i.os)}</td>
+      <td style="text-align:right">${f1(i.alcohol||0)}</td>
+      <td style="text-align:right">${f1(i.pac)}</td>
+      <td style="text-align:right">${f1(i.pod)}</td>
+      <td style="text-align:right">${f1(i.kcal)}</td>
+      <td style="text-align:right">${f1(i.precio)}</td>
+    </tr>`).join('');
+}
+
+function selIngrediente(id) {
+  ingSelId = id;
+  document.querySelectorAll('#ing-tbody tr').forEach(r => r.classList.remove('sel'));
+  const row = document.getElementById('ing-row-'+id);
+  if (row) row.classList.add('sel');
+}
+
+function abrirNuevoIngrediente() {
+  document.getElementById('modal-ing-titulo').textContent = '➕ Nuevo Ingrediente';
+  document.getElementById('ing-edit-id').value = '';
+  ['nombre','azucares','mg','og','esml','prot','lact','os','alcohol','pac','pod','kcal','precio','comentarios']
+    .forEach(f => { const el=document.getElementById('ing-'+f); if(el) el.value = f==='nombre'||f==='comentarios'?'':0; });
+  const opEl=document.getElementById('ing-orden-past'); if(opEl) opEl.value=0;
+  const pmEl=document.getElementById('ing-peso-mol'); if(pmEl) pmEl.value=1;
+  poblarSelectFamilias('ing-familia', '');
+  abrirModal('modal-ing');
+}
+
+function abrirEditarIngrediente(id) {
+  const i = ingredientes.find(x=>x.id===id);
+  if (!i) return;
+  document.getElementById('modal-ing-titulo').textContent = '✏️ Editar Ingrediente';
+  document.getElementById('ing-edit-id').value = id;
+  document.getElementById('ing-nombre').value = i.nombre;
+  document.getElementById('ing-azucares').value = i.azucares;
+  document.getElementById('ing-mg').value = i.mg;
+  document.getElementById('ing-og').value = i.og;
+  document.getElementById('ing-esml').value = i.esml;
+  document.getElementById('ing-prot').value = i.proteinas;
+  document.getElementById('ing-lact').value = i.lactosa;
+  document.getElementById('ing-os').value = i.os;
+  document.getElementById('ing-alcohol').value = i.alcohol||0;
+  document.getElementById('ing-pac').value = i.pac;
+  document.getElementById('ing-pod').value = i.pod;
+  document.getElementById('ing-kcal').value = i.kcal;
+  document.getElementById('ing-precio').value = i.precio;
+  document.getElementById('ing-orden-past').value = i.orden_past||0;
+  document.getElementById('ing-peso-mol').value = i.peso_mol_az||1;
+  document.getElementById('ing-comentarios').value = i.comentarios||'';
+  poblarSelectFamilias('ing-familia', i.familia);
+  abrirModal('modal-ing');
+}
+
+function editarIngredienteSelec() {
+  if (!ingSelId) { alert('Selecciona un ingrediente primero'); return; }
+  abrirEditarIngrediente(ingSelId);
+}
+
+function guardarIngrediente() {
+  const nombre = document.getElementById('ing-nombre').value.trim();
+  if (!nombre) { alert('El nombre es obligatorio'); return; }
+  const datos = {
+    nombre, familia: document.getElementById('ing-familia').value,
+    azucares: pf('ing-azucares'), mg: pf('ing-mg'), og: pf('ing-og'),
+    esml: pf('ing-esml'), proteinas: pf('ing-prot'), lactosa: pf('ing-lact'),
+    os: pf('ing-os'), alcohol: pf('ing-alcohol'), pac: pf('ing-pac'), pod: pf('ing-pod'),
+    kcal: pf('ing-kcal'), precio: pf('ing-precio'),
+    orden_past: pf('ing-orden-past'), peso_mol_az: pf('ing-peso-mol'),
+    comentarios: document.getElementById('ing-comentarios').value
+  };
+  const editId = parseInt(document.getElementById('ing-edit-id').value);
+  if (editId) {
+    const idx = ingredientes.findIndex(i=>i.id===editId);
+    if (idx>=0) ingredientes[idx] = {...ingredientes[idx], ...datos};
+  } else {
+    datos.id = Date.now();
+    ingredientes.push(datos);
+  }
+  saveData();
+  cerrarModal('modal-ing');
+  renderIngredientes();
+  renderInicio();
+}
+
+function eliminarIngredienteSelec() {
+  if (!ingSelId) { alert('Selecciona un ingrediente primero'); return; }
+  const i = ingredientes.find(x=>x.id===ingSelId);
+  const usado = formulas.some(f => f.ingredientes && f.ingredientes.some(fi=>fi.ing_id===ingSelId));
+  if (usado) { alert(`No se puede eliminar '${i.nombre}' porque está en una o más fórmulas.`); return; }
+  if (!confirm(`¿Eliminar '${i.nombre}'?`)) return;
+  ingredientes = ingredientes.filter(x=>x.id!==ingSelId);
+  ingSelId = null;
+  saveData();
+  renderIngredientes();
+  renderInicio();
+}
+
+// ============================================================
+// FORMULAS
+// ============================================================
+function renderFormulas() {
+  if (typeof actualizarContadorDemo === "function") actualizarContadorDemo();
+  const busq = document.getElementById('form-buscar').value.toLowerCase();
+  const lista = formulas.filter(f => !busq || f.nombre.toLowerCase().includes(busq))
+    .sort((a,b)=>a.nombre.localeCompare(b.nombre));
+  document.getElementById('lista-formulas').innerHTML = lista.map(f =>
+    `<li id="fl-${f.id}" class="${formSelId===f.id?'sel':''}" onclick="selFormula(${f.id})">${f.nombre}</li>`
+  ).join('') || '<li style="color:var(--gris3);padding:16px">No hay fórmulas</li>';
+  if (formSelId) renderDetalleFormula(formSelId);
+}
+
+function selFormula(id) {
+  formSelId = id;
+  document.querySelectorAll('#lista-formulas li').forEach(li=>li.classList.remove('sel'));
+  const li = document.getElementById('fl-'+id);
+  if (li) li.classList.add('sel');
+  renderDetalleFormula(id);
+}
+
+function renderDetalleFormula(id) {
+  const f = formulas.find(x=>x.id===id);
+  if (!f) return;
+  const ings = (f.ingredientes||[]).map(fi => {
+    const ing = ingredientes.find(i=>i.id===fi.ing_id);
+    return ing ? {...fi, ing} : null;
+  }).filter(Boolean);
+
+  // Calcular totales
+  let tot = {az:0,mg:0,og:0,esml:0,prot:0,lact:0,os:0,pac:0,pod:0,kcal:0,pct:0,st:0};
+  ings.forEach(fi => {
+    const p = fi.porcentaje/100;
+    tot.az   += fi.ing.azucares*p;
+    tot.mg   += fi.ing.mg*p;
+    tot.og   += fi.ing.og*p;
+    tot.esml += fi.ing.esml*p;
+    tot.prot += fi.ing.proteinas*p;
+    tot.lact += fi.ing.lactosa*p;
+    tot.os   += fi.ing.os*p;
+    tot.pac  += fi.ing.pac*p*40.90;
+    tot.pod  += (fi.ing.azucares>0) ? fi.ing.pod*p : 0;
+    tot.kcal += fi.ing.kcal*p;
+    tot.pct  += fi.porcentaje;
+  });
+  const st = tot.az+tot.mg+tot.og+tot.esml+tot.os;
+  
+  // Calcular gramos totales según cantidad aplicada
+  const totalGrams = window._cantGrams && window._cantGrams[id] ? window._cantGrams[id] : (f.pesoDeseado||1000);
+  const lim = cfg.limites;
+
+  function ev(val,mn,mx) {
+    return val>=mn&&val<=mx ? `<span class="eq-val ok">${f2(val)}</span>` : `<span class="eq-val bad">${f2(val)}</span>`;
+  }
+
+  const sortedIngs = ings.sort((a,b)=>b.porcentaje-a.porcentaje);
+  const totalPct = sortedIngs.reduce((s,fi)=>s+fi.porcentaje,0);
+  
+  // Accumulate column totals for Totales row
+  let colTot = {az:0,mg:0,og:0,esml:0,prot:0,lact:0,os:0,st:0,peso:0};
+  
+  const rows = sortedIngs.map((fi,idx) => {
+    const p=fi.porcentaje/100, ing=fi.ing;
+    const st_i = (ing.azucares+ing.mg+ing.og+ing.esml+ing.os)*p;
+    const autoPct = totalPct>0 ? (fi.porcentaje/totalPct*100) : 0;
+    const pesoG = fi.porcentaje*totalGrams/100;
+    colTot.az+=ing.azucares*p; colTot.mg+=ing.mg*p; colTot.og+=ing.og*p;
+    colTot.esml+=ing.esml*p; colTot.prot+=ing.proteinas*p; colTot.lact+=ing.lactosa*p;
+    colTot.os+=ing.os*p; colTot.st+=st_i; colTot.peso+=pesoG;
+    return `<tr style="background:${idx%2?'#fafbfc':'white'}">
+      <td style="padding:6px 10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${ing.nombre}">${ing.nombre}</td>
+      <td style="text-align:center;padding:6px 4px">${f2(fi.porcentaje)}</td>
+      <td style="text-align:center;padding:6px 4px;color:#2563a8">${f2(autoPct)}</td>
+      <td style="text-align:center;padding:6px 4px;font-weight:600;color:#1a2744">${f1(pesoG)}g</td>
+      <td style="text-align:center;padding:6px 4px">${f2(ing.azucares*p)}</td>
+      <td style="text-align:center;padding:6px 4px">${f2(ing.mg*p)}</td>
+      <td style="text-align:center;padding:6px 4px">${f2(ing.og*p)}</td>
+      <td style="text-align:center;padding:6px 4px;font-weight:700;color:#1e4d8c">${f2((ing.mg+ing.og)*p)}</td>
+      <td style="text-align:center;padding:6px 4px">${f2(ing.esml*p)}</td>
+      <td style="text-align:center;padding:6px 4px">${f2(ing.proteinas*p)}</td>
+      <td style="text-align:center;padding:6px 4px">${f2(ing.lactosa*p)}</td>
+      <td style="text-align:center;padding:6px 4px">${f2(ing.os*p)}</td>
+      <td style="text-align:center;padding:6px 4px">${f2(st_i)}</td>
+    </tr>`;
+  }).join('');
+
+  // Totales row
+  const totalesRow = `<tr class="totales-row" style="background:var(--azul);font-weight:bold">
+    <td style="padding:7px 10px">TOTALES</td>
+    <td style="text-align:right;padding:7px 8px">${f2(totalPct)}</td>
+    <td style="text-align:right;padding:7px 8px">100.00</td>
+    <td style="text-align:right;padding:7px 8px">${f1(colTot.peso)}g</td>
+    <td style="text-align:right;padding:7px 8px">${f2(colTot.az)}</td>
+    <td style="text-align:right;padding:7px 8px">${f2(colTot.mg)}</td>
+    <td style="text-align:right;padding:7px 8px">${f2(colTot.og)}</td>
+    <td style="text-align:right;padding:7px 8px">${f2(colTot.esml)}</td>
+    <td style="text-align:right;padding:7px 8px">${f2(colTot.prot)}</td>
+    <td style="text-align:right;padding:7px 8px">${f2(colTot.lact)}</td>
+    <td style="text-align:right;padding:7px 8px">${f2(colTot.os)}</td>
+    <td style="text-align:right;padding:7px 8px">${f2(colTot.st)}</td>
+  </tr>`;
+
+  document.getElementById('form-detalle').innerHTML = `
+    <div class="detalle-box">
+      <div class="detalle-hdr" style="background:var(--azul);padding:12px 16px">
+        <h3>📋 ${f.nombre}</h3>
+        <button class="btn btn-blue btn-sm" onclick="editarFormula()">✏️ Editar Fórmula</button>
+      </div>
+      <div class="detalle-info" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 16px">
+        <span style="font-size:12px;color:#6b7280">${f.descripcion||''}</span>
+        <div style="display:flex;align-items:center;gap:8px;margin-left:auto">
+          <span style="font-size:13px;font-weight:600;color:#1a2744">Producir:</span>
+          <input type="number" id="cant-kg-${f.id}" value="1" min="0.1" step="0.1" 
+            style="width:80px;padding:5px 8px;border:2px solid var(--azul2);border-radius:5px;font-size:14px;font-weight:bold;text-align:center"
+            onkeydown="if(event.key==='Enter')aplicarCantidad(${f.id})">
+          <span style="font-size:13px;font-weight:600;color:#1a2744">kg</span>
+          <button onclick="aplicarCantidad(${f.id})" 
+            style="padding:5px 16px;background:var(--azul2);color:white;border:none;border-radius:5px;font-size:13px;font-weight:600;cursor:pointer">
+            ✅ Aplicar
+          </button>
+          <span id="cant-label-${f.id}" style="font-size:12px;color:#16a34a;font-weight:600"></span>
+        </div>
+      </div>
+      <div style="padding:10px 16px 4px;font-size:13px;font-weight:bold;color:var(--azul)">Ingredientes:</div>
+      <div style="overflow-x:auto;padding:0 16px">
+        <table style="width:100%;font-size:12px;border-collapse:collapse;table-layout:fixed">
+          <colgroup>
+            <col style="width:180px">
+            <col style="width:65px"><col style="width:65px"><col style="width:75px">
+            <col style="width:55px"><col style="width:55px"><col style="width:55px">
+            <col style="width:55px"><col style="width:55px"><col style="width:55px">
+            <col style="width:55px"><col style="width:55px">
+          </colgroup>
+          <thead><tr style="background:var(--azul);color:white">
+            <th style="padding:6px 10px;text-align:left">Ingrediente</th>
+            <th style="padding:6px 8px;text-align:center">Base 100</th>
+            <th style="padding:6px 8px;text-align:center">%</th>
+            <th style="padding:6px 8px;text-align:center">Peso(g)</th>
+            <th style="padding:6px 8px;text-align:center">AZ</th>
+            <th style="padding:6px 8px;text-align:center">MG</th>
+            <th style="padding:6px 8px;text-align:center">OG</th>
+            <th style="padding:6px 8px;text-align:center;background:#1a3a6e">GT</th>
+            <th style="padding:6px 8px;text-align:center">SLNG</th>
+            <th style="padding:6px 8px;text-align:center">PROT</th>
+            <th style="padding:6px 8px;text-align:center">LACT</th>
+            <th style="padding:6px 8px;text-align:center">OS</th>
+            <th style="padding:6px 8px;text-align:center">ST</th>
+          </tr></thead>
+          <tbody>${rows}${totalesRow}</tbody>
+        </table>
+      </div>
+      <div style="padding:10px 16px 4px;font-size:13px;font-weight:bold;color:var(--azul)">Equilibrios:</div>
+      <div style="padding:10px 16px">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+          <div style="background:#f0f7ff;border-radius:8px;padding:10px 14px;border-left:4px solid var(--azul2)">
+            <div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Total Azúcares</div>
+            <div style="font-size:22px;font-weight:800">${ev(tot.az,lim.minAz,lim.maxAz)}</div>
+          </div>
+          <div style="background:#f0f7ff;border-radius:8px;padding:10px 14px;border-left:4px solid #1e4d8c">
+            <div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Grasa Total (MG+OG)</div>
+            <div style="font-size:22px;font-weight:800">${ev(tot.mg+tot.og,lim.minMg,lim.maxMg)}</div>
+          </div>
+          <div style="background:#f0f7ff;border-radius:8px;padding:10px 14px;border-left:4px solid var(--azul2)">
+            <div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Total SLNG</div>
+            <div style="font-size:22px;font-weight:800">${ev(tot.esml,lim.minEsml,lim.maxEsml)}</div>
+          </div>
+          <div style="background:#f0fdf4;border-radius:8px;padding:10px 14px;border-left:4px solid #16a34a">
+            <div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Sólidos Totales</div>
+            <div style="font-size:22px;font-weight:800">${ev(st,lim.minST,lim.maxST)}</div>
+          </div>
+          <div style="background:#fef9f0;border-radius:8px;padding:10px 14px;border-left:4px solid #f59e0b">
+            <div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">POD</div>
+            <div style="font-size:22px;font-weight:800">${ev(tot.pod,lim.minPOD,lim.maxPOD)}</div>
+          </div>
+          <div style="background:#fff0f0;border-radius:8px;padding:10px 14px;border-left:4px solid #dc2626">
+            <div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">PAC</div>
+            <div style="font-size:22px;font-weight:800">${ev(tot.pac,lim.minPAC,lim.maxPAC)}</div>
+          </div>
+        </div></div>
+      <div class="total-bar">
+        ${Math.abs(tot.pct-100)<0.01?'✅':'⚠️'} Total: <strong>${f2(tot.pct)}%</strong>
+        &nbsp;|&nbsp; Peso total: <strong>${f1(totalGrams)}g</strong>
+        &nbsp;|&nbsp; Kcal/100g: <strong>${f1(tot.kcal)}</strong>
+      </div>
+    </div>`;
+}
+
+function abrirNuevaFormula() {
+  abrirModal('modal-nueva-formula');
+  document.getElementById('nf-nombre').value='';
+  document.getElementById('nf-desc').value='';
+  document.getElementById('nf-peso').value=1000;
+  setTimeout(()=>document.getElementById('nf-nombre').focus(),100);
+}
+
+function crearFormula() {
+  const nombre = document.getElementById('nf-nombre').value.trim();
+  if (!nombre) { alert('El nombre es obligatorio'); return; }
+  if (formulas.find(f=>f.nombre===nombre)) { alert('Ya existe una fórmula con ese nombre'); return; }
+  const f = {
+    id: Date.now(), nombre,
+    descripcion: document.getElementById('nf-desc').value,
+    pesoDeseado: parseFloat(document.getElementById('nf-peso').value)||1000,
+    observaciones:'', ingredientes:[]
+  };
+  formulas.push(f);
+  saveData();
+  cerrarModal('modal-nueva-formula');
+  renderFormulas();
+  selFormula(f.id);
+  setTimeout(()=>editarFormula(),200);
+}
+
+function editarFormula() {
+  if (!formSelId) { alert('Selecciona una fórmula primero'); return; }
+  const f = formulas.find(x=>x.id===formSelId);
+  if (!f) return;
+  efFormulaId = f.id;
+  efIngredientes = JSON.parse(JSON.stringify(f.ingredientes||[]));
+  document.getElementById('modal-ef-titulo').textContent = '✏️ ' + f.nombre;
+  document.getElementById('ef-desc').value = f.descripcion||'';
+  document.getElementById('ef-peso').value = f.pesoDeseado ? (f.pesoDeseado/1000) : 0;
+  renderSelectorIngredientes();
+  renderEfIngredientes();
+  abrirModal('modal-edit-formula');
+  iniciarAutosave();
+  setTimeout(initDragDrop, 50);
+}
+
+function renderSelectorIngredientes() {
+  const busq = document.getElementById('ef-buscar-ing').value.toLowerCase();
+  const lista = ingredientes.filter(i =>
+    !busq || i.nombre.toLowerCase().includes(busq)
+  ).sort((a,b)=>a.nombre.localeCompare(b.nombre));
+
+  const div = document.getElementById('ing-selector');
+  div.innerHTML = lista.map(i =>
+    `<div class="ing-sel-item" onclick="selIngSel(${i.id})" ondblclick="selIngSel(${i.id});añadirIngredienteFormula()" id="isel-${i.id}">${i.nombre} <span style="color:var(--gris3);font-size:10px">(${i.familia})</span></div>`
+  ).join('');
+}
+
+let ingSelEf = null;
+function selIngSel(id) {
+  ingSelEf = id;
+  document.querySelectorAll('.ing-sel-item').forEach(d=>d.classList.remove('sel'));
+  const el = document.getElementById('isel-'+id);
+  if (el) el.classList.add('sel');
+}
+
+function añadirIngredienteFormula() {
+  if (!ingSelEf) { alert('Selecciona un ingrediente'); return; }
+  const pct = parseFloat(document.getElementById('ef-pct').value);
+  if (isNaN(pct)||pct<0) { alert('Porcentaje inválido'); return; }
+  const exist = efIngredientes.find(fi=>fi.ing_id===ingSelEf);
+  if (exist) { exist.porcentaje = Math.round((exist.porcentaje+pct)*100)/100; }
+  else { efIngredientes.push({ing_id:ingSelEf, porcentaje:pct}); }
+  renderEfIngredientes();
+}
+
+function renderEfIngredientes() {
+  const lim = cfg.limites;
+  let tot={az:0,mg:0,og:0,esml:0,prot:0,lact:0,os:0,pac:0,pod:0,pct:0,st:0};
+  const rows = efIngredientes.map((fi,idx) => {
+    const ing = ingredientes.find(i=>i.id===fi.ing_id);
+    if (!ing) return '';
+    const p = fi.porcentaje/100;
+    const st_i = (ing.azucares+ing.mg+ing.og+ing.esml+ing.os)*p;
+    tot.az+=ing.azucares*p; tot.mg+=ing.mg*p; tot.og+=ing.og*p; tot.esml+=ing.esml*p;
+    tot.prot+=ing.proteinas*p; tot.lact+=ing.lactosa*p; tot.os+=ing.os*p;
+    tot.pac+=ing.pac*p*40.90; tot.pod+=(ing.azucares>0)?ing.pod*p:0; tot.pct+=fi.porcentaje;
+    tot.st+=st_i;
+    return `<tr class="ef-ing-row" draggable="true" data-idx="${idx}" style="background:${idx%2?'#fafbfc':'white'}">
+      <td class="drag-handle" title="Arrastra para reordenar">⠿</td>
+      <td>${ing.nombre}</td>
+      <td style="text-align:right"><input type="number" step="0.01" value="${fi.porcentaje}" style="width:65px;padding:2px 4px;border:1px solid var(--gris2);border-radius:3px;font-size:11px" onchange="efIngredientes[${idx}].porcentaje=parseFloat(this.value)||0;renderEfIngredientes()"></td>
+      <td style="text-align:right;font-weight:700;color:#1a3a6e">${f1(fi.porcentaje*(parseFloat(document.getElementById('ef-peso').value)||0)*1000/100)}g</td>
+      <td style="text-align:right">${f2(ing.azucares*p)}</td>
+      <td style="text-align:right">${f2(ing.mg*p)}</td>
+      <td style="text-align:right">${f2(ing.og*p)}</td>
+      <td style="text-align:right;font-weight:700;color:#1e4d8c">${f2((ing.mg+ing.og)*p)}</td>
+      <td style="text-align:right">${f2(ing.esml*p)}</td>
+      <td style="text-align:right">${f2(ing.proteinas*p)}</td>
+      <td style="text-align:right">${f2(ing.lactosa*p)}</td>
+      <td style="text-align:right">${f2(ing.os*p)}</td>
+      <td style="text-align:right">${f2(st_i)}</td>
+      <td style="text-align:right">${f2(ing.pac*p*40.90)}</td>
+      <td style="text-align:right">${f2((ing.azucares>0)?ing.pod*p:0)}</td>
+      <td><button onclick="confirmarEliminarIng(${idx})" style="background:var(--rojo);color:white;border:none;border-radius:3px;cursor:pointer;padding:2px 6px;font-size:11px" title="Eliminar ingrediente">✖</button></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('ef-ing-tbody').innerHTML = rows || '<tr><td colspan="9" style="text-align:center;color:var(--gris3);padding:10px">Sin ingredientes</td></tr>';
+  const ok = Math.abs(tot.pct-100)<0.01;
+  document.getElementById('ef-totales').innerHTML =
+    '<div style="padding:2px 0">' +
+    (ok?'✅':'⚠️') + ' <strong>Total: ' + f2(tot.pct) + '%</strong>' +
+    ' &nbsp;|&nbsp; Peso total: <strong>' + f1(tot.pct*(parseFloat(document.getElementById('ef-peso').value)||0)*1000/100) + 'g</strong>' +
+    ' &nbsp;|&nbsp; ' + ck(tot.az,  lim.minAz,   lim.maxAz,   'AZ') +
+    ' &nbsp;|&nbsp; MG: <strong>' + f2(tot.mg) + '</strong>' +
+    ' &nbsp;|&nbsp; OG: <strong>' + f2(tot.og) + '</strong>' +
+    ' &nbsp;|&nbsp; ' + ck(tot.mg+tot.og, lim.minMg, lim.maxMg, 'GT', '#1e4d8c') +
+    ' &nbsp;|&nbsp; ' + ck(tot.esml, lim.minEsml, lim.maxEsml, 'SLNG', '#1563a8') +
+    ' &nbsp;|&nbsp; ' + ck(tot.prot, lim.minProt, lim.maxProt, 'PROT') +
+    ' &nbsp;|&nbsp; ' + ck(tot.lact, lim.minLact, lim.maxLact, 'LACT') +
+    ' &nbsp;|&nbsp; OS: <strong>' + f2(tot.os) + '</strong>' +
+    ' &nbsp;|&nbsp; <span style="color:#1563a8;font-weight:800">ST: <strong>' + f2(tot.st) + '</strong></span>' +
+    ' &nbsp;|&nbsp; Kcal: <strong>' + f1(tot.kcal) + '</strong>' +
+    '</div>' +
+    '<div style="padding:2px 0;border-top:1px solid rgba(0,0,0,0.08);margin-top:2px">' +
+    ' &nbsp;&nbsp; ' + ck(tot.pac, lim.minPAC, lim.maxPAC, 'PAC') +
+    ' &nbsp;&nbsp;&nbsp; ' + ck(tot.pod, lim.minPOD, lim.maxPOD, 'POD') +
+    '</div>';
+}
+
+function guardarFormula(silencioso=false) {
+  const idx = formulas.findIndex(f=>f.id===efFormulaId);
+  if (idx<0) return;
+  formulas[idx].descripcion = document.getElementById('ef-desc').value;
+  formulas[idx].pesoDeseado = (parseFloat(document.getElementById('ef-peso').value)||0)*1000;
+  formulas[idx].ingredientes = efIngredientes;
+  saveData();
+  if (silencioso) {
+    // Show autosave indicator
+    const ind = document.getElementById('autosave-ind');
+    if (ind) {
+      ind.textContent = '✅ Guardado automáticamente ' + new Date().toLocaleTimeString();
+      ind.style.opacity = '1';
+      setTimeout(() => { ind.style.opacity = '0'; }, 2500);
+    }
+  } else {
+    cerrarModal('modal-edit-formula');
+    renderFormulas();
+    renderDetalleFormula(efFormulaId);
+  }
+}
+
+let autosaveInterval = null;
+
+function iniciarAutosave() {
+  pararAutosave();
+  autosaveInterval = setInterval(() => {
+    if (efFormulaId && document.getElementById('modal-edit-formula').classList.contains('open')) {
+      guardarFormula(true);
+    }
+  }, 30000);
+}
+
+function pararAutosave() {
+  if (autosaveInterval) { clearInterval(autosaveInterval); autosaveInterval = null; }
+}
+
+function eliminarFormula() {
+  if (!formSelId) { alert('Selecciona una fórmula primero'); return; }
+  const f = formulas.find(x=>x.id===formSelId);
+  if (!confirm(`¿Eliminar la fórmula '${f.nombre}'?`)) return;
+  formulas = formulas.filter(x=>x.id!==formSelId);
+  formSelId = null;
+  saveData();
+  document.getElementById('form-detalle').innerHTML='<div style="padding:40px;text-align:center;color:var(--gris3)">Selecciona una fórmula</div>';
+  renderFormulas();
+  renderInicio();
+}
+
+function duplicarFormula() {
+  if (!formSelId) { alert('Selecciona una fórmula primero'); return; }
+  const f = formulas.find(x=>x.id===formSelId);
+  const nombre = prompt('Nombre para la copia:', f.nombre+' (copia)');
+  if (!nombre) return;
+  const nueva = {...JSON.parse(JSON.stringify(f)), id:Date.now(), nombre};
+  formulas.push(nueva);
+  saveData();
+  renderFormulas();
+  selFormula(nueva.id);
+  renderInicio();
+}
+
+// ============================================================
+// FAMILIAS
+// ============================================================
+function renderFamilias() {
+  document.getElementById('fam-tbody').innerHTML = familias.map(fam => {
+    const cnt = ingredientes.filter(i=>i.familia===fam.nombre).length;
+    return `<tr onclick="selFam('${fam.id}')" id="fam-row-${fam.id}" ondblclick="editarFamiliaSelec()">
+      <td>${fam.nombre}</td><td style="text-align:center">${cnt}</td><td>${fam.descripcion||''}</td>
+    </tr>`;
+  }).join('');
+}
+
+let famSelId = null;
+function selFam(id) {
+  famSelId = parseInt(id);
+  document.querySelectorAll('#fam-tbody tr').forEach(r=>r.classList.remove('sel'));
+  const row = document.getElementById('fam-row-'+id);
+  if (row) row.classList.add('sel');
+}
+
+function nuevaFamilia() {
+  document.getElementById('modal-fam-titulo').textContent='➕ Nueva Familia';
+  document.getElementById('fam-edit-id').value='';
+  document.getElementById('fam-nombre').value='';
+  document.getElementById('fam-desc').value='';
+  abrirModal('modal-familia');
+}
+
+function editarFamiliaSelec() {
+  if (!famSelId) { alert('Selecciona una familia'); return; }
+  const fam = familias.find(f=>f.id===famSelId);
+  document.getElementById('modal-fam-titulo').textContent='✏️ Editar Familia';
+  document.getElementById('fam-edit-id').value=fam.id;
+  document.getElementById('fam-nombre').value=fam.nombre;
+  document.getElementById('fam-desc').value=fam.descripcion||'';
+  abrirModal('modal-familia');
+}
+
+function guardarFamilia() {
+  const nombre = document.getElementById('fam-nombre').value.trim();
+  if (!nombre) { alert('El nombre es obligatorio'); return; }
+  const editId = parseInt(document.getElementById('fam-edit-id').value);
+  if (editId) {
+    const fam = familias.find(f=>f.id===editId);
+    const oldNombre = fam.nombre;
+    fam.nombre = nombre;
+    fam.descripcion = document.getElementById('fam-desc').value;
+    if (oldNombre !== nombre) ingredientes.forEach(i=>{ if(i.familia===oldNombre) i.familia=nombre; });
+  } else {
+    familias.push({id:Date.now(), nombre, descripcion:document.getElementById('fam-desc').value});
+  }
+  saveData();
+  cerrarModal('modal-familia');
+  renderFamilias();
+}
+
+function eliminarFamiliaSelec() {
+  if (!famSelId) { alert('Selecciona una familia'); return; }
+  const fam = familias.find(f=>f.id===famSelId);
+  const cnt = ingredientes.filter(i=>i.familia===fam.nombre).length;
+  if (cnt>0) { alert(`No se puede eliminar '${fam.nombre}': tiene ${cnt} ingredientes. Cambia su familia primero.`); return; }
+  if (!confirm(`¿Eliminar la familia '${fam.nombre}'?`)) return;
+  familias = familias.filter(f=>f.id!==famSelId);
+  famSelId=null;
+  saveData();
+  renderFamilias();
+}
+
+// ============================================================
+// CONFIGURACIÓN
+// ============================================================
+function renderConfig() {
+  document.getElementById('cfg-empresa').value=cfg.empresa||'';
+  document.getElementById('cfg-calle').value=cfg.calle||'';
+  document.getElementById('cfg-poblacion').value=cfg.poblacion||'';
+  document.getElementById('cfg-provincia').value=cfg.provincia||'';
+  const lim = cfg.limites;
+  const limFields = [
+    ['Azúcares (%)','minAz','maxAz'],['GT Grasa Total (MG+OG) (%)','minMg','maxMg'],
+    ['SLNG (%)','minEsml','maxEsml'],['Proteínas (%)','minProt','maxProt'],
+    ['Lactosa (%)','minLact','maxLact'],['Sólidos Totales (%)','minST','maxST'],
+    ['POD','minPOD','maxPOD'],['PAC','minPAC','maxPAC']
+  ];
+  document.getElementById('lim-grid').innerHTML = limFields.map(([label,mn,mx]) =>
+    `<div class="lim-row">
+      <label>${label}</label>
+      <span>min:</span><input type="number" step="0.1" id="lim-${mn}" value="${lim[mn]}">
+      <span>max:</span><input type="number" step="0.1" id="lim-${mx}" value="${lim[mx]}">
+    </div>`
+  ).join('');
+}
+
+function guardarConfig() {
+  cfg.empresa=document.getElementById('cfg-empresa').value;
+  cfg.calle=document.getElementById('cfg-calle').value;
+  cfg.poblacion=document.getElementById('cfg-poblacion').value;
+  cfg.provincia=document.getElementById('cfg-provincia').value;
+  const lf = ['minAz','maxAz','minMg','maxMg','minEsml','maxEsml','minProt','maxProt',
+               'minLact','maxLact','minST','maxST','minPOD','maxPOD','minPAC','maxPAC'];
+  lf.forEach(k => { cfg.limites[k]=parseFloat(document.getElementById('lim-'+k).value)||0; });
+  saveConfig();
+  alert('✅ Configuración guardada');
+}
+
+// ============================================================
+// UTILIDADES
+// ============================================================
+function f1(v) { return (parseFloat(v)||0).toFixed(1); }
+function f2(v) { return (parseFloat(v)||0).toFixed(2); }
+function pf(id) { return parseFloat(document.getElementById(id).value)||0; }
+
+function abrirModal(id) { document.getElementById(id).classList.add('open'); }
+function cerrarModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function poblarSelectFamilias(selId, valActual) {
+  const sel = document.getElementById(selId);
+  sel.innerHTML = familias.map(f =>
+    `<option value="${f.nombre}"${f.nombre===valActual?' selected':''}>${f.nombre}</option>`
+  ).join('');
+}
+
+function sortTable(tableId, col) {
+  const key = tableId+'_'+col;
+  sortDir[key] = !sortDir[key];
+  const tbody = document.getElementById(tableId==='ing-table'?'ing-tbody':'fam-tbody');
+  const rows = Array.from(tbody.rows);
+  rows.sort((a,b)=>{
+    const av=a.cells[col]?.textContent.trim()||'';
+    const bv=b.cells[col]?.textContent.trim()||'';
+    const an=parseFloat(av), bn=parseFloat(bv);
+    if(!isNaN(an)&&!isNaN(bn)) return sortDir[key]?bn-an:an-bn;
+    return sortDir[key]?bv.localeCompare(av):av.localeCompare(bv);
+  });
+  rows.forEach(r=>tbody.appendChild(r));
+}
+
+// Cerrar modal al clicar fuera
+document.querySelectorAll('.modal-bg').forEach(bg => {
+  bg.addEventListener('click', e => {
+    // Never close the formula editor by clicking outside - data would be lost
+    if (e.target===bg && bg.id !== 'modal-edit-formula') {
+      bg.classList.remove('open');
+    }
+  });
+});
+
+function aplicarCantidad(id) {
+  const inp = document.getElementById('cant-kg-'+id);
+  const kg = parseFloat(inp ? inp.value : 1) || 1;
+  if (!window._cantGrams) window._cantGrams = {};
+  window._cantGrams[id] = kg * 1000;
+  const lbl = document.getElementById('cant-label-'+id);
+  if (lbl) lbl.textContent = '→ ' + f1(kg*1000) + ' g';
+  renderDetalleFormula(id);
+}
+
+// ═══════════════════════════════════════════════════
+// EXPORTAR / IMPORTAR FÓRMULAS
+// ═══════════════════════════════════════════════════
+
+function exportarFormulas() {
+  if (!formulas || formulas.length === 0) {
+    alert('No hay fórmulas para exportar.');
+    return;
+  }
+  // Guardamos sólo los datos esenciales: nombre, descripción, pesoDeseado,
+  // observaciones y los ingredientes con su NOMBRE (no id) y porcentaje.
+  // Así son independientes de los IDs y se actualizan al importar.
+  const exportData = {
+    version: '1.0',
+    fecha: new Date().toISOString().split('T')[0],
+    app: 'Helatek I+D+I',
+    formulas: formulas.map(f => ({
+      nombre: f.nombre,
+      descripcion: f.descripcion || '',
+      pesoDeseado: f.pesoDeseado || 1000,
+      observaciones: f.observaciones || '',
+      ingredientes: (f.ingredientes || []).map(fi => {
+        const ing = ingredientes.find(i => i.id === fi.ing_id);
+        return {
+          nombre_ingrediente: ing ? ing.nombre : fi.nombre_ingrediente || '?',
+          porcentaje: fi.porcentaje
+        };
+      })
+    }))
+  };
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const fecha = new Date().toISOString().split('T')[0];
+  a.download = `Helatek_Formulas_${fecha}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  alert('✅ ' + formulas.length + ' fórmulas exportadas correctamente.\n\nGuarda este archivo en un lugar seguro. Puedes importarlo en cualquier momento aunque borres el caché del navegador.');
+}
+
+function importarFormulas(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.formulas || !Array.isArray(data.formulas)) {
+        alert('❌ Archivo no válido. Debe ser un JSON exportado desde Helatek I+D+I.');
+        return;
+      }
+      // DEMO: verificar límite
+      if (data.formulas.length > DEMO_MAX_FORMULAS) {
+        alert('🔒 VERSIÓN DEMO — Límite alcanzado\n\nNo se pueden importar ' + data.formulas.length + ' fórmulas. El máximo en la versión DEMO es ' + DEMO_MAX_FORMULAS + '.\n\nContacta con Helatek I+D+I para la versión completa.');
+        return;
+      }
+      let importadas = 0, noEncontradas = [];
+      const nuevasFormulas = data.formulas.map(f => {
+        // Reconstruir ingredientes buscando por NOMBRE en los ingredientes actuales
+        const ingsReconstruidos = (f.ingredientes || []).map(fi => {
+          const ingActual = ingredientes.find(i =>
+            i.nombre.toLowerCase().trim() === (fi.nombre_ingrediente || '').toLowerCase().trim()
+          );
+          if (!ingActual) {
+            noEncontradas.push(`"${fi.nombre_ingrediente}" en fórmula "${f.nombre}"`);
+            return null;
+          }
+          return { ing_id: ingActual.id, porcentaje: fi.porcentaje };
+        }).filter(Boolean);
+        importadas++;
+        return {
+          id: Date.now() + Math.random(),
+          nombre: f.nombre,
+          descripcion: f.descripcion || '',
+          pesoDeseado: f.pesoDeseado || 1000,
+          observaciones: f.observaciones || '',
+          ingredientes: ingsReconstruidos
+        };
+      });
+      // Preguntar si reemplazar o añadir
+      const accion = confirm(
+        `Se van a importar ${importadas} fórmulas.
+
+` +
+        `¿Deseas REEMPLAZAR todas las fórmulas actuales?
+
+` +
+        `• Aceptar → Reemplazar (borra las actuales)
+` +
+        `• Cancelar → Añadir a las existentes`
+      );
+      if (accion) {
+        formulas = nuevasFormulas;
+      } else {
+        // Añadir evitando duplicados por nombre
+        nuevasFormulas.forEach(nf => {
+          const existe = formulas.find(f => f.nombre.toLowerCase() === nf.nombre.toLowerCase());
+          if (!existe) formulas.push(nf);
+        });
+      }
+      saveData();
+      renderFormulas();
+      let msg = `✅ ${importadas} fórmulas importadas y actualizadas con los valores actuales de ingredientes.`;
+      if (noEncontradas.length > 0) {
+        msg += '\n\n⚠️ ' + noEncontradas.length + ' ingrediente(s) no encontrado(s):\n' + noEncontradas.slice(0,5).join('\n');
+        if (noEncontradas.length > 5) msg += '\n...y ' + (noEncontradas.length-5) + ' más.';
+      }
+      alert(msg);
+    } catch(err) {
+      alert('❌ Error al leer el archivo: ' + err.message);
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+// ════════════════════════════════════════════════════
+// ARRANQUE
+// ============================================================
+
+// ck() — colorear valor: rojo si fuera de rango
+function ck(val, mn, mx, label, baseColor) {
+  var out = (mn !== undefined && val < mn) || (mx !== undefined && val > mx);
+  var color = out ? '#dc2626' : (baseColor || '#374151');
+  var w = out ? '900' : '600';
+  var warn = out ? ' ⚠️' : '';
+  return '<span style="color:' + color + ';font-weight:' + w + '">' + label + ': <strong>' + f2(val) + '</strong>' + warn + '</span>';
+}
+
+
+// Confirmar antes de eliminar ingrediente de la fórmula
+function confirmarEliminarIng(idx) {
+  const ing = efIngredientes[idx];
+  const nombre = ing ? (ingredientes.find(i=>i.id===ing.ing_id)||{nombre:'este ingrediente'}).nombre : 'este ingrediente';
+  if (confirm('¿Seguro que quieres eliminar "' + nombre + '" de la fórmula?')) {
+    efIngredientes.splice(idx, 1);
+    renderEfIngredientes();
+  }
+}
+
+// Drag & Drop para reordenar ingredientes
+let _dragIdx = null;
+
+function initDragDrop() {
+  const tbody = document.getElementById('ef-ing-tbody');
+  if (!tbody) return;
+  tbody.addEventListener('dragstart', function(e) {
+    const row = e.target.closest('tr[draggable]');
+    if (!row) return;
+    _dragIdx = parseInt(row.dataset.idx);
+    row.classList.add('ef-row-dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  tbody.addEventListener('dragend', function() {
+    tbody.querySelectorAll('tr').forEach(r => r.classList.remove('ef-row-dragging','ef-row-over'));
+  });
+  tbody.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    const row = e.target.closest('tr[draggable]');
+    tbody.querySelectorAll('tr').forEach(r => r.classList.remove('ef-row-over'));
+    if (row) row.classList.add('ef-row-over');
+  });
+  tbody.addEventListener('drop', function(e) {
+    e.preventDefault();
+    const row = e.target.closest('tr[draggable]');
+    if (!row || _dragIdx === null) return;
+    const destIdx = parseInt(row.dataset.idx);
+    if (_dragIdx === destIdx) return;
+    const item = efIngredientes.splice(_dragIdx, 1)[0];
+    efIngredientes.splice(destIdx, 0, item);
+    _dragIdx = null;
+    renderEfIngredientes();
+  });
+}
+
+
+// ══════════════════════════════════════════════════
+// MODO DEMO — restricciones activas
+// ══════════════════════════════════════════════════
+const DEMO_MODE = true;
+const DEMO_MAX_FORMULAS = 10;
+
+// Guardar referencia a las funciones originales
+const _abrirNuevoIngrediente_orig = abrirNuevoIngrediente;
+const _abrirEditarIngrediente_orig = abrirEditarIngrediente;
+const _abrirNuevaFormula_orig = abrirNuevaFormula;
+const _importarFormulas_orig = importarFormulas;
+
+// Bloquear añadir ingredientes
+function abrirNuevoIngrediente() {
+  alert('🔒 VERSIÓN DEMO\n\nNo es posible añadir nuevos ingredientes en la versión de demostración.\n\nContacta con Helatek I+D+I para la versión completa.');
+}
+
+// Bloquear editar ingredientes
+function abrirEditarIngrediente(id) {
+  alert('🔒 VERSIÓN DEMO\n\nLa edición de ingredientes no está disponible en la versión de demostración.\n\nContacta con Helatek I+D+I para la versión completa.');
+}
+
+// Bloquear nueva fórmula si hay 10 o más
+function abrirNuevaFormula() {
+  if (formulas.length >= DEMO_MAX_FORMULAS) {
+    alert('🔒 VERSIÓN DEMO — Límite alcanzado\n\nEsta versión permite un máximo de ' + DEMO_MAX_FORMULAS + ' fórmulas.\n\nContacta con Helatek I+D+I para trabajar sin límites.');
+    return;
+  }
+  _abrirNuevaFormula_orig();
+}
+
+// Actualizar contador DEMO en toolbar
+function actualizarContadorDemo() {
+  var dc = document.getElementById('demo-counter');
+  if (!dc) return;
+  var restantes = DEMO_MAX_FORMULAS - formulas.length;
+  if (restantes <= 0) {
+    dc.textContent = '🔒 Límite alcanzado (' + DEMO_MAX_FORMULAS + '/' + DEMO_MAX_FORMULAS + ')';
+    dc.style.color = '#dc2626';
+  } else {
+    dc.textContent = formulas.length + '/' + DEMO_MAX_FORMULAS + ' fórmulas';
+    dc.style.color = restantes <= 2 ? '#d97706' : '#6b7280';
+  }
+}
+
+loadConfig();
+// Reset ingredientes si hay versión incompatible en caché
+try {
+  const testIng = localStorage.getItem('hk_ingredientes');
+  if (testIng) {
+    const arr = JSON.parse(testIng);
+    // Si el primer ingrediente no tiene el campo 'pac' correcto, limpiar
+    if (arr.length > 0 && (typeof arr[0].pac === 'undefined' || typeof arr[0].og === 'undefined')) {
+      localStorage.removeItem('hk_ingredientes');
+      localStorage.removeItem('hk_familias');
+    }
+  }
+} catch(e) { localStorage.removeItem('hk_ingredientes'); localStorage.removeItem('hk_familias'); }
+loadData();
+renderInicio();
+</script>
+</body>
+</html>

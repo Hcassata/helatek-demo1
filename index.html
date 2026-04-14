@@ -544,7 +544,7 @@ const DEFAULT_INGREDIENTES = [
   ["Gelatina frio absolut cristal","Azucares",64,0,0,0,0,0,0,-0.55,80,0,0,""],
   ["Glucosa 20 DE 1","Azucares",95,0,0,0,0,0,0,-0.24,16,0,0,""],
   ["Glucosa 21 DE","Azucares",95,0,0,0,0,0,0,-0.24,16,0,0,""],
-  ["Glucosa 38 DE","Azucares",95,0,0,0,0,0,0,-0.46,30,3.80,0,""],
+  ["Glucosa 38 DE","Azucares",95,0,0,0,0,0,0,-0.01321,40,3.80,0,""],
   ["Glucosa 38 DE 1","Azucares",95,0,0,0,0,0,0,-0.46,30,0,0,""],
   ["Jarabe Alta Fructosa 55%","Azucares",77,0,0,0,0,0,0,-1.10,125,0,0,""],
   ["Jarabe Glucosa 25 DE","Azucares",80,0,0,0,0,0,0,-0.30,28,3.20,0,""],
@@ -1086,7 +1086,7 @@ function renderDetalleFormula(id) {
     tot.prot += fi.ing.proteinas*p;
     tot.lact += fi.ing.lactosa*p;
     tot.os   += fi.ing.os*p;
-    tot.pac  += fi.ing.pac*p*40.90;
+    tot.pac  += (fi.ing.azucares>0) ? fi.ing.pac*p*89.62 : 0;
     tot.pod  += (fi.ing.azucares>0) ? fi.ing.pod*p : 0;
     tot.kcal += fi.ing.kcal*p;
     tot.pct  += fi.porcentaje;
@@ -1309,7 +1309,7 @@ function renderEfIngredientes() {
     const st_i = (ing.azucares+ing.mg+ing.og+ing.esml+ing.os)*p;
     tot.az+=ing.azucares*p; tot.mg+=ing.mg*p; tot.og+=ing.og*p; tot.esml+=ing.esml*p;
     tot.prot+=ing.proteinas*p; tot.lact+=ing.lactosa*p; tot.os+=ing.os*p;
-    tot.pac+=ing.pac*p*40.90; tot.pod+=(ing.azucares>0)?ing.pod*p:0; tot.pct+=fi.porcentaje;
+    tot.pac+=(ing.azucares>0)?ing.pac*p*89.62:0; tot.pod+=(ing.azucares>0)?ing.pod*p:0; tot.pct+=fi.porcentaje;
     tot.st+=st_i;
     return `<tr class="ef-ing-row" draggable="true" data-idx="${idx}" style="background:${idx%2?'#fafbfc':'white'}">
       <td class="drag-handle" title="Arrastra para reordenar">⠿</td>
@@ -1325,7 +1325,7 @@ function renderEfIngredientes() {
       <td style="text-align:right">${f2(ing.lactosa*p)}</td>
       <td style="text-align:right">${f2(ing.os*p)}</td>
       <td style="text-align:right">${f2(st_i)}</td>
-      <td style="text-align:right">${f2(ing.pac*p*40.90)}</td>
+      <td style="text-align:right">${f2((ing.azucares>0)?ing.pac*p*89.62:0)}</td>
       <td style="text-align:right">${f2((ing.azucares>0)?ing.pod*p:0)}</td>
       <td><button onclick="confirmarEliminarIng(${idx})" style="background:var(--rojo);color:white;border:none;border-radius:3px;cursor:pointer;padding:2px 6px;font-size:11px" title="Eliminar ingrediente">✖</button></td>
     </tr>`;

@@ -1233,13 +1233,7 @@ function renderDetalleFormula(id) {
     </div>`;
 }
 
-function abrirNuevaFormula() {
-  abrirModal('modal-nueva-formula');
-  document.getElementById('nf-nombre').value='';
-  document.getElementById('nf-desc').value='';
-  document.getElementById('nf-peso').value=1000;
-  setTimeout(()=>document.getElementById('nf-nombre').focus(),100);
-}
+// [DEMO] abrirNuevaFormula redefinida abajo con límite de fórmulas
 
 function crearFormula() {
   const nombre = document.getElementById('nf-nombre').value.trim();
@@ -1760,41 +1754,39 @@ function initDragDrop() {
 const DEMO_MODE = true;
 const DEMO_MAX_FORMULAS = 10;
 
-// Guardar referencia a las funciones originales
-const _abrirNuevoIngrediente_orig = abrirNuevoIngrediente;
-const _abrirEditarIngrediente_orig = abrirEditarIngrediente;
-const _abrirNuevaFormula_orig = abrirNuevaFormula;
-const _importarFormulas_orig = importarFormulas;
-
-// Bloquear añadir ingredientes
+// ── DEMO: Bloquear añadir ingredientes ──
 function abrirNuevoIngrediente() {
-  alert('🔒 VERSIÓN DEMO\n\nNo es posible añadir nuevos ingredientes en la versión de demostración.\n\nContacta con Helatek I+D+I para la versión completa.');
+  alert('\uD83D\uDD12 VERSI\u00D3N DEMO\n\nNo es posible a\u00F1adir nuevos ingredientes en la versi\u00F3n de demostraci\u00F3n.\n\nContacta con Helatek I+D+I para la versi\u00F3n completa.');
 }
 
-// Bloquear editar ingredientes
+// ── DEMO: Bloquear editar ingredientes ──
 function abrirEditarIngrediente(id) {
-  alert('🔒 VERSIÓN DEMO\n\nLa edición de ingredientes no está disponible en la versión de demostración.\n\nContacta con Helatek I+D+I para la versión completa.');
+  alert('\uD83D\uDD12 VERSI\u00D3N DEMO\n\nLa edici\u00F3n de ingredientes no est\u00E1 disponible en la versi\u00F3n de demostraci\u00F3n.\n\nContacta con Helatek I+D+I para la versi\u00F3n completa.');
 }
 
-// Bloquear nueva fórmula si hay 10 o más
+// ── DEMO: Nueva f\u00F3rmula con l\u00EDmite (c\u00F3digo original inline para evitar hoisting) ──
 function abrirNuevaFormula() {
   if (formulas.length >= DEMO_MAX_FORMULAS) {
-    alert('🔒 VERSIÓN DEMO — Límite alcanzado\n\nEsta versión permite un máximo de ' + DEMO_MAX_FORMULAS + ' fórmulas.\n\nContacta con Helatek I+D+I para trabajar sin límites.');
+    alert('\uD83D\uDD12 VERSI\u00D3N DEMO \u2014 L\u00EDmite alcanzado\n\nEsta versi\u00F3n permite un m\u00E1ximo de ' + DEMO_MAX_FORMULAS + ' f\u00F3rmulas.\n\nContacta con Helatek I+D+I para trabajar sin l\u00EDmites.');
     return;
   }
-  _abrirNuevaFormula_orig();
+  abrirModal('modal-nueva-formula');
+  document.getElementById('nf-nombre').value = '';
+  document.getElementById('nf-desc').value = '';
+  document.getElementById('nf-peso').value = 1000;
+  setTimeout(function() { document.getElementById('nf-nombre').focus(); }, 100);
 }
 
-// Actualizar contador DEMO en toolbar
+// ── DEMO: Actualizar contador ──
 function actualizarContadorDemo() {
   var dc = document.getElementById('demo-counter');
   if (!dc) return;
   var restantes = DEMO_MAX_FORMULAS - formulas.length;
   if (restantes <= 0) {
-    dc.textContent = '🔒 Límite alcanzado (' + DEMO_MAX_FORMULAS + '/' + DEMO_MAX_FORMULAS + ')';
+    dc.textContent = '\uD83D\uDD12 L\u00EDmite alcanzado (' + DEMO_MAX_FORMULAS + '/' + DEMO_MAX_FORMULAS + ')';
     dc.style.color = '#dc2626';
   } else {
-    dc.textContent = formulas.length + '/' + DEMO_MAX_FORMULAS + ' fórmulas';
+    dc.textContent = formulas.length + '/' + DEMO_MAX_FORMULAS + ' f\u00F3rmulas';
     dc.style.color = restantes <= 2 ? '#d97706' : '#6b7280';
   }
 }

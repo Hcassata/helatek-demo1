@@ -1129,7 +1129,7 @@ function renderDetalleFormula(id) {
   // Calcular totales
   let tot = {az:0,mg:0,og:0,esml:0,prot:0,lact:0,os:0,pac:0,pod:0,kcal:0,pct:0,st:0};
   ings.forEach(fi => {
-    const p = fi.porcentaje/100;
+    const p = totalPct > 0 ? fi.porcentaje/totalPct : fi.porcentaje/100;
     tot.az   += fi.ing.azucares*p;
     tot.mg   += fi.ing.mg*p;
     tot.og   += fi.ing.og*p;
@@ -1430,8 +1430,8 @@ function renderEfIngredientes() {
     ' &nbsp; (' + pesoKgEf + ' kg)' +
     '</div>' +
     '<div style="padding:2px 0;border-top:1px solid rgba(255,255,255,0.2);margin-top:2px">' +
-    ' &nbsp;&nbsp; ' + ck(tot.pac, lim.minPAC, lim.maxPAC, 'PAC') +
-    ' &nbsp;&nbsp;&nbsp; ' + ck(tot.pod, lim.minPOD, lim.maxPOD, 'POD') +
+    '<span style="font-size:15px;font-weight:800"> ' + ck(tot.pac, lim.minPAC, lim.maxPAC, 'PAC') +
+    '&nbsp;&nbsp;&nbsp;&nbsp;' + ck(tot.pod, lim.minPOD, lim.maxPOD, 'POD') + '</span>' +
     '</div>';
 }
 
@@ -1842,8 +1842,9 @@ function imprimirFormula(fid) {
   }).filter(Boolean);
 
   var tot = {az:0,mg:0,og:0,esml:0,prot:0,lact:0,os:0,pac:0,pod:0,kcal:0,pct:0,st:0};
+  var sumaPesosI = ings.reduce(function(s,fi){ return s+(fi.porcentaje||0); }, 0) || 100;
   ings.forEach(function(fi) {
-    var p = fi.porcentaje/100;
+    var p = fi.porcentaje / sumaPesosI;
     tot.az   += fi.ing.azucares*p;
     tot.mg   += fi.ing.mg*p;
     tot.og   += fi.ing.og*p;
@@ -1868,7 +1869,7 @@ function imprimirFormula(fid) {
   var hoy = new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'});
 
   var rows = ings.map(function(fi, idx) {
-    var p   = fi.porcentaje / 100;
+    var p   = fi.porcentaje / sumaPesosI;
     var ing = fi.ing;
     var peso = fi.porcentaje * pesoG / 100;
     var bg  = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
@@ -2121,8 +2122,9 @@ function imprimirFormula(fid) {
   }).filter(Boolean);
 
   var tot = {az:0,mg:0,og:0,esml:0,prot:0,lact:0,os:0,pac:0,pod:0,kcal:0,pct:0,st:0};
+  var sumaPesosI = ings.reduce(function(s,fi){ return s+(fi.porcentaje||0); }, 0) || 100;
   ings.forEach(function(fi) {
-    var p = fi.porcentaje/100;
+    var p = fi.porcentaje / sumaPesosI;
     tot.az   += fi.ing.azucares*p;
     tot.mg   += fi.ing.mg*p;
     tot.og   += fi.ing.og*p;
@@ -2147,7 +2149,7 @@ function imprimirFormula(fid) {
   var hoy = new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'});
 
   var rows = ings.map(function(fi, idx) {
-    var p   = fi.porcentaje / 100;
+    var p   = fi.porcentaje / sumaPesosI;
     var ing = fi.ing;
     var peso = fi.porcentaje * pesoG / 100;
     var bg  = idx % 2 === 0 ? '#ffffff' : '#f8fafc';

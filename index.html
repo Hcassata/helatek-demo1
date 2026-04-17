@@ -89,7 +89,7 @@
   #lista-formulas li.sel { background: var(--celeste); font-weight: 600; color: var(--azul2); border-right: 3px solid var(--azul2); }
   .form-lista-btns { padding: 8px 12px; display: flex; gap: 6px; border-top: 1px solid var(--gris2); flex-wrap: wrap; }
   .form-detalle { flex: 1; overflow-y: auto; background: var(--gris); }
-  .detalle-box { background: white; margin: 12px; border-radius: 8px; overflow: hidden; }
+  .detalle-box { background: white; margin: 12px; border-radius: 8px; }
   .detalle-hdr { background: var(--azul); color: white; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; }
   .detalle-hdr h3 { font-size: 14px; }
   .detalle-info { padding: 8px 16px; font-size: 12px; color: var(--gris3); border-bottom: 1px solid var(--gris2); }
@@ -99,7 +99,7 @@
   .eq-val { font-size: 13px; font-weight: bold; }
   .eq-val.ok { color: var(--verde); }
   .eq-val.bad { color: var(--rojo); }
-  .total-bar { padding: 8px 16px !important; background: #1a2744 !important; color: white !important; border-top: 2px solid rgba(255,255,255,0.2) !important; font-size: 12px; font-weight: 600; }
+  .total-bar { padding: 8px 16px !important; background: #1a2744 !important; color: white !important; border-top: 2px solid rgba(255,255,255,0.2) !important; font-size: 12px; font-weight: 600; border-radius: 0 0 8px 8px; }
 
   /* MODAL */
   .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
@@ -502,7 +502,7 @@
           <input type="text" id="ef-buscar-ing" placeholder="🔍 Buscar ingrediente..." style="width:100%;padding:5px 8px;border:1px solid var(--gris2);border-radius:4px;font-size:12px;margin-bottom:4px" oninput="renderSelectorIngredientes()" onkeydown="efBuscarKeydown(event)">
           <div id="ing-selector" style="height:240px;overflow-y:auto;border:1px solid var(--gris2);border-radius:5px"></div>
           <div style="display:flex;align-items:center;gap:6px;margin-top:6px">
-            <label style="font-size:12px;font-weight:600;color:var(--azul)">Porcentaje:</label>
+            <label style="font-size:12px;font-weight:600;color:var(--azul)">Cantidad:</label>
             <input id="ef-pct" type="number" step="0.01" value="5.00" style="width:80px;padding:5px;border:1px solid var(--gris2);border-radius:4px;font-size:12px" onkeydown="efBuscarKeydown(event)">
             <span style="font-size:12px">%</span>
             <button class="btn btn-green btn-sm" onclick="añadirIngredienteFormula()">➕ Añadir</button>
@@ -1277,7 +1277,7 @@ function renderDetalleFormula(id) {
             <div style="font-size:22px;font-weight:800">${ev(tot.pac,lim.minPAC,lim.maxPAC)}</div>
           </div>
         </div></div>
-      <div class="total-bar" style="background:#1a2744!important;color:white!important">
+      <div class="total-bar" style="background:#1a2744!important;color:white!important;border-radius:0 0 8px 8px;">
         ${Math.abs(tot.pct-100)<0.01?'✅':'⚠️'} Total: <strong>${f2(tot.pct)}%</strong>
         &nbsp;|&nbsp; Peso total: <strong>${f1(totalGrams)}g</strong>
         &nbsp;|&nbsp; Kcal/100g: <strong>${f1(tot.kcal)}</strong>
@@ -1358,11 +1358,15 @@ function selIngSel(id) {
 function añadirIngredienteFormula() {
   if (!ingSelEf) { alert('Selecciona un ingrediente'); return; }
   const pct = parseFloat(document.getElementById('ef-pct').value);
-  if (isNaN(pct)||pct<0) { alert('Porcentaje inválido'); return; }
+  if (isNaN(pct)||pct<0) { alert('Cantidad inválida'); return; }
   const exist = efIngredientes.find(fi=>fi.ing_id===ingSelEf);
   if (exist) { exist.porcentaje = Math.round((exist.porcentaje+pct)*100)/100; }
   else { efIngredientes.push({ing_id:ingSelEf, porcentaje:pct}); }
+  ingSelEf = null;
   renderEfIngredientes();
+  renderSelectorIngredientes();
+  var buscar = document.getElementById('ef-buscar-ing');
+  if (buscar) { buscar.value = ''; buscar.focus(); }
 }
 
 function renderEfIngredientes() {

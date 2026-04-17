@@ -1127,9 +1127,10 @@ function renderDetalleFormula(id) {
   }).filter(Boolean);
 
   // Calcular totales
+  const totalPct = ings.reduce((s,fi) => s + (fi.porcentaje||0), 0) || 100;
   let tot = {az:0,mg:0,og:0,esml:0,prot:0,lact:0,os:0,pac:0,pod:0,kcal:0,pct:0,st:0};
   ings.forEach(fi => {
-    const p = totalPct > 0 ? fi.porcentaje/totalPct : fi.porcentaje/100;
+    const p = fi.porcentaje / totalPct;
     tot.az   += fi.ing.azucares*p;
     tot.mg   += fi.ing.mg*p;
     tot.og   += fi.ing.og*p;
@@ -1154,8 +1155,7 @@ function renderDetalleFormula(id) {
     return val>=mn&&val<=mx ? `<span class="eq-val ok">${f2(val)}</span>` : `<span class="eq-val bad">${f2(val)}</span>`;
   }
 
-  const sortedIngs = ings.sort((a,b)=>b.porcentaje-a.porcentaje);
-  const totalPct = sortedIngs.reduce((s,fi)=>s+fi.porcentaje,0);
+  const sortedIngs = [...ings].sort((a,b)=>b.porcentaje-a.porcentaje);
   
   // Accumulate column totals for Totales row
   let colTot = {az:0,mg:0,og:0,esml:0,prot:0,lact:0,os:0,st:0,peso:0};

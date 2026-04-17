@@ -226,6 +226,34 @@
   }
   #print-area { display: none; }
 
+
+  /* ── Modal editor fórmula — tamaño máximo ── */
+  #modal-edit-formula .modal {
+    max-width: 98vw !important; width: 98vw !important;
+    height: 94vh !important; max-height: 94vh !important;
+    display: flex !important; flex-direction: column !important;
+  }
+  #modal-edit-formula .modal-body {
+    padding: 8px 12px 4px !important;
+    flex: 1 !important; display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important; min-height: 0 !important;
+  }
+  #modal-edit-formula .edit-split {
+    gap: 10px !important; flex: 1 !important;
+    overflow: hidden !important; min-height: 0 !important;
+  }
+  #modal-edit-formula .edit-left {
+    width: 205px !important; min-width: 195px !important;
+    flex: 0 0 205px !important; display: flex !important;
+    flex-direction: column !important; overflow: hidden !important;
+  }
+  #modal-edit-formula .edit-right {
+    flex: 1 !important; overflow-y: auto !important;
+    overflow-x: auto !important; min-width: 0 !important;
+  }
+  #ing-selector { flex:1 !important; overflow-y:auto !important; min-height:60px; }
+
 </style>
 </head>
 <body>
@@ -453,7 +481,18 @@
     <div class="modal-hdr" id="modal-ef-titulo" style="background:var(--azul)">✏️ Editar Fórmula</div>
     <div class="modal-body">
       <div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap">
-        <div class="form-row" style="flex:2;margin:0"><label style="min-width:90px">Descripción</label><input id="ef-desc" type="text"></div>
+        <div class="form-row" style="flex:1;margin:0;min-width:180px">
+          <label style="min-width:70px;font-weight:700">Nombre</label>
+          <input id="ef-nombre" type="text" style="font-weight:700;font-size:14px" placeholder="Nombre de la fórmula">
+        </div>
+        <div class="form-row" style="flex:1;margin:0;min-width:150px">
+          <label style="min-width:70px">Descripción</label>
+          <input id="ef-desc" type="text" placeholder="Descripción breve">
+        </div>
+        <div class="form-row" style="flex:2;margin:0;min-width:200px">
+          <label style="min-width:80px">Comentarios</label>
+          <textarea id="ef-comentarios" rows="2" style="flex:1;resize:none;border:1px solid var(--gris2);border-radius:4px;padding:4px 8px;font-size:12px;font-family:inherit" placeholder="Observaciones, técnicas especiales, notas de elaboración..."></textarea>
+        </div>
         <div class="form-row" style="margin:0"><label style="min-width:110px">Peso deseado (kg)</label><input id="ef-peso" type="number" value="0" step="0.1" min="0" style="width:90px" oninput="renderEfIngredientes()" title="Introduce los kg a producir para ver el peso de cada ingrediente"></div>
       </div>
       <div class="edit-split">
@@ -467,6 +506,9 @@
             <input id="ef-pct" type="number" step="0.01" value="5.00" style="width:80px;padding:5px;border:1px solid var(--gris2);border-radius:4px;font-size:12px" onkeydown="efBuscarKeydown(event)">
             <span style="font-size:12px">%</span>
             <button class="btn btn-green btn-sm" onclick="añadirIngredienteFormula()">➕ Añadir</button>
+            <button id="btn-normalizar" class="btn btn-sm" onclick="normalizarA100()" 
+              style="display:none;background:#f59e0b;color:white;margin-left:6px" 
+              title="Ajusta todos los porcentajes para que sumen 100%">⚖️ Normalizar a 100%</button>
           </div>
         </div>
         <!-- Right: formula ingredients -->
@@ -475,11 +517,11 @@
           <div style="overflow-x:auto">
             <table id="formula-ing-table" style="width:100%;min-width:500px">
               <thead><tr style="background:var(--azul);color:white">
-                <th style="padding:6px 4px;width:24px"></th>
-                <th style="padding:6px 8px;text-align:left">Ingrediente</th>
-                <th style="padding:6px 8px">%</th>
-                <th style="padding:6px 8px;background:#1a3a6e">Peso(g)</th>
-                <th style="padding:6px 8px">AZ</th>
+                <th style="padding:6px 4px;width:20px"></th>
+                <th style="padding:6px 8px;text-align:left;min-width:140px">Ingrediente</th>
+                <th style="padding:6px 6px;width:70px;background:#0f2a5a" title="Cantidad — mismo valor que % en recetas base 100">PESO</th>
+                <th style="padding:6px 6px;width:52px;background:#1a3a6e" title="Porcentaje en base 100">%</th>
+                <th style="padding:6px 5px;width:46px">AZ</th>
                 <th style="padding:6px 8px">MG</th>
                 <th style="padding:6px 8px">OG</th>
                 <th style="padding:6px 8px;background:#1e3a6e">GT</th>
@@ -1059,7 +1101,6 @@ function eliminarIngredienteSelec() {
 // FORMULAS
 // ============================================================
 function renderFormulas() {
-  if (typeof actualizarContadorDemo === "function") actualizarContadorDemo();
   const busq = document.getElementById('form-buscar').value.toLowerCase();
   const lista = formulas.filter(f => !busq || f.nombre.toLowerCase().includes(busq))
     .sort((a,b)=>a.nombre.localeCompare(b.nombre));
@@ -1103,7 +1144,7 @@ function renderDetalleFormula(id) {
   });
   const st = tot.az+tot.mg+tot.og+tot.esml+tot.os;
   const agua_frac = (100-st) > 0 ? (100-st)/100 : 1;
-  tot.pac = tot.pac * 40.94 / agua_frac;
+  tot.pac = tot.pac * 33.89 / agua_frac;
   
   // Calcular gramos totales según cantidad aplicada
   const totalGrams = window._cantGrams && window._cantGrams[id] ? window._cantGrams[id] : (f.pesoDeseado||1000);
@@ -1130,8 +1171,7 @@ function renderDetalleFormula(id) {
     return `<tr style="background:${idx%2?'#fafbfc':'white'}">
       <td style="padding:6px 10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${ing.nombre}">${ing.nombre}</td>
       <td style="text-align:center;padding:6px 4px">${f2(fi.porcentaje)}</td>
-      <td style="text-align:center;padding:6px 4px;color:#2563a8">${f2(autoPct)}</td>
-      <td style="text-align:center;padding:6px 4px;font-weight:600;color:#1a2744">${f1(pesoG)}g</td>
+      <td style="text-align:center;padding:6px 4px;font-weight:600;color:#0f2a5a">${f1(pesoG)}g</td>
       <td style="text-align:center;padding:6px 4px">${f2(ing.azucares*p)}</td>
       <td style="text-align:center;padding:6px 4px">${f2(ing.mg*p)}</td>
       <td style="text-align:center;padding:6px 4px">${f2(ing.og*p)}</td>
@@ -1148,8 +1188,7 @@ function renderDetalleFormula(id) {
   const totalesRow = `<tr class="totales-row" style="background:var(--azul);font-weight:bold">
     <td style="padding:7px 10px">TOTALES</td>
     <td style="text-align:right;padding:7px 8px">${f2(totalPct)}</td>
-    <td style="text-align:right;padding:7px 8px">100.00</td>
-    <td style="text-align:right;padding:7px 8px">${f1(colTot.peso)}g</td>
+    <td style="text-align:right;padding:7px 8px;font-weight:800">${f1(colTot.peso)}g</td>
     <td style="text-align:right;padding:7px 8px">${f2(colTot.az)}</td>
     <td style="text-align:right;padding:7px 8px">${f2(colTot.mg)}</td>
     <td style="text-align:right;padding:7px 8px">${f2(colTot.og)}</td>
@@ -1188,7 +1227,7 @@ function renderDetalleFormula(id) {
         <table style="width:100%;font-size:12px;border-collapse:collapse;table-layout:fixed">
           <colgroup>
             <col style="width:180px">
-            <col style="width:65px"><col style="width:65px"><col style="width:75px">
+            <col style="width:65px"><col style="width:75px">
             <col style="width:55px"><col style="width:55px"><col style="width:55px">
             <col style="width:55px"><col style="width:55px"><col style="width:55px">
             <col style="width:55px"><col style="width:55px">
@@ -1196,8 +1235,7 @@ function renderDetalleFormula(id) {
           <thead><tr style="background:var(--azul);color:white">
             <th style="padding:6px 10px;text-align:left">Ingrediente</th>
             <th style="padding:6px 8px;text-align:center">Base 100</th>
-            <th style="padding:6px 8px;text-align:center">%</th>
-            <th style="padding:6px 8px;text-align:center">Peso(g)</th>
+            <th style="padding:6px 8px;text-align:center;background:#0f2a5a">Peso(g)</th>
             <th style="padding:6px 8px;text-align:center">AZ</th>
             <th style="padding:6px 8px;text-align:center">MG</th>
             <th style="padding:6px 8px;text-align:center">OG</th>
@@ -1247,7 +1285,13 @@ function renderDetalleFormula(id) {
     </div>`;
 }
 
-// [DEMO] abrirNuevaFormula redefinida abajo con límite de fórmulas
+function abrirNuevaFormula() {
+  abrirModal('modal-nueva-formula');
+  document.getElementById('nf-nombre').value='';
+  document.getElementById('nf-desc').value='';
+  document.getElementById('nf-peso').value=1000;
+  setTimeout(()=>document.getElementById('nf-nombre').focus(),100);
+}
 
 function crearFormula() {
   const nombre = document.getElementById('nf-nombre').value.trim();
@@ -1274,7 +1318,15 @@ function editarFormula() {
   efFormulaId = f.id;
   efIngredientes = JSON.parse(JSON.stringify(f.ingredientes||[]));
   document.getElementById('modal-ef-titulo').textContent = '✏️ ' + f.nombre;
+  setTimeout(function(){
+    var nInput = document.getElementById('ef-nombre');
+    if(nInput) nInput.oninput = function(){ 
+      document.getElementById('modal-ef-titulo').textContent = '✏️ ' + (this.value||'Sin nombre');
+    };
+  }, 100);
+  document.getElementById('ef-nombre').value = f.nombre||'';
   document.getElementById('ef-desc').value = f.descripcion||'';
+  document.getElementById('ef-comentarios').value = f.observaciones||'';
   document.getElementById('ef-peso').value = f.pesoDeseado ? (f.pesoDeseado/1000) : 0;
   renderSelectorIngredientes();
   renderEfIngredientes();
@@ -1316,20 +1368,24 @@ function añadirIngredienteFormula() {
 function renderEfIngredientes() {
   const lim = cfg.limites;
   let tot={az:0,mg:0,og:0,esml:0,prot:0,lact:0,os:0,pac:0,pod:0,pct:0,st:0};
+  const sumaPesos = efIngredientes.reduce((s,fi) => s + (fi.porcentaje||0), 0) || 100;
+  const pesoEfInput = document.getElementById('ef-peso');
+  const pesoKgEf = pesoEfInput ? (parseFloat(pesoEfInput.value)||0) : 0;
+  const pesoTotalG = pesoKgEf * 1000;
   const rows = efIngredientes.map((fi,idx) => {
     const ing = ingredientes.find(i=>i.id===fi.ing_id);
     if (!ing) return '';
-    const p = fi.porcentaje/100;
+    const p = fi.porcentaje/sumaPesos; // fracción real normalizada
     const st_i = (ing.azucares+ing.mg+ing.og+ing.esml+ing.os)*p;
     tot.az+=ing.azucares*p; tot.mg+=ing.mg*p; tot.og+=ing.og*p; tot.esml+=ing.esml*p;
     tot.prot+=ing.proteinas*p; tot.lact+=ing.lactosa*p; tot.os+=ing.os*p;
-    tot.pac+=ing.pac*(ing.azucares*p/100)+(-0.64)*(ing.lactosa*p/100); tot.pod+=ing.pod*(ing.azucares*p/100)+15*(ing.lactosa*p/100); tot.pct+=fi.porcentaje;
+    tot.pac+=ing.pac*(ing.azucares*p/100)+(-1.2208)*(ing.lactosa*p/100); tot.pod+=ing.pod*(ing.azucares*p/100)+16.62*(ing.lactosa*p/100); tot.pct+=fi.porcentaje;
     tot.st+=st_i;
     return `<tr class="ef-ing-row" draggable="true" data-idx="${idx}" style="background:${idx%2?'#fafbfc':'white'}">
       <td class="drag-handle" title="Arrastra para reordenar">⠿</td>
-      <td>${ing.nombre}</td>
-      <td style="text-align:right"><input type="number" step="0.01" value="${fi.porcentaje}" style="width:65px;padding:2px 4px;border:1px solid var(--gris2);border-radius:3px;font-size:11px" onchange="efIngredientes[${idx}].porcentaje=parseFloat(this.value)||0;renderEfIngredientes()"></td>
-      <td style="text-align:right;font-weight:700;color:#1a3a6e">${f1(fi.porcentaje*(parseFloat(document.getElementById('ef-peso').value)||0)*1000/100)}g</td>
+      <td style="font-size:12px;padding:4px 6px">${ing.nombre}</td>
+      <td style="text-align:right;padding:3px 4px"><input type="number" step="0.1" min="0" value="${f2(fi.porcentaje)}" style="width:62px;padding:2px 5px;border:1.5px solid #0f2a5a;border-radius:3px;font-size:12px;font-weight:700;color:#0f2a5a;text-align:right" onchange="efIngredientes[${idx}].porcentaje=parseFloat(this.value)||0;renderEfIngredientes()" title="Cantidad base 100"></td>
+      <td style="text-align:right;font-weight:600;color:#1a3a6e;font-size:11px;padding:3px 4px">${f2(fi.porcentaje/sumaPesos*100)}%</td>
       <td style="text-align:right">${f2(ing.azucares*p)}</td>
       <td style="text-align:right">${f2(ing.mg*p)}</td>
       <td style="text-align:right">${f2(ing.og*p)}</td>
@@ -1339,21 +1395,22 @@ function renderEfIngredientes() {
       <td style="text-align:right">${f2(ing.lactosa*p)}</td>
       <td style="text-align:right">${f2(ing.os*p)}</td>
       <td style="text-align:right">${f2(st_i)}</td>
-      <td style="text-align:right">${f2(ing.pac*(ing.azucares*p/100)+(-0.64)*(ing.lactosa*p/100))}</td>
+      <td style="text-align:right">${f2(ing.pac*(ing.azucares*p/100)+(-1.2208)*(ing.lactosa*p/100))}</td>
       <td style="text-align:right">${f2((ing.azucares>0)?ing.pod*p:0)}</td>
       <td><button onclick="confirmarEliminarIng(${idx})" style="background:var(--rojo);color:white;border:none;border-radius:3px;cursor:pointer;padding:2px 6px;font-size:11px" title="Eliminar ingrediente">✖</button></td>
     </tr>`;
   }).join('');
   document.getElementById('ef-ing-tbody').innerHTML = rows || '<tr><td colspan="9" style="text-align:center;color:var(--gris3);padding:10px">Sin ingredientes</td></tr>';
-  const ok = Math.abs(tot.pct-100)<0.01;
-  const pesoEfInput = document.getElementById('ef-peso');
-  const pesoKgEf = pesoEfInput ? (parseFloat(pesoEfInput.value)||0) : 0;
+  const pctNorm = sumaPesos > 0 ? 100 : 0;
+  const ok = efIngredientes.length > 0;
+  var btnNorm = document.getElementById('btn-normalizar');
+  if (btnNorm) btnNorm.style.display = ok ? 'none' : 'inline-block';
   const pesoTotalBatch = f1(tot.pct * pesoKgEf * 1000 / 100);
   const agua_frac_ef = (100-tot.st) > 0 ? (100-tot.st)/100 : 1;
-  tot.pac = tot.pac * 40.94 / agua_frac_ef;
+  tot.pac = tot.pac * 33.89 / agua_frac_ef;
   document.getElementById('ef-totales').innerHTML =
     '<div style="padding:2px 0">' +
-    (ok?'✅':'⚠️') + ' <strong>Total: ' + f2(tot.pct) + '%</strong>' +
+    (ok?'✅':'⚠️️ RECETA NO VÁLIDA') + ' <strong>Total: ' + f2(tot.pct) + '%</strong>' + (ok?'':' <span style="color:#fca5a5;font-size:11px">(debe ser 100% para calcular PAC/POD)</span>') +
     ' &nbsp;|&nbsp; ' + ck(tot.az,  lim.minAz,   lim.maxAz,   'AZ') +
     ' &nbsp;|&nbsp; MG: <strong>' + f2(tot.mg) + '</strong>' +
     ' &nbsp;|&nbsp; OG: <strong>' + f2(tot.og) + '</strong>' +
@@ -1377,7 +1434,10 @@ function renderEfIngredientes() {
 function guardarFormula(silencioso=false) {
   const idx = formulas.findIndex(f=>f.id===efFormulaId);
   if (idx<0) return;
+  var nuevoNombre = document.getElementById('ef-nombre').value.trim();
+  if (nuevoNombre) formulas[idx].nombre = nuevoNombre;
   formulas[idx].descripcion = document.getElementById('ef-desc').value;
+  formulas[idx].observaciones = document.getElementById('ef-comentarios').value;
   formulas[idx].pesoDeseado = (parseFloat(document.getElementById('ef-peso').value)||0)*1000;
   formulas[idx].ingredientes = efIngredientes;
   saveData();
@@ -1644,11 +1704,6 @@ function importarFormulas(event) {
         alert('❌ Archivo no válido. Debe ser un JSON exportado desde Helatek I+D+I.');
         return;
       }
-      // DEMO: verificar límite
-      if (data.formulas.length > DEMO_MAX_FORMULAS) {
-        alert('🔒 VERSIÓN DEMO — Límite alcanzado\n\nNo se pueden importar ' + data.formulas.length + ' fórmulas. El máximo en la versión DEMO es ' + DEMO_MAX_FORMULAS + '.\n\nContacta con Helatek I+D+I para la versión completa.');
-        return;
-      }
       let importadas = 0, noEncontradas = [];
       const nuevasFormulas = data.formulas.map(f => {
         // Reconstruir ingredientes buscando por NOMBRE en los ingredientes actuales
@@ -1770,70 +1825,10 @@ function initDragDrop() {
 
 
 // ══════════════════════════════════════════════════
-// MODO DEMO — restricciones activas
 // ══════════════════════════════════════════════════
-const DEMO_MODE = true;
-const DEMO_MAX_FORMULAS = 10;
+// IMPRIMIR FÓRMULA
+// ══════════════════════════════════════════════════
 
-// ── DEMO: Bloquear añadir ingredientes ──
-function abrirNuevoIngrediente() {
-  alert('\uD83D\uDD12 VERSI\u00D3N DEMO\n\nNo es posible a\u00F1adir nuevos ingredientes en la versi\u00F3n de demostraci\u00F3n.\n\nContacta con Helatek I+D+I para la versi\u00F3n completa.');
-}
-
-// ── DEMO: Bloquear editar ingredientes ──
-function abrirEditarIngrediente(id) {
-  alert('\uD83D\uDD12 VERSI\u00D3N DEMO\n\nLa edici\u00F3n de ingredientes no est\u00E1 disponible en la versi\u00F3n de demostraci\u00F3n.\n\nContacta con Helatek I+D+I para la versi\u00F3n completa.');
-}
-
-// ── DEMO: Nueva f\u00F3rmula con l\u00EDmite (c\u00F3digo original inline para evitar hoisting) ──
-function abrirNuevaFormula() {
-  if (formulas.length >= DEMO_MAX_FORMULAS) {
-    alert('\uD83D\uDD12 VERSI\u00D3N DEMO \u2014 L\u00EDmite alcanzado\n\nEsta versi\u00F3n permite un m\u00E1ximo de ' + DEMO_MAX_FORMULAS + ' f\u00F3rmulas.\n\nContacta con Helatek I+D+I para trabajar sin l\u00EDmites.');
-    return;
-  }
-  abrirModal('modal-nueva-formula');
-  document.getElementById('nf-nombre').value = '';
-  document.getElementById('nf-desc').value = '';
-  document.getElementById('nf-peso').value = 1000;
-  setTimeout(function() { document.getElementById('nf-nombre').focus(); }, 100);
-}
-
-// ── DEMO: Actualizar contador ──
-function actualizarContadorDemo() {
-  var dc = document.getElementById('demo-counter');
-  if (!dc) return;
-  var restantes = DEMO_MAX_FORMULAS - formulas.length;
-  if (restantes <= 0) {
-    dc.textContent = '\uD83D\uDD12 L\u00EDmite alcanzado (' + DEMO_MAX_FORMULAS + '/' + DEMO_MAX_FORMULAS + ')';
-    dc.style.color = '#dc2626';
-  } else {
-    dc.textContent = formulas.length + '/' + DEMO_MAX_FORMULAS + ' f\u00F3rmulas';
-    dc.style.color = restantes <= 2 ? '#d97706' : '#6b7280';
-  }
-}
-
-
-// Navegación con flechas en el buscador de ingredientes
-function efBuscarKeydown(e) {
-  const items = document.querySelectorAll('.ing-sel-item');
-  if (!items.length) return;
-  if (e.key === 'Enter') { añadirIngredienteFormula(); return; }
-  if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
-  e.preventDefault();
-  // Encontrar el seleccionado actual
-  const selIdx = Array.from(items).findIndex(el => el.classList.contains('sel'));
-  let nextIdx;
-  if (e.key === 'ArrowDown') nextIdx = selIdx < 0 ? 0 : Math.min(selIdx+1, items.length-1);
-  else nextIdx = selIdx <= 0 ? 0 : selIdx-1;
-  // Seleccionar el siguiente
-  const nextItem = items[nextIdx];
-  const ingId = parseInt(nextItem.id.replace('isel-',''));
-  selIngSel(ingId);
-  nextItem.scrollIntoView({block:'nearest'});
-}
-
-
-// Versión imprimible de la fórmula
 function imprimirFormula(fid) {
   var f = formulas.find(function(x){ return x.id === fid; });
   if (!f) return;
@@ -1852,14 +1847,14 @@ function imprimirFormula(fid) {
     tot.prot += fi.ing.proteinas*p;
     tot.lact += fi.ing.lactosa*p;
     tot.os   += fi.ing.os*p;
-    tot.pac  += fi.ing.pac*(fi.ing.azucares*p/100)+(-0.64)*(fi.ing.lactosa*p/100);
-    tot.pod  += fi.ing.pod*(fi.ing.azucares*p/100)+15*(fi.ing.lactosa*p/100);
+    tot.pac  += fi.ing.pac*(fi.ing.azucares*p/100)+(-1.2208)*(fi.ing.lactosa*p/100);
+    tot.pod  += fi.ing.pod*(fi.ing.azucares*p/100)+16.62*(fi.ing.lactosa*p/100);
     tot.kcal += fi.ing.kcal*p;
     tot.pct  += fi.porcentaje;
     tot.st   += (fi.ing.azucares+fi.ing.mg+fi.ing.og+fi.ing.esml+fi.ing.os)*p;
   });
   var agua_frac = (100-tot.st) > 0 ? (100-tot.st)/100 : 1;
-  tot.pac = tot.pac * 40.94 / agua_frac;
+  tot.pac = tot.pac * 33.89 / agua_frac;
 
   var pesoKgStr = prompt('Peso total a producir (kg):', f.pesoDeseado ? (f.pesoDeseado/1000) : 1);
   if (pesoKgStr === null) return;
@@ -1997,6 +1992,299 @@ function imprimirFormula(fid) {
   win.document.write(doc);
   win.document.close();
 }
+
+
+// Navegación con flechas en el buscador de ingredientes
+function efBuscarKeydown(e) {
+  var items = document.querySelectorAll('.ing-sel-item');
+  if (!items.length) return;
+  if (e.key === 'Enter') { añadirIngredienteFormula(); return; }
+  if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+  e.preventDefault();
+  var arr = Array.from(items);
+  var selIdx = arr.findIndex(function(el){ return el.classList.contains('sel'); });
+  var nextIdx;
+  if (e.key === 'ArrowDown') nextIdx = selIdx < 0 ? 0 : Math.min(selIdx+1, items.length-1);
+  else nextIdx = selIdx <= 0 ? 0 : selIdx-1;
+  var nextItem = items[nextIdx];
+  var ingId = parseInt(nextItem.id.replace('isel-',''));
+  selIngSel(ingId);
+  nextItem.scrollIntoView({block:'nearest'});
+}
+
+
+
+// Normalizar porcentajes a 100%
+function normalizarA100() {
+  const total = efIngredientes.reduce(function(s, fi) { return s + (fi.porcentaje||0); }, 0);
+  if (total <= 0) return;
+  if (Math.abs(total - 100) < 0.01) return;
+  efIngredientes.forEach(function(fi) {
+    fi.porcentaje = parseFloat(((fi.porcentaje||0) * 100 / total).toFixed(2));
+  });
+  renderEfIngredientes();
+}
+
+
+
+// Cambiar peso en gramos de un ingrediente → recalcula % en base al total del batch
+function efCambiarPeso(idx, gramos) {
+  var g = parseFloat(gramos) || 0;
+  var pesoInput = document.getElementById('ef-peso');
+  var pesoTotalG = pesoInput ? (parseFloat(pesoInput.value)||0)*1000 : 0;
+  if (pesoTotalG <= 0) {
+    // Si no hay peso total definido, usar la suma actual de todos los pesos
+    var sumaG = efIngredientes.reduce(function(s, fi) {
+      return s + (fi.porcentaje * (pesoInput ? (parseFloat(pesoInput.value)||0)*1000 : 1000) / 100);
+    }, 0);
+    pesoTotalG = sumaG > 0 ? sumaG : 1000;
+    // Actualizar el campo ef-peso
+    if (pesoInput) pesoInput.value = (pesoTotalG/1000).toFixed(1);
+  }
+  efIngredientes[idx].porcentaje = parseFloat((g / pesoTotalG * 100).toFixed(4));
+  renderEfIngredientes();
+}
+
+
+const DEMO_MODE = true;
+const DEMO_MAX_FORMULAS = 10;
+
+// ── DEMO: Bloquear añadir ingredientes ──
+function abrirNuevoIngrediente() {
+  alert('\uD83D\uDD12 VERSI\u00D3N DEMO\n\nNo es posible a\u00F1adir nuevos ingredientes en la versi\u00F3n de demostraci\u00F3n.\n\nContacta con Helatek I+D+I para la versi\u00F3n completa.');
+}
+
+// ── DEMO: Bloquear editar ingredientes ──
+function abrirEditarIngrediente(id) {
+  alert('\uD83D\uDD12 VERSI\u00D3N DEMO\n\nLa edici\u00F3n de ingredientes no est\u00E1 disponible en la versi\u00F3n de demostraci\u00F3n.\n\nContacta con Helatek I+D+I para la versi\u00F3n completa.');
+}
+
+// ── DEMO: Nueva f\u00F3rmula con l\u00EDmite (c\u00F3digo original inline para evitar hoisting) ──
+function abrirNuevaFormula() {
+  if (formulas.length >= DEMO_MAX_FORMULAS) {
+    alert('\uD83D\uDD12 VERSI\u00D3N DEMO \u2014 L\u00EDmite alcanzado\n\nEsta versi\u00F3n permite un m\u00E1ximo de ' + DEMO_MAX_FORMULAS + ' f\u00F3rmulas.\n\nContacta con Helatek I+D+I para trabajar sin l\u00EDmites.');
+    return;
+  }
+  abrirModal('modal-nueva-formula');
+  document.getElementById('nf-nombre').value = '';
+  document.getElementById('nf-desc').value = '';
+  document.getElementById('nf-peso').value = 1000;
+  setTimeout(function() { document.getElementById('nf-nombre').focus(); }, 100);
+}
+
+// ── DEMO: Actualizar contador ──
+function actualizarContadorDemo() {
+  var dc = document.getElementById('demo-counter');
+  if (!dc) return;
+  var restantes = DEMO_MAX_FORMULAS - formulas.length;
+  if (restantes <= 0) {
+    dc.textContent = '\uD83D\uDD12 L\u00EDmite alcanzado (' + DEMO_MAX_FORMULAS + '/' + DEMO_MAX_FORMULAS + ')';
+    dc.style.color = '#dc2626';
+  } else {
+    dc.textContent = formulas.length + '/' + DEMO_MAX_FORMULAS + ' f\u00F3rmulas';
+    dc.style.color = restantes <= 2 ? '#d97706' : '#6b7280';
+  }
+}
+
+
+// Navegación con flechas en el buscador de ingredientes
+function efBuscarKeydown(e) {
+  const items = document.querySelectorAll('.ing-sel-item');
+  if (!items.length) return;
+  if (e.key === 'Enter') { añadirIngredienteFormula(); return; }
+  if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+  e.preventDefault();
+  // Encontrar el seleccionado actual
+  const selIdx = Array.from(items).findIndex(el => el.classList.contains('sel'));
+  let nextIdx;
+  if (e.key === 'ArrowDown') nextIdx = selIdx < 0 ? 0 : Math.min(selIdx+1, items.length-1);
+  else nextIdx = selIdx <= 0 ? 0 : selIdx-1;
+  // Seleccionar el siguiente
+  const nextItem = items[nextIdx];
+  const ingId = parseInt(nextItem.id.replace('isel-',''));
+  selIngSel(ingId);
+  nextItem.scrollIntoView({block:'nearest'});
+}
+
+
+// Versión imprimible de la fórmula
+function imprimirFormula(fid) {
+  var f = formulas.find(function(x){ return x.id === fid; });
+  if (!f) return;
+  var ings = (f.ingredientes || []).map(function(fi) {
+    var ing = ingredientes.find(function(i){ return i.id === fi.ing_id; });
+    return ing ? Object.assign({}, fi, {ing: ing}) : null;
+  }).filter(Boolean);
+
+  var tot = {az:0,mg:0,og:0,esml:0,prot:0,lact:0,os:0,pac:0,pod:0,kcal:0,pct:0,st:0};
+  ings.forEach(function(fi) {
+    var p = fi.porcentaje/100;
+    tot.az   += fi.ing.azucares*p;
+    tot.mg   += fi.ing.mg*p;
+    tot.og   += fi.ing.og*p;
+    tot.esml += fi.ing.esml*p;
+    tot.prot += fi.ing.proteinas*p;
+    tot.lact += fi.ing.lactosa*p;
+    tot.os   += fi.ing.os*p;
+    tot.pac  += fi.ing.pac*(fi.ing.azucares*p/100)+(-1.2208)*(fi.ing.lactosa*p/100);
+    tot.pod  += fi.ing.pod*(fi.ing.azucares*p/100)+16.62*(fi.ing.lactosa*p/100);
+    tot.kcal += fi.ing.kcal*p;
+    tot.pct  += fi.porcentaje;
+    tot.st   += (fi.ing.azucares+fi.ing.mg+fi.ing.og+fi.ing.esml+fi.ing.os)*p;
+  });
+  var agua_frac = (100-tot.st) > 0 ? (100-tot.st)/100 : 1;
+  tot.pac = tot.pac * 33.89 / agua_frac;
+
+  var pesoKgStr = prompt('Peso total a producir (kg):', f.pesoDeseado ? (f.pesoDeseado/1000) : 1);
+  if (pesoKgStr === null) return;
+  var pesoKg = parseFloat(pesoKgStr) || 1;
+  var pesoG  = pesoKg * 1000;
+  var empresa = (cfg && cfg.empresa) ? cfg.empresa : 'Helatek I+D+I';
+  var hoy = new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'});
+
+  var rows = ings.map(function(fi, idx) {
+    var p   = fi.porcentaje / 100;
+    var ing = fi.ing;
+    var peso = fi.porcentaje * pesoG / 100;
+    var bg  = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
+    return '<tr style="background:'+bg+'">'
+      + '<td style="padding:6px 10px;border:1px solid #e2e8f0;font-weight:500">'+ing.nombre+'</td>'
+      + '<td style="padding:6px 8px;text-align:right;border:1px solid #e2e8f0">'+f2(fi.porcentaje)+'</td>'
+      + '<td style="padding:6px 8px;text-align:right;border:1px solid #e2e8f0;font-weight:800;color:#1a2744;font-size:14px">'+f1(peso)+'g</td>'
+      + '<td style="padding:6px 8px;text-align:right;border:1px solid #e2e8f0">'+f2(ing.azucares*p)+'</td>'
+      + '<td style="padding:6px 8px;text-align:right;border:1px solid #e2e8f0">'+f2(ing.mg*p)+'</td>'
+      + '<td style="padding:6px 8px;text-align:right;border:1px solid #e2e8f0">'+f2(ing.og*p)+'</td>'
+      + '<td style="padding:6px 8px;text-align:right;border:1px solid #e2e8f0;background:#eef2ff;font-weight:700">'+f2((ing.mg+ing.og)*p)+'</td>'
+      + '<td style="padding:6px 8px;text-align:right;border:1px solid #e2e8f0">'+f2(ing.esml*p)+'</td>'
+      + '<td style="padding:6px 8px;text-align:right;border:1px solid #e2e8f0">'+f2(ing.proteinas*p)+'</td>'
+      + '<td style="padding:6px 8px;text-align:right;border:1px solid #e2e8f0">'+f2(ing.lactosa*p)+'</td>'
+      + '<td style="padding:6px 8px;text-align:right;border:1px solid #e2e8f0">'+f2(ing.os*p)+'</td>'
+      + '<td style="padding:6px 8px;text-align:right;border:1px solid #e2e8f0">'+f2((ing.azucares+ing.mg+ing.og+ing.esml+ing.os)*p)+'</td>'
+      + '</tr>';
+  }).join('');
+
+  var equilibrios = [
+    ['Azucares', f2(tot.az), '#1a2744'],
+    ['M.G. Total (MG+OG)', f2(tot.mg+tot.og), '#1a2744'],
+    ['SLNG', f2(tot.esml), '#1a2744'],
+    ['S.Totales', f2(tot.st), '#1a2744'],
+    ['POD', f2(tot.pod), '#b45309'],
+    ['PAC', f2(tot.pac), '#dc2626'],
+    ['Proteinas', f2(tot.prot), '#4b5563'],
+    ['Lactosa', f2(tot.lact), '#4b5563'],
+  ].map(function(x){
+    return '<div style="border:1px solid #e2e8f0;border-radius:6px;padding:10px 14px;border-left:4px solid '+x[2]+'">'
+      +'<div style="font-size:9px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">'+x[0]+'</div>'
+      +'<div style="font-size:22px;font-weight:800;color:'+x[2]+'">'+x[1]+'</div></div>';
+  }).join('');
+
+  var doc = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+f.nombre+'</title>'
+    +'<style>'
+    +'body{font-family:Arial,sans-serif;margin:0;padding:0;color:#1a2744;font-size:13px}'
+    +'table{border-collapse:collapse;width:100%}'
+    +'th{background:#1a2744;color:white;padding:7px 8px;font-size:11px;border:1px solid #0f1f3d}'
+    +'th.peso-col{background:#0f2a5a;font-size:12px}'
+    +'@media print{.no-print{display:none!important}}'
+    +'</style></head><body>'
+
+    // Toolbar
+    +'<div class="no-print" style="padding:10px 16px;background:#f1f5f9;border-bottom:2px solid #e2e8f0;display:flex;align-items:center;gap:8px">'
+    +'<button onclick="window.print()" style="background:#1a2744;color:white;border:none;padding:8px 20px;border-radius:5px;cursor:pointer;font-size:13px;font-weight:600">&#128438; Imprimir / Guardar PDF</button>'
+    +'<button onclick="window.close()" style="background:#6b7280;color:white;border:none;padding:8px 16px;border-radius:5px;cursor:pointer;font-size:13px">&#x2716; Cerrar</button>'
+    +'</div>'
+
+    +'<div style="padding:20px 24px;max-width:1050px;margin:0 auto">'
+
+    // Cabecera
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;padding-bottom:12px;border-bottom:3px solid #1a2744">'
+    +'<div>'
+    +'<div style="font-size:10px;font-weight:700;color:#6b7280;letter-spacing:2px;text-transform:uppercase;margin-bottom:3px">HELADOS ARTESANOS</div>'
+    +'<h1 style="margin:0;font-size:22px;color:#1a2744;font-weight:800">'+f.nombre.toUpperCase()+'</h1>'
+    +(f.descripcion ? '<p style="margin:4px 0 0;color:#6b7280;font-size:12px">'+f.descripcion+'</p>' : '')
+    +'</div>'
+    +'<div style="text-align:right;font-size:11px;color:#6b7280;line-height:2">'
+    +'<strong style="font-size:14px;color:#1a2744">'+empresa+'</strong><br>'
+    +'Peso: <strong>'+f1(pesoG)+'g ('+pesoKg+' kg)</strong><br>'
+    +hoy
+    +'</div>'
+    +'</div>'
+
+    // Fechas / Lote
+    +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">'
+    +['Fecha Pasteurización','Fecha Mantecación','Lote','Fecha Caducidad'].map(function(label){
+      return '<div style="border:1px solid #d1d5db;border-radius:6px;padding:8px 12px">'
+        +'<div style="font-size:9px;color:#9ca3af;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">'+label+'</div>'
+        +'<div style="border-bottom:1px dashed #d1d5db;min-height:24px;margin-top:2px"></div>'
+        +'</div>';
+    }).join('')
+    +'</div>'
+
+    // Tabla ingredientes
+    +'<table style="margin-bottom:14px;font-size:12px">'
+    +'<thead><tr>'
+    +'<th style="text-align:left;padding:8px 10px;min-width:155px">Ingrediente</th>'
+    +'<th style="text-align:right;width:50px">%</th>'
+    +'<th class="peso-col" style="text-align:right;width:75px">Peso (g)</th>'
+    +'<th style="text-align:right;width:48px">AZ</th>'
+    +'<th style="text-align:right;width:44px">MG</th>'
+    +'<th style="text-align:right;width:44px">OG</th>'
+    +'<th style="text-align:right;width:48px;background:#162f66">GT</th>'
+    +'<th style="text-align:right;width:50px">SLNG</th>'
+    +'<th style="text-align:right;width:44px">PROT</th>'
+    +'<th style="text-align:right;width:50px">LACT</th>'
+    +'<th style="text-align:right;width:44px">OS</th>'
+    +'<th style="text-align:right;width:48px">ST</th>'
+    +'</tr></thead>'
+    +'<tbody>'+rows+'</tbody>'
+    +'<tfoot><tr style="background:#1a2744;color:white;font-weight:700">'
+    +'<td style="padding:7px 10px;border:1px solid #0f1f3d">TOTALES</td>'
+    +'<td style="padding:7px 8px;text-align:right;border:1px solid #0f1f3d">100,00</td>'
+    +'<td style="padding:7px 8px;text-align:right;border:1px solid #0f2a5a;font-size:14px">'+f1(pesoG)+'g</td>'
+    +'<td style="padding:7px 8px;text-align:right;border:1px solid #0f1f3d">'+f2(tot.az)+'</td>'
+    +'<td style="padding:7px 8px;text-align:right;border:1px solid #0f1f3d">'+f2(tot.mg)+'</td>'
+    +'<td style="padding:7px 8px;text-align:right;border:1px solid #0f1f3d">'+f2(tot.og)+'</td>'
+    +'<td style="padding:7px 8px;text-align:right;border:1px solid #0f1f3d">'+f2(tot.mg+tot.og)+'</td>'
+    +'<td style="padding:7px 8px;text-align:right;border:1px solid #0f1f3d">'+f2(tot.esml)+'</td>'
+    +'<td style="padding:7px 8px;text-align:right;border:1px solid #0f1f3d">'+f2(tot.prot)+'</td>'
+    +'<td style="padding:7px 8px;text-align:right;border:1px solid #0f1f3d">'+f2(tot.lact)+'</td>'
+    +'<td style="padding:7px 8px;text-align:right;border:1px solid #0f1f3d">'+f2(tot.os)+'</td>'
+    +'<td style="padding:7px 8px;text-align:right;border:1px solid #0f1f3d">'+f2(tot.st)+'</td>'
+    +'</tr></tfoot>'
+    +'</table>'
+
+    // Equilibrios
+    +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px">'+equilibrios+'</div>'
+
+    // Observaciones
+    +(f.observaciones ? '<div style="border:1px solid #e2e8f0;border-radius:6px;padding:12px 16px;margin-bottom:14px">'
+      +'<div style="font-size:10px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Observaciones</div>'
+      +'<div style="font-size:13px">'+f.observaciones+'</div></div>' : '')
+
+    // Pie
+    +'<div style="font-size:10px;color:#9ca3af;border-top:1px solid #e2e8f0;padding-top:8px;display:flex;justify-content:space-between">'
+    +'<span>Generado por Helatek I+D+I &mdash; Software de Formulaci&oacute;n de Helados</span>'
+    +'<span>Gelat Mix v1.0</span>'
+    +'</div>'
+    +'</div></body></html>';
+
+  var win = window.open('', '_blank', 'width=1050,height=760');
+  win.document.write(doc);
+  win.document.close();
+}
+
+
+// Normalizar porcentajes a 100%
+function normalizarA100() {
+  const total = efIngredientes.reduce(function(s, fi) { return s + (fi.porcentaje||0); }, 0);
+  if (total <= 0) return;
+  if (Math.abs(total - 100) < 0.01) return;
+  efIngredientes.forEach(function(fi) {
+    fi.porcentaje = parseFloat(((fi.porcentaje||0) * 100 / total).toFixed(2));
+  });
+  renderEfIngredientes();
+}
+
+
 
 loadConfig();
 // Reset ingredientes si hay versión incompatible en caché

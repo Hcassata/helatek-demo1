@@ -1138,8 +1138,8 @@ function renderDetalleFormula(id) {
     tot.prot += fi.ing.proteinas*p;
     tot.lact += fi.ing.lactosa*p;
     tot.os   += fi.ing.os*p;
-    tot.pac  += fi.ing.pac * (fi.ing.azucares*p/100) + (-0.64)*(fi.ing.lactosa*p/100);
-    tot.pod  += fi.ing.pod * (fi.ing.azucares*p/100) + 15*(fi.ing.lactosa*p/100);
+    tot.pac  += fi.ing.pac * (fi.ing.azucares*p/100) + (-1.2208)*(fi.ing.lactosa*p/100);
+    tot.pod  += fi.ing.pod * (fi.ing.azucares*p/100) + 16.62*(fi.ing.lactosa*p/100);
     tot.kcal += fi.ing.kcal*p;
     tot.pct  += fi.porcentaje;
   });

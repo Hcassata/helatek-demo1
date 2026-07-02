@@ -1110,7 +1110,7 @@ function renderDetalleFormula(id) {
     tot.prot += fi.ing.proteinas*p;
     tot.lact += fi.ing.lactosa*p;
     tot.os   += fi.ing.os*p;
-    const alc_m_det=fi.ing.alcohol*p/100; const pacEff_det=getPacEff(fi.ing); const kAlcDet=(-16.0993*(1+(-0.8469)*alc_m_det)); tot.pac  += pacEff_det * (fi.ing.azucares*p/100) + (-1.2208)*(fi.ing.lactosa*p/100) + kAlcDet*alc_m_det;
+    const alc_m_det=fi.ing.alcohol*p/100; const pacEff_det=getPacEff(fi.ing); const az_m_det=fi.ing.azucares*p/100; const kAlcDet=(-20.2676+13.4124*alc_m_det+29.0730*az_m_det-29.2523*alc_m_det*alc_m_det+8.4345*az_m_det*alc_m_det); tot.pac  += pacEff_det * az_m_det + (-1.2208)*(fi.ing.lactosa*p/100) + kAlcDet*alc_m_det;
     tot.pod  += fi.ing.pod * (fi.ing.azucares*p/100) + 16.62*(fi.ing.lactosa*p/100);
     tot.kcal += fi.ing.kcal*p;
     tot.pct  += fi.porcentaje;
@@ -1365,7 +1365,7 @@ function renderEfIngredientes() {
     const st_i = (ing.azucares+ing.mg+ing.og+ing.esml+ing.os)*p;
     tot.az+=ing.azucares*p; tot.mg+=ing.mg*p; tot.og+=ing.og*p; tot.esml+=ing.esml*p;
     tot.prot+=ing.proteinas*p; tot.lact+=ing.lactosa*p; tot.os+=ing.os*p;
-    const alc_m_ef=ing.alcohol*p/100; const pacEff_ef=getPacEff(ing); const kAlcEf=(-16.0993*(1+(-0.8469)*alc_m_ef)); tot.pac+=pacEff_ef*(ing.azucares*p/100)+(-1.2208)*(ing.lactosa*p/100)+kAlcEf*alc_m_ef; tot.pod+=ing.pod*(ing.azucares*p/100)+16.62*(ing.lactosa*p/100); tot.pct+=fi.porcentaje;
+    const alc_m_ef=ing.alcohol*p/100; const pacEff_ef=getPacEff(ing); const az_m_ef=ing.azucares*p/100; const kAlcEf=(-20.2676+13.4124*alc_m_ef+29.0730*az_m_ef-29.2523*alc_m_ef*alc_m_ef+8.4345*az_m_ef*alc_m_ef); tot.pac+=pacEff_ef*az_m_ef+(-1.2208)*(ing.lactosa*p/100)+kAlcEf*alc_m_ef; tot.pod+=ing.pod*(ing.azucares*p/100)+16.62*(ing.lactosa*p/100); tot.pct+=fi.porcentaje;
     tot.st+=st_i;
     return `<tr class="ef-ing-row" draggable="true" data-idx="${idx}" style="background:${idx%2?'#fafbfc':'white'}">
       <td class="drag-handle" title="Arrastra para reordenar">⠿</td>
@@ -1381,7 +1381,7 @@ function renderEfIngredientes() {
       <td style="text-align:right">${f2(ing.lactosa*p)}</td>
       <td style="text-align:right">${f2(ing.os*p)}</td>
       <td style="text-align:right">${f2(st_i)}</td>
-      <td style="text-align:right">${f2(getPacEff(ing)*(ing.azucares*p/100)+(-1.2208)*(ing.lactosa*p/100)+(-16.0993*(1+(-0.8469)*(ing.alcohol*p/100)))*(ing.alcohol*p/100))}</td>
+      <td style="text-align:right">${f2((()=>{const am=ing.alcohol*p/100,azm=ing.azucares*p/100;return getPacEff(ing)*azm+(-1.2208)*(ing.lactosa*p/100)+(-20.2676+13.4124*am+29.0730*azm-29.2523*am*am+8.4345*azm*am)*am;})(  ))}</td>
       <td style="text-align:right">${f2((ing.azucares>0)?ing.pod*p:0)}</td>
       <td><button onclick="confirmarEliminarIng(${idx})" style="background:var(--rojo);color:white;border:none;border-radius:3px;cursor:pointer;padding:2px 6px;font-size:11px" title="Eliminar ingrediente">✖</button></td>
     </tr>`;
@@ -1834,7 +1834,7 @@ function imprimirFormula(fid) {
     tot.prot += fi.ing.proteinas*p;
     tot.lact += fi.ing.lactosa*p;
     tot.os   += fi.ing.os*p;
-    var alc_m_impr=fi.ing.alcohol*p/100; var pacEff_impr=getPacEff(fi.ing); var kAlcImpr=(-16.0993*(1+(-0.8469)*alc_m_impr)); tot.pac  += pacEff_impr*(fi.ing.azucares*p/100)+(-1.2208)*(fi.ing.lactosa*p/100)+kAlcImpr*alc_m_impr;
+    var alc_m_impr=fi.ing.alcohol*p/100; var pacEff_impr=getPacEff(fi.ing); var az_m_impr=fi.ing.azucares*p/100; var kAlcImpr=(-20.2676+13.4124*alc_m_impr+29.0730*az_m_impr-29.2523*alc_m_impr*alc_m_impr+8.4345*az_m_impr*alc_m_impr); tot.pac  += pacEff_impr*az_m_impr+(-1.2208)*(fi.ing.lactosa*p/100)+kAlcImpr*alc_m_impr;
     tot.pod  += fi.ing.pod*(fi.ing.azucares*p/100)+16.62*(fi.ing.lactosa*p/100);
     tot.kcal += fi.ing.kcal*p;
     tot.pct  += fi.porcentaje;

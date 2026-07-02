@@ -858,27 +858,25 @@ let sortDir = {};
 
 function loadData() {
   const savedFam = localStorage.getItem('hk_familias');
-  const savedIng = localStorage.getItem('hk_ingredientes');
   const savedForm = localStorage.getItem('hk_formulas');
+  // Ingredientes SIEMPRE desde DEFAULT_INGREDIENTES (frescos, con alcohol y PM correctos)
+  let nextId = 1;
+  ingredientes = DEFAULT_INGREDIENTES.map(d => {
+    const comentStr = d[15]||'';
+    const alcMatch = comentStr.match(/Alcohol:([\d.]+)%/);
+    const alc = alcMatch ? parseFloat(alcMatch[1]) : 0;
+    return {
+      id: nextId++, nombre:d[0], familia:d[1], azucares:d[2], mg:d[3],
+      og:d[4], esml:d[5], proteinas:d[6], lactosa:d[7], os:d[8],
+      alcohol:alc, pac:d[9], pod:d[10], kcal:d[11], precio:d[12],
+      orden_past:d[13]||0, peso_mol_az:d[14]||0, comentarios:comentStr
+    };
+  });
   if (savedFam) {
     familias = JSON.parse(savedFam);
-    ingredientes = JSON.parse(savedIng);
-    formulas = JSON.parse(savedForm);
+    formulas = JSON.parse(savedForm||'[]');
   } else {
-    // Primera vez: cargar datos por defecto
     familias = DEFAULT_FAMILIAS.map((n,i) => ({id:i+1, nombre:n, descripcion:''}));
-    let nextId = 1;
-    ingredientes = DEFAULT_INGREDIENTES.map(d => {
-      const comentStr = d[15]||'';
-      const alcMatch = comentStr.match(/Alcohol:([\d.]+)%/);
-      const alc = alcMatch ? parseFloat(alcMatch[1]) : 0;
-      return {
-        id: nextId++, nombre:d[0], familia:d[1], azucares:d[2], mg:d[3],
-        og:d[4], esml:d[5], proteinas:d[6], lactosa:d[7], os:d[8],
-        alcohol:alc, pac:d[9], pod:d[10], kcal:d[11], precio:d[12],
-        orden_past:d[13]||0, peso_mol_az:d[14]||0, comentarios:comentStr
-      };
-    });
     formulas = [];
     saveData();
   }

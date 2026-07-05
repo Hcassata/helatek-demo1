@@ -287,7 +287,7 @@
     <kbd>Alt+F</kbd> Fórmulas &nbsp; <kbd>Alt+I</kbd> Ingredientes<br>
     <kbd>Alt+N</kbd> Nueva fórmula &nbsp; <kbd>Esc</kbd> Cerrar
   </div>
-  <div class="sidebar-bottom">Helatek I+D+I v1.0</div>
+  <div class="sidebar-bottom">Helatek I+D+I v1.1</div>
 </div>
 
 <!-- MAIN -->
@@ -658,54 +658,54 @@ const DEFAULT_INGREDIENTES = [
   ["Levadura fresca","Fibra",0.00,0.00,0.00,0.00,0.00,0.00,100.00,0.00,0.00,0.00,0.00,0,1.00,""],
   ["Mango Arotz","Fibra",13.9000,0.00,0.00,0.00,0.00,0.00,4.00,-0.6400,100.00,0.00,0.00,0,220.00,""],
   ["Polidextrosa","Fibra",96.00,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,0.00,1.00,0.00,0,2000.00,""],
-  ["Aguacate","Frutas",1.8000,0.00,22.2000,0.00,0.00,0.00,7.5000,-0.6400,100.00,2.2300,0.00,0,200.00,""],
-  ["Albaricoque","Frutas",9.3500,0.00,0.00,0.00,0.00,0.00,0.00,-0.8400,100.00,0.00,0.00,0,342.00,""],
+  ["Aguacate","Frutas",1.8000,0.00,22.2000,0.00,0.00,0.00,7.5000,-0.6400,100.00,2.2300,0.00,0,0,""],
+  ["Albaricoque","Frutas",9.3500,0.00,0.00,0.00,0.00,0.00,0.00,-0.8400,100.00,0.00,0.00,0,0,""],
   ["Alcaparras","Frutas",2.1000,0.00,0.00,0.00,0.00,0.00,7.9000,-0.6400,100.00,0.00,0.00,0,342.00,""],
-  ["Arandanos Ponthier","Frutas",19.00,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,100.00,0.00,0.00,0,260.00,""],
+  ["Arandanos Ponthier","Frutas",19.00,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,100.00,0.00,0.00,0,0,""],
   ["Cebolla","Frutas",5.2000,0.00,0.00,0.00,0.00,0.00,2.2000,-0.6400,100.00,0.2300,0.00,0,342.00,""],
   ["Cereza Natural","Frutas",13.5000,0.00,0.00,0.00,0.00,0.00,1.5000,-1.2200,125.00,0.5800,5.00,0,180.00,""],
-  ["COCO AROTZ","Frutas",9.0100,0.00,22.0800,0.00,0.00,0.00,11.00,-0.6400,100.00,0.00,4.9500,0,187.00,""],
-  ["Coco Desecado","Frutas",6.4000,0.00,36.00,0.00,0.00,0.00,10.5000,-0.6400,100.00,3.5100,3.2900,0,187.00,""],
-  ["Crema de Coco Nature Fruits","Frutas",2.5000,0.00,23.7500,0.00,0.00,0.00,0.00,-0.6400,100.00,0.00,0.00,0,187.00,""],
+  ["COCO AROTZ","Frutas",9.0100,0.00,22.0800,0.00,0.00,0.00,11.00,-0.6400,100.00,0.00,4.9500,0,0,""],
+  ["Coco Desecado","Frutas",6.4000,0.00,36.00,0.00,0.00,0.00,10.5000,-0.6400,100.00,3.5100,3.2900,0,0,""],
+  ["Crema de Coco Nature Fruits","Frutas",2.5000,0.00,23.7500,0.00,0.00,0.00,0.00,-0.6400,100.00,0.00,0.00,0,0,""],
   ["Frambuesa Natural","Frutas",8.00,0.00,0.00,0.00,0.00,0.00,7.5000,-1.2200,125.00,0.3200,12.00,0,180.00,""],
   ["Fresa Boiron","Frutas",18.00,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,100.00,0.00,0.00,0,346.00,""],
   ["Fresa Natural","Frutas",5.00,0.00,0.00,0.00,0.00,0.00,4.00,-1.2200,125.00,0.3200,3.00,0,180.00,""],
   ["Kiwi Natural","Frutas",9.00,0.00,0.00,0.00,0.00,0.00,6.00,-1.2200,125.00,0.5400,3.00,0,180.00,""],
-  ["MANDARINA AROTZ","Frutas",12.00,0.00,0.00,0.00,0.00,0.00,3.6000,-0.6400,100.00,0.00,0.00,0,250.00,""],
-  ["Mandarina Boiron","Frutas",11.00,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,100.00,0.00,5.9000,0,250.00,""],
-  ["Mango Natural","Frutas",15.00,0.00,0.00,0.00,0.00,0.00,1.5000,-0.6400,100.00,0.6000,5.00,0,220.00,""],
-  ["Manzana Granny Smith","Frutas",10.5000,0.00,0.00,0.00,0.00,0.00,1.5000,-0.6400,125.00,42.00,3.00,0,220.00,""],
-  ["Maracuya Arotz","Frutas",7.3000,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,100.00,0.00,0.00,0,210.00,""],
-  ["Melocoton Natural","Frutas",9.00,0.00,0.00,0.00,0.00,0.00,1.4000,-0.6400,100.00,0.3700,3.00,0,291.00,""],
-  ["Melon Arotz","Frutas",14.7000,0.00,0.1900,0.00,0.00,0.00,2.00,-0.6400,100.00,0.00,0.00,0,210.00,""],
-  ["Melon Verde Natural","Frutas",13.1000,0.00,0.00,0.00,0.00,0.00,0.8000,-1.2200,125.00,0.5200,3.00,0,260.00,""],
-  ["Mermeladas","Frutas",65.00,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,100.00,2.6000,6.00,0,300.00,""],
+  ["MANDARINA AROTZ","Frutas",12.00,0.00,0.00,0.00,0.00,0.00,3.6000,-0.6400,100.00,0.00,0.00,0,0,""],
+  ["Mandarina Boiron","Frutas",11.00,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,100.00,0.00,5.9000,0,0,""],
+  ["Mango Natural","Frutas",15.00,0.00,0.00,0.00,0.00,0.00,1.5000,-0.6400,100.00,0.6000,5.00,0,0,""],
+  ["Manzana Granny Smith","Frutas",10.5000,0.00,0.00,0.00,0.00,0.00,1.5000,-0.6400,125.00,42.00,3.00,0,0,""],
+  ["Maracuya Arotz","Frutas",7.3000,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,100.00,0.00,0.00,0,0,""],
+  ["Melocoton Natural","Frutas",9.00,0.00,0.00,0.00,0.00,0.00,1.4000,-0.6400,100.00,0.3700,3.00,0,0,""],
+  ["Melon Arotz","Frutas",14.7000,0.00,0.1900,0.00,0.00,0.00,2.00,-0.6400,100.00,0.00,0.00,0,0,""],
+  ["Melon Verde Natural","Frutas",13.1000,0.00,0.00,0.00,0.00,0.00,0.8000,-1.2200,125.00,0.5200,3.00,0,0,""],
+  ["Mermeladas","Frutas",65.00,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,100.00,2.6000,6.00,0,0,""],
   ["Mora Natural","Frutas",6.00,0.00,0.00,0.00,0.00,0.00,9.00,-1.2200,125.00,0.3500,0.00,0,180.00,""],
-  ["Pasion Ponthier (Maracuya)","Frutas",21.00,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,100.00,0.00,0.00,0,210.00,""],
+  ["Pasion Ponthier (Maracuya)","Frutas",21.00,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,100.00,0.00,0.00,0,0,""],
   ["Pepinillo encurtido","Frutas",2.6000,0.00,0.00,0.00,0.00,0.00,5.7000,-0.6400,100.00,0.00,0.00,0,342.00,""],
   ["Pera Natural","Frutas",11.7000,0.00,0.00,0.00,0.00,0.00,2.2000,-1.2200,125.00,0.4600,3.00,0,180.00,""],
-  ["Piña Arotz","Frutas",18.1000,0.00,0.00,0.00,0.00,0.00,1.1000,-0.6400,100.00,0.00,0.00,0,230.00,""],
-  ["Piña en su Jugo del Monte","Frutas",15.5000,0.00,0.00,0.00,0.00,0.00,1.2000,-0.6400,100.00,0.7000,0.00,0,230.00,""],
-  ["Platano Natural","Frutas",18.00,0.00,0.00,0.00,0.00,0.00,3.00,-0.9000,112.00,0.8500,4.00,0,260.00,""],
-  ["Pomelo Natural","Frutas",11.00,0.00,0.00,0.00,0.00,0.00,1.00,-1.00,112.00,0.3000,0.00,0,236.00,""],
-  ["Pullpa Lichi","Frutas",19.00,0.00,0.4300,0.00,0.00,0.00,1.3000,-0.6400,100.00,0.00,0.00,0,220.00,""],
-  ["Pulpa Cereza Garnier","Frutas",18.00,0.00,0.00,0.00,0.00,0.00,4.00,-0.6400,100.00,0.7200,8.00,0,270.00,""],
-  ["Pulpa Frambuesa Garnier","Frutas",22.00,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,100.00,0.8800,9.00,0,285.00,""],
-  ["Pulpa Fruta Pasion Garnier","Frutas",16.00,0.00,0.00,0.00,0.00,0.00,4.00,-0.6400,100.00,0.6400,8.00,0,210.00,""],
-  ["Pulpa Mango Garnier","Frutas",17.00,0.00,0.00,0.00,0.00,0.00,6.00,-0.6400,100.00,0.6800,0.00,0,220.00,""],
-  ["PULPA MANZANA GRANNU SMITH","Frutas",13.8000,0.00,0.00,0.00,0.00,0.00,1.9000,-0.9000,125.00,51.00,0.00,0,342.00,""],
-  ["Pure frutos del bosque Arotz","Frutas",17.1000,0.00,0.00,0.00,0.00,0.00,2.00,-0.6400,100.00,0.00,0.00,0,270.00,""],
-  ["Pure Mango Boiron","Frutas",19.00,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,100.00,0.00,8.00,0,220.00,""],
-  ["Pure Melocoton Arotz","Frutas",15.8000,0.00,0.00,0.00,0.00,0.00,1.3000,-0.6400,100.00,66.00,3.1000,0,260.00,""],
-  ["Sandia Boiron","Frutas",9.00,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,100.00,0.00,7.00,0,200.00,""],
-  ["Sandia Natural","Frutas",4.5000,0.00,0.00,0.00,0.00,0.00,0.3000,-0.9000,112.00,0.3200,4.00,0,260.00,""],
-  ["Yuzu Ponthier","Frutas",8.00,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,100.00,0.00,0.00,0,250.00,""],
-  ["Zumo Limon Fira","Frutas",8.00,0.00,0.00,0.00,0.00,0.00,2.1000,-0.6400,100.00,0.3200,3.5000,0,250.00,""],
-  ["Zumo Limon Franver","Frutas",8.00,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,100.00,0.00,0.00,0,250.00,""],
+  ["Piña Arotz","Frutas",18.1000,0.00,0.00,0.00,0.00,0.00,1.1000,-0.6400,100.00,0.00,0.00,0,0,""],
+  ["Piña en su Jugo del Monte","Frutas",15.5000,0.00,0.00,0.00,0.00,0.00,1.2000,-0.6400,100.00,0.7000,0.00,0,0,""],
+  ["Platano Natural","Frutas",18.00,0.00,0.00,0.00,0.00,0.00,3.00,-0.9000,112.00,0.8500,4.00,0,0,""],
+  ["Pomelo Natural","Frutas",11.00,0.00,0.00,0.00,0.00,0.00,1.00,-1.00,112.00,0.3000,0.00,0,0,""],
+  ["Pullpa Lichi","Frutas",19.00,0.00,0.4300,0.00,0.00,0.00,1.3000,-0.6400,100.00,0.00,0.00,0,0,""],
+  ["Pulpa Cereza Garnier","Frutas",18.00,0.00,0.00,0.00,0.00,0.00,4.00,-0.6400,100.00,0.7200,8.00,0,0,""],
+  ["Pulpa Frambuesa Garnier","Frutas",22.00,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,100.00,0.8800,9.00,0,0,""],
+  ["Pulpa Fruta Pasion Garnier","Frutas",16.00,0.00,0.00,0.00,0.00,0.00,4.00,-0.6400,100.00,0.6400,8.00,0,0,""],
+  ["Pulpa Mango Garnier","Frutas",17.00,0.00,0.00,0.00,0.00,0.00,6.00,-0.6400,100.00,0.6800,0.00,0,0,""],
+  ["PULPA MANZANA GRANNU SMITH","Frutas",13.8000,0.00,0.00,0.00,0.00,0.00,1.9000,-0.9000,125.00,51.00,0.00,0,0,""],
+  ["Pure frutos del bosque Arotz","Frutas",17.1000,0.00,0.00,0.00,0.00,0.00,2.00,-0.6400,100.00,0.00,0.00,0,0,""],
+  ["Pure Mango Boiron","Frutas",19.00,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,100.00,0.00,8.00,0,0,""],
+  ["Pure Melocoton Arotz","Frutas",15.8000,0.00,0.00,0.00,0.00,0.00,1.3000,-0.6400,100.00,66.00,3.1000,0,0,""],
+  ["Sandia Boiron","Frutas",9.00,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,100.00,0.00,7.00,0,0,""],
+  ["Sandia Natural","Frutas",4.5000,0.00,0.00,0.00,0.00,0.00,0.3000,-0.9000,112.00,0.3200,4.00,0,0,""],
+  ["Yuzu Ponthier","Frutas",8.00,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,100.00,0.00,0.00,0,0,""],
+  ["Zumo Limon Fira","Frutas",8.00,0.00,0.00,0.00,0.00,0.00,2.1000,-0.6400,100.00,0.3200,3.5000,0,0,""],
+  ["Zumo Limon Franver","Frutas",8.00,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,100.00,0.00,0.00,0,0,""],
   ["Zumo Limon Natural","Frutas",2.4000,0.00,0.00,0.00,0.00,0.00,5.6000,-1.2200,125.00,0.2500,5.00,0,180.00,""],
-  ["Zumo Mandarina Natural","Frutas",12.5000,0.00,0.00,0.00,0.00,0.00,1.9000,-0.9500,112.00,0.3700,4.00,0,253.00,""],
-  ["Zumo Naranja Natural","Frutas",8.4000,0.00,0.00,0.00,0.00,0.00,3.3000,-1.00,112.00,0.4000,3.5000,0,236.00,""],
-  ["Zumo Piña","Frutas",12.00,0.00,0.00,0.00,0.00,0.00,4.00,-1.00,112.00,0.5000,0.00,0,252.00,""],
+  ["Zumo Mandarina Natural","Frutas",12.5000,0.00,0.00,0.00,0.00,0.00,1.9000,-0.9500,112.00,0.3700,4.00,0,0,""],
+  ["Zumo Naranja Natural","Frutas",8.4000,0.00,0.00,0.00,0.00,0.00,3.3000,-1.00,112.00,0.4000,3.5000,0,0,""],
+  ["Zumo Piña","Frutas",12.00,0.00,0.00,0.00,0.00,0.00,4.00,-1.00,112.00,0.5000,0.00,0,0,""],
   ["ZUMON LIMON NATURAL +10","Frutas",12.4000,0.00,0.00,0.00,0.00,0.00,5.6000,-1.2200,125.00,0.00,0.00,0,180.00,""],
   ["Chufa Seca","Frutos Secos",20.00,0.00,23.1000,0.00,2.00,0.00,41.1000,-0.6400,1.00,0.00,2.0500,0,342.00,""],
   ["Coco Rallado","Frutos Secos",0.00,0.00,30.00,0.00,0.00,0.00,70.00,0.00,0.00,0.00,3.2900,0,1.00,""],
@@ -719,7 +719,7 @@ const DEFAULT_INGREDIENTES = [
   ["Pasta Nuez","Frutos Secos",0.00,0.00,63.8000,0.00,0.00,0.00,31.5000,-0.6400,100.00,6.7400,20.00,0,1.00,""],
   ["Pasta Piñon","Frutos Secos",0.00,0.00,51.00,0.00,0.00,0.00,42.00,-0.6400,100.00,5.7000,0.00,0,1.00,""],
   ["Pasta Pistacho","Frutos Secos",0.00,0.00,53.00,0.00,0.00,0.00,39.9000,-0.6400,100.00,6.00,25.7500,0,1.00,""],
-  ["Turron 70%","Frutos Secos",26.5000,0.00,38.00,0.00,0.00,0.00,30.00,-0.5800,112.5000,4.4800,13.00,0,261.00,""],
+  ["Turron 70%","Frutos Secos",26.5000,0.00,38.00,0.00,0.00,0.00,30.00,-0.5800,112.5000,4.4800,13.00,0,0,""],
   ["TURRON SIN AZUCAR","Frutos Secos",3.5000,0.00,37.00,0.00,0.00,0.00,33.00,-0.9300,112.5000,0.00,0.00,0,1.00,""],
   ["Aceite Girasol","Grasas",0.00,0.00,100.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0,1.00,""],
   ["Aceite Oliva","Grasas",0.00,0.00,100.00,0.00,0.00,0.00,0.00,0.00,0.00,9.00,5.00,0,1.00,""],
@@ -774,11 +774,11 @@ const DEFAULT_INGREDIENTES = [
   ["Vino Dulce 16","Licores",20.00,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,100.00,0.8000,0.00,0,342.00,"Alcohol:16.0%"],
   ["Vino Dulce 20","Licores",20.00,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,100.00,0.8000,0.00,0,342.00,"Alcohol:20.0%"],
   ["Vino Tinto 12","Licores",0.00,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,100.00,0.00,0.00,0,342.00,"Alcohol:12.0%"],
-  ["Albaricoque Ponthier","Pastas Semielaboradas",19.3500,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,100.00,0.00,0.00,0,260.00,""],
-  ["Arconsa Gr21 Zumo","Pastas Semielaboradas",8.4700,0.00,0.00,0.00,0.00,0.00,0.3300,-0.6400,100.00,0.00,3.0400,0,260.00,""],
-  ["Frambuesa Ponthier","Pastas Semielaboradas",19.00,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,100.00,0.00,8.00,0,285.00,""],
+  ["Albaricoque Ponthier","Pastas Semielaboradas",19.3500,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,100.00,0.00,0.00,0,0,""],
+  ["Arconsa Gr21 Zumo","Pastas Semielaboradas",8.4700,0.00,0.00,0.00,0.00,0.00,0.3300,-0.6400,100.00,0.00,3.0400,0,0,""],
+  ["Frambuesa Ponthier","Pastas Semielaboradas",19.00,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,100.00,0.00,8.00,0,0,""],
   ["Gr20 Limon Arconsa","Pastas Semielaboradas",64.00,0.00,0.0100,0.00,0.00,0.00,1.5000,-0.6400,100.00,0.00,0.00,0,0,""],
-  ["Mirtillo Ponthier (arandanos)","Pastas Semielaboradas",19.00,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,-0.6400,0.00,0.00,0,260.00,""],
+  ["Mirtillo Ponthier (arandanos)","Pastas Semielaboradas",19.00,0.00,0.00,0.00,0.00,0.00,0.00,-0.6400,-0.6400,0.00,0.00,0,0,""],
   ["Nutella","Pastas Semielaboradas",56.7000,0.00,31.6000,0.00,0.00,0.00,10.00,-0.6400,100.00,7.00,7.00,0,342.00,""],
   ["Pasta Regaliz","Pastas Semielaboradas",45.00,0.00,0.00,0.00,0.00,0.00,45.00,-0.6400,100.00,0.00,18.00,0,342.00,""],
   ["PASTA TIRAMISU AROMITALIA","Pastas Semielaboradas",39.00,0.00,5.00,0.00,0.00,0.00,2.5000,-0.6400,100.00,0.00,0.00,0,342.00,""],
@@ -1110,14 +1110,14 @@ function renderDetalleFormula(id) {
     tot.prot += fi.ing.proteinas*p;
     tot.lact += fi.ing.lactosa*p;
     tot.os   += fi.ing.os*p;
-    const alc_m_det=fi.ing.alcohol*p/100; const pacEff_det=getPacEff(fi.ing); const az_m_det=fi.ing.azucares*p/100; const kAlcDet=(-20.2676+13.4124*alc_m_det+29.0730*az_m_det-29.2523*alc_m_det*alc_m_det+8.4345*az_m_det*alc_m_det); tot.pac  += pacEff_det * az_m_det + (-1.2208)*(fi.ing.lactosa*p/100) + kAlcDet*alc_m_det;
+    const alc_m_det=fi.ing.alcohol*p/100; const pacEff_det=getPacEff(fi.ing); const az_m_det=fi.ing.azucares*p/100; tot.pac  += pacEff_det * az_m_det + (-0.64)*(fi.ing.lactosa*p/100) + (K_ALC)*alc_m_det;
     tot.pod  += fi.ing.pod * (fi.ing.azucares*p/100) + 16.62*(fi.ing.lactosa*p/100);
     tot.kcal += fi.ing.kcal*p;
     tot.pct  += fi.porcentaje;
   });
   const st = tot.az+tot.mg+tot.og+tot.esml+tot.os;
   const agua_frac = (100-st) > 0 ? (100-st)/100 : 1;
-  tot.pac = tot.pac * 33.89 / agua_frac;
+  tot.pac = tot.pac * 100 * agua_frac;
   
   // Calcular gramos totales según cantidad aplicada
   const totalGrams = window._cantGrams && window._cantGrams[id] ? window._cantGrams[id] : (f.pesoDeseado||1000);
@@ -1342,7 +1342,10 @@ function añadirIngredienteFormula() {
 }
 
 
-// ── PAC efectivo por Peso Molecular ──────────────────────────────────────
+// ── Modelo PAC GelatMix (multiplicativo por agua) ─────────────────────────
+// PAC_total = [ Σ( pacEff·az + (-0.64)·lactosa + K_ALC·alcohol ) ] × agua%
+// Calibrado exacto: Sacarosa 30/70 y 50/50, Cointreau, Licor Dulce 20
+const K_ALC = -6.385; // crioscopía del alcohol (lineal bajo el modelo real)
 function getPacEff(ing) {
   const pm = ing.peso_mol_az || 0;
   // Usar PM solo para azúcares simples: pm entre 150-400 y tienen azúcares
@@ -1365,7 +1368,7 @@ function renderEfIngredientes() {
     const st_i = (ing.azucares+ing.mg+ing.og+ing.esml+ing.os)*p;
     tot.az+=ing.azucares*p; tot.mg+=ing.mg*p; tot.og+=ing.og*p; tot.esml+=ing.esml*p;
     tot.prot+=ing.proteinas*p; tot.lact+=ing.lactosa*p; tot.os+=ing.os*p;
-    const alc_m_ef=ing.alcohol*p/100; const pacEff_ef=getPacEff(ing); const az_m_ef=ing.azucares*p/100; const kAlcEf=(-20.2676+13.4124*alc_m_ef+29.0730*az_m_ef-29.2523*alc_m_ef*alc_m_ef+8.4345*az_m_ef*alc_m_ef); tot.pac+=pacEff_ef*az_m_ef+(-1.2208)*(ing.lactosa*p/100)+kAlcEf*alc_m_ef; tot.pod+=ing.pod*(ing.azucares*p/100)+16.62*(ing.lactosa*p/100); tot.pct+=fi.porcentaje;
+    const alc_m_ef=ing.alcohol*p/100; const pacEff_ef=getPacEff(ing); const az_m_ef=ing.azucares*p/100; tot.pac+=pacEff_ef*az_m_ef+(-0.64)*(ing.lactosa*p/100)+(K_ALC)*alc_m_ef; tot.pod+=ing.pod*(ing.azucares*p/100)+16.62*(ing.lactosa*p/100); tot.pct+=fi.porcentaje;
     tot.st+=st_i;
     return `<tr class="ef-ing-row" draggable="true" data-idx="${idx}" style="background:${idx%2?'#fafbfc':'white'}">
       <td class="drag-handle" title="Arrastra para reordenar">⠿</td>
@@ -1381,7 +1384,7 @@ function renderEfIngredientes() {
       <td style="text-align:right">${f2(ing.lactosa*p)}</td>
       <td style="text-align:right">${f2(ing.os*p)}</td>
       <td style="text-align:right">${f2(st_i)}</td>
-      <td style="text-align:right">${f2((()=>{const am=ing.alcohol*p/100,azm=ing.azucares*p/100;return getPacEff(ing)*azm+(-1.2208)*(ing.lactosa*p/100)+(-20.2676+13.4124*am+29.0730*azm-29.2523*am*am+8.4345*azm*am)*am;})(  ))}</td>
+      <td style="text-align:right">${f2((()=>{const am=ing.alcohol*p/100,azm=ing.azucares*p/100;return (getPacEff(ing)*azm+(-0.64)*(ing.lactosa*p/100)+(K_ALC)*am)*100;})(  ))}</td>
       <td style="text-align:right">${f2((ing.azucares>0)?ing.pod*p:0)}</td>
       <td><button onclick="confirmarEliminarIng(${idx})" style="background:var(--rojo);color:white;border:none;border-radius:3px;cursor:pointer;padding:2px 6px;font-size:11px" title="Eliminar ingrediente">✖</button></td>
     </tr>`;
@@ -1393,7 +1396,7 @@ function renderEfIngredientes() {
   if (btnNorm) btnNorm.style.display = ok ? 'none' : 'inline-block';
   const pesoTotalBatch = f1(tot.pct * pesoKgEf * 1000 / 100);
   const agua_frac_ef = (100-tot.st) > 0 ? (100-tot.st)/100 : 1;
-  tot.pac = tot.pac * 33.89 / agua_frac_ef;
+  tot.pac = tot.pac * 100 * agua_frac_ef;
   document.getElementById('ef-totales').innerHTML =
     '<div style="padding:2px 0">' +
     (ok?'✅':'⚠️️ RECETA NO VÁLIDA') + ' <strong>Total: ' + f2(tot.pct) + '%</strong>' + (ok?'':' <span style="color:#fca5a5;font-size:11px">(debe ser 100% para calcular PAC/POD)</span>') +
@@ -1834,14 +1837,14 @@ function imprimirFormula(fid) {
     tot.prot += fi.ing.proteinas*p;
     tot.lact += fi.ing.lactosa*p;
     tot.os   += fi.ing.os*p;
-    var alc_m_impr=fi.ing.alcohol*p/100; var pacEff_impr=getPacEff(fi.ing); var az_m_impr=fi.ing.azucares*p/100; var kAlcImpr=(-20.2676+13.4124*alc_m_impr+29.0730*az_m_impr-29.2523*alc_m_impr*alc_m_impr+8.4345*az_m_impr*alc_m_impr); tot.pac  += pacEff_impr*az_m_impr+(-1.2208)*(fi.ing.lactosa*p/100)+kAlcImpr*alc_m_impr;
+    var alc_m_impr=fi.ing.alcohol*p/100; var pacEff_impr=getPacEff(fi.ing); var az_m_impr=fi.ing.azucares*p/100; tot.pac  += pacEff_impr*az_m_impr+(-0.64)*(fi.ing.lactosa*p/100)+(K_ALC)*alc_m_impr;
     tot.pod  += fi.ing.pod*(fi.ing.azucares*p/100)+16.62*(fi.ing.lactosa*p/100);
     tot.kcal += fi.ing.kcal*p;
     tot.pct  += fi.porcentaje;
     tot.st   += (fi.ing.azucares+fi.ing.mg+fi.ing.og+fi.ing.esml+fi.ing.os)*p;
   });
   var agua_frac = (100-tot.st) > 0 ? (100-tot.st)/100 : 1;
-  tot.pac = tot.pac * 33.89 / agua_frac;
+  tot.pac = tot.pac * 100 * agua_frac;
 
   var pesoKgStr = prompt('Peso total a producir (kg):', f.pesoDeseado ? (f.pesoDeseado/1000) : 1);
   if (pesoKgStr === null) return;

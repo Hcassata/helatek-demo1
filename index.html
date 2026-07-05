@@ -6,29 +6,29 @@
 <title>Helatek I+D+I · DEMO — Software de Formulación de Helados</title>
 <style>
   :root {
-    --azul: #375a8c; --azul2: #2563a8; --azul3: #4a90d9;
-    --celeste: #e8f4fd; --blanco: #fff; --gris: #f5f6fa;
-    --gris2: #d1d5db; --gris3: #6b7280; --verde: #16a34a;
+    --azul: #4E9184; --azul2: #5CA394; --azul3: #78B8AA;
+    --celeste: #EDF5F1; --blanco: #fff; --gris: #F6F3EE;
+    --gris2: #D6D2CA; --gris3: #6E6A61; --verde: #16a34a;
     --rojo: #dc2626; --naranja: #f59e0b;
-    --sidebar-bg: #1a2744;
-    --sidebar-hover: #2563a8;
-    --sidebar-active: #2563a8;
+    --sidebar-bg: #21403C;
+    --sidebar-hover: #5CA394;
+    --sidebar-active: #5CA394;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { display: flex; height: 100vh; overflow: hidden; background: var(--gris); font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; color: #1a2744; }
+  body { display: flex; height: 100vh; overflow: hidden; background: var(--gris); font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; color: #21403C; }
 
   /* SIDEBAR */
-  #sidebar { width: 200px; min-width: 200px; background: var(--sidebar-bg); display: flex; flex-direction: column; height: 100vh; overflow-y: auto; padding: 0; flex-shrink: 0; }
+  #sidebar { width: 200px; min-width: 200px; background: linear-gradient(180deg,#3C7B6F 0%,#356B60 55%,#2A4A44 100%); display: flex; flex-direction: column; height: 100vh; overflow-y: auto; padding: 0; flex-shrink: 0; }
   .logo { text-align: center; padding: 20px 10px 12px; color: white; border-bottom: 1px solid var(--gris2); }
   .logo .ico { font-size: 40px; }
   .logo h1 { font-size: 20px; font-weight: bold;   color: white; }
   .logo p { font-size: 9px; color: var(--azul3); margin-top: 3px;   }
   .sep { height: 1px; background: var(--azul2); margin: 10px 15px; }
   .nav-btn { display: block; width: 100%; text-align: left; padding: 12px 22px; background: transparent;
-    border: none; color: #b8cce0; font-size: 13px; cursor: pointer; transition: all 0.2s;
+    border: none; color: #C6DAD3; font-size: 13px; cursor: pointer; transition: all 0.2s;
      }
   .nav-btn:hover { background: var(--azul2); color: white; }
-  .nav-btn.active { background: var(--azul2); color: white; font-weight: 600; ; padding-left: 22px; }
+  .nav-btn.active { background: rgba(255,255,255,0.10); color: white; font-weight: 700; padding-left: 18px; border-left: 4px solid #E3A85C; }
   .sidebar-bottom { margin-top: auto; text-align: center; padding: 10px; font-size: 10px; color: var(--gris3); border-top: 1px solid var(--gris2); }
 
   /* MAIN */
@@ -40,9 +40,9 @@
   .page-header span { font-size: 12px; color: var(--gris3); }
 
   /* BUTTONS */
-  .btn { padding: 7px 16px; border: none; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: 600; transition: opacity 0.15s; }
-  .btn:hover { opacity: 0.85; }
-  .btn-blue { background: #128437; color: white; }
+  .btn { padding: 7px 16px; border: none; border-radius: 9px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.15s; box-shadow: 0 1px 2px rgba(33,64,60,0.10); }
+  .btn:hover { opacity: 0.92; transform: translateY(-1px); box-shadow: 0 3px 8px rgba(33,64,60,0.16); }
+  .btn-blue { background: #4E9184; color: white; }
   .btn-green { background: var(--verde); color: white; }
   .btn-red { background: var(--rojo); color: white; }
   .btn-orange { background: var(--naranja); color: white; }
@@ -52,7 +52,7 @@
   /* INICIO */
   #pg-inicio { padding: 0; }
   .stats-row { display: flex; gap: 16px; padding: 20px 24px 10px; }
-  .stat-card { background: white; border-radius: 12px; padding: 20px 28px; text-align: center; min-width: 150px;   }
+  .stat-card { background: white; border-radius: 16px; padding: 20px 28px; text-align: center; min-width: 150px; box-shadow: 0 2px 10px rgba(33,64,60,0.06); border: 1px solid #ECE8E0; }
   .stat-card .num { font-size: 36px; font-weight: bold; }
   .stat-card .lbl { font-size: 12px; color: var(--gris3); margin-top: 4px; }
   .quick { padding: 10px 24px 0; }
@@ -71,12 +71,12 @@
   table { width: 100%; border-collapse: collapse; font-size: 12px; background: white; border-radius: 8px; overflow: hidden; margin-top: 10px; }
   th { background: var(--azul); color: white; padding: 8px 10px; text-align: left; cursor: pointer; user-select: none; white-space: nowrap; }
   th:hover { background: var(--azul2); }
-  td { padding: 7px 10px; border-bottom: 1px solid #f0f0f0; white-space: nowrap; }
-  tr:hover td { background: #F5EDE8; }
-  tr.totales-row:hover td { background: #1e3a5f !important; color: white !important; }
+  td { padding: 7px 10px; border-bottom: 1px solid #EEEAE3; white-space: nowrap; }
+  tr:hover td { background: #FBF3EC; }
+  tr.totales-row:hover td { background: #3C7B6F !important; color: white !important; }
   tr.totales-row td { color: white; }
   tr.sel td { background: #FFF3E8 !important; color: var(--azul2); }
-  tr:nth-child(even) td { background: #fafbfc; }
+  tr:nth-child(even) td { background: #FBFAF6; }
   .tbl-actions { padding: 8px 20px; display: flex; gap: 8px; background: var(--gris); border-top: 1px solid var(--gris2); }
 
   /* FORMULAS */
@@ -84,8 +84,8 @@
   .form-lista { width: 280px; min-width: 280px; border-right: 1px solid var(--gris2); display: flex; flex-direction: column; background: white; }
   .form-lista h3 { padding: 12px 16px 6px; font-size: 13px; font-weight: bold; color: var(--azul); border-bottom: 1px solid var(--gris2);   }
   #lista-formulas { flex: 1; overflow-y: auto; list-style: none; }
-  #lista-formulas li { padding: 10px 16px; cursor: pointer; border-bottom: 1px solid #f5f5f5; font-size: 13px; }
-  #lista-formulas li:hover { background: #F5EDE8; }
+  #lista-formulas li { padding: 10px 16px; cursor: pointer; border-bottom: 1px solid #F6F3EE; font-size: 13px; }
+  #lista-formulas li:hover { background: #FBF3EC; }
   #lista-formulas li.sel { background: var(--celeste); font-weight: 500; color: var(--azul2); border-right: 3px solid var(--azul2); }
   .form-lista-btns { padding: 8px 12px; display: flex; gap: 6px; border-top: 1px solid var(--gris2); flex-wrap: wrap; }
   .form-detalle { flex: 1; overflow-y: auto; background: var(--gris); }
@@ -99,8 +99,8 @@
   .eq-val { font-size: 13px; font-weight: bold; }
   .eq-val.ok { color: var(--verde); }
   .eq-val.bad { color: var(--rojo); }
-  .total-bar { padding: 8px 16px !important; background: #1e3a5f !important; color: white !important; border-top: 2px solid var(--azul2) !important; font-size: 12px; font-weight: 500; border-radius: 0 0 8px 8px; position: sticky; bottom: 0; z-index: 10; }
-  .detalle-box .total-bar, div.total-bar { background: #1e3a5f !important; color: white !important; }
+  .total-bar { padding: 8px 16px !important; background: #3C7B6F !important; color: white !important; border-top: 2px solid var(--azul2) !important; font-size: 12px; font-weight: 500; border-radius: 0 0 8px 8px; position: sticky; bottom: 0; z-index: 10; }
+  .detalle-box .total-bar, div.total-bar { background: #3C7B6F !important; color: white !important; }
 
   /* MODAL */
   .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
@@ -121,8 +121,8 @@
   .edit-right { flex: 1; overflow: hidden; }
   #ing-selector { width: 100%; height: 180px; font-size: 12px; border: 1px solid var(--gris2); border-radius: 5px; }
   .ing-sel-item { padding: 4px 8px; cursor: pointer; }
-  .ing-sel-item:hover { background: #F5EDE8; }
-  .ing-sel-item.sel { background: #F5EDE8; color: var(--azul2); font-weight: 600; }
+  .ing-sel-item:hover { background: #FBF3EC; }
+  .ing-sel-item.sel { background: #FBF3EC; color: var(--azul2); font-weight: 600; }
   #formula-ing-table { font-size: 12px; }
   #formula-ing-table td { padding: 5px 8px; }
 
@@ -185,14 +185,14 @@
 
 
   /* Atajos en sidebar */
-  .sidebar-atajos { padding:8px 12px 0;font-size:10px;color:#5580a8;line-height:1.8; }
-  .sidebar-atajos kbd { background:#1a2744;padding:1px 4px;border-radius:3px;color:#5580a8;font-size:9px; }
+  .sidebar-atajos { padding:8px 12px 0;font-size:10px;color:#78B8AA;line-height:1.8; }
+  .sidebar-atajos kbd { background:#21403C;padding:1px 4px;border-radius:3px;color:#78B8AA;font-size:9px; }
 
 
   /* ── Drag & Drop ingredientes ── */
   .drag-handle {
     cursor: grab;
-    color: #94a3b8;
+    color: #9B968C;
     font-size: 16px;
     padding: 0 6px;
     user-select: none;
@@ -267,14 +267,28 @@
   <div class="logo" style="padding:16px 10px 12px;text-align:center">
     <!-- SVG logo dos círculos estilo ANHA -->
     <svg viewBox="0 0 100 78" width="130" height="101" xmlns="http://www.w3.org/2000/svg" style="margin:0 auto;display:block;overflow:visible">
-      <!-- Círculo izquierdo: más grande y más alto -->
-      <circle cx="36" cy="32" r="32" fill="#D4607A" opacity="0.82"/>
-      <!-- Círculo derecho: más pequeño y más abajo -->
-      <circle cx="68" cy="46" r="25" fill="#F2A93B" opacity="0.80"/>
+      <defs>
+        <radialGradient id="gLeft" cx="38%" cy="34%" r="72%">
+          <stop offset="0%" stop-color="#B6E0C6"/>
+          <stop offset="55%" stop-color="#8FC9A8"/>
+          <stop offset="100%" stop-color="#5FA37E"/>
+        </radialGradient>
+        <radialGradient id="gRight" cx="38%" cy="34%" r="72%">
+          <stop offset="0%" stop-color="#F3CD96"/>
+          <stop offset="55%" stop-color="#E3A85C"/>
+          <stop offset="100%" stop-color="#C4823A"/>
+        </radialGradient>
+      </defs>
+      <!-- Bola izquierda (pistacho) -->
+      <circle cx="36" cy="32" r="32" fill="url(#gLeft)"/>
+      <circle cx="26" cy="22" r="9" fill="#ffffff" opacity="0.22"/>
+      <!-- Bola derecha (caramelo) -->
+      <circle cx="68" cy="46" r="25" fill="url(#gRight)"/>
+      <circle cx="60" cy="38" r="7" fill="#ffffff" opacity="0.22"/>
     </svg>
     <div style="margin-top:4px;font-size:17px;font-weight:700;color:white;letter-spacing:2px;font-family:Georgia,serif">HELATEK</div>
-    <div style="font-size:8px;color:#a8c4e0;letter-spacing:3px;margin-top:2px">I+D+I</div>
-    <div style="font-size:7px;color:#6b8db0;margin-top:1px;font-style:italic">del helado artesano</div>
+    <div style="font-size:8px;color:#C0DAD0;letter-spacing:3px;margin-top:2px">I+D+I</div>
+    <div style="font-size:7px;color:#9BBBB0;margin-top:1px;font-style:italic">del helado artesano</div>
   </div>
   <div class="sep"></div>
   <button class="nav-btn active" onclick="showPage('inicio')">🏠  Inicio</button>
@@ -283,7 +297,7 @@
   <button class="nav-btn" onclick="showPage('familias')">👨‍👩‍👧  Familias</button>
   <button class="nav-btn" onclick="showPage('config')">⚙️  Configuración</button>
   <div class="sidebar-atajos">
-    <strong style="color:#7aa0c8">ATAJOS</strong><br>
+    <strong style="color:#9BBBB0">ATAJOS</strong><br>
     <kbd>Alt+F</kbd> Fórmulas &nbsp; <kbd>Alt+I</kbd> Ingredientes<br>
     <kbd>Alt+N</kbd> Nueva fórmula &nbsp; <kbd>Esc</kbd> Cerrar
   </div>
@@ -431,7 +445,7 @@
         <div class="form-row"><label style="min-width:130px">Ingrediente *</label><input id="ing-nombre" type="text" placeholder="Nombre"></div>
         <div class="form-row"><label style="min-width:130px">Familia</label><select id="ing-familia" style="flex:1;padding:7px 10px;border:1px solid var(--gris2);border-radius:5px;font-size:13px"></select></div>
       </div>
-      <div style="border:1px solid var(--gris2);border-radius:6px;padding:12px;background:#fafbfc">
+      <div style="border:1px solid var(--gris2);border-radius:6px;padding:12px;background:#FBFAF6">
         <div style="font-size:11px;font-weight:bold;color:var(--gris3);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Información</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 20px">
           <div class="form-row" style="margin:0"><label style="min-width:160px;font-size:13px">Azúcares</label><input id="ing-azucares" type="number" step="0.01" value="0" style="width:90px;padding:5px 8px;border:1px solid var(--gris2);border-radius:4px;font-size:13px;text-align:right"></div>
@@ -522,12 +536,12 @@
               <thead><tr style="background:var(--azul);color:white">
                 <th style="padding:6px 4px;width:20px"></th>
                 <th style="padding:6px 8px;text-align:left;min-width:140px">Ingrediente</th>
-                <th style="padding:6px 6px;width:70px;background:#0f2a5a" title="Cantidad — mismo valor que % en recetas base 100">PESO</th>
-                <th style="padding:6px 6px;width:52px;background:#1a3a6e" title="Porcentaje en base 100">%</th>
+                <th style="padding:6px 6px;width:70px;background:#356B60" title="Cantidad — mismo valor que % en recetas base 100">PESO</th>
+                <th style="padding:6px 6px;width:52px;background:#3C7B6F" title="Porcentaje en base 100">%</th>
                 <th style="padding:6px 5px;width:46px">AZ</th>
                 <th style="padding:6px 5px;width:44px">MG</th>
                 <th style="padding:6px 5px;width:44px">OG</th>
-                <th style="padding:6px 5px;width:46px;background:#1e3a6e">GT</th>
+                <th style="padding:6px 5px;width:46px;background:#3C7B6F">GT</th>
                 <th style="padding:6px 5px;width:46px">SLNG</th>
                 <th style="padding:6px 5px;width:44px">PROT</th>
                 <th style="padding:6px 5px;width:46px">LACT</th>
@@ -540,7 +554,7 @@
               <tbody id="ef-ing-tbody"></tbody>
             </table>
           </div>
-          <div id="ef-totales" style="margin-top:6px;padding:6px 12px;background:#1a2744;color:white;border-radius:5px;font-size:12px;min-height:50px"></div>
+          <div id="ef-totales" style="margin-top:6px;padding:6px 12px;background:#21403C;color:white;border-radius:5px;font-size:12px;min-height:50px"></div>
         </div>
       </div>
     </div>
@@ -1140,14 +1154,14 @@ function renderDetalleFormula(id) {
     colTot.az+=ing.azucares*p; colTot.mg+=ing.mg*p; colTot.og+=ing.og*p;
     colTot.esml+=ing.esml*p; colTot.prot+=ing.proteinas*p; colTot.lact+=ing.lactosa*p;
     colTot.os+=ing.os*p; colTot.st+=st_i; colTot.peso+=pesoG;
-    return `<tr style="background:${idx%2?'#fafbfc':'white'}">
+    return `<tr style="background:${idx%2?'#FBFAF6':'white'}">
       <td style="padding:6px 10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${ing.nombre}">${ing.nombre}</td>
       <td style="text-align:center;padding:6px 4px">${f2(fi.porcentaje)}</td>
-      <td style="text-align:center;padding:6px 4px;font-weight:600;color:#0f2a5a">${f1(pesoG)}g</td>
+      <td style="text-align:center;padding:6px 4px;font-weight:600;color:#356B60">${f1(pesoG)}g</td>
       <td style="text-align:center;padding:6px 4px">${f2(ing.azucares*p)}</td>
       <td style="text-align:center;padding:6px 4px">${f2(ing.mg*p)}</td>
       <td style="text-align:center;padding:6px 4px">${f2(ing.og*p)}</td>
-      <td style="text-align:center;padding:6px 4px;font-weight:700;color:#1e4d8c">${f2((ing.mg+ing.og)*p)}</td>
+      <td style="text-align:center;padding:6px 4px;font-weight:700;color:#4E9184">${f2((ing.mg+ing.og)*p)}</td>
       <td style="text-align:center;padding:6px 4px">${f2(ing.esml*p)}</td>
       <td style="text-align:center;padding:6px 4px">${f2(ing.proteinas*p)}</td>
       <td style="text-align:center;padding:6px 4px">${f2(ing.lactosa*p)}</td>
@@ -1177,16 +1191,16 @@ function renderDetalleFormula(id) {
       <div class="detalle-hdr" style="background:var(--azul);padding:12px 16px">
         <h3>📋 ${f.nombre}</h3>
         <button class="btn btn-blue btn-sm" onclick="editarFormula()">✏️ Editar Fórmula</button>
-        <button class="btn btn-gray btn-sm" onclick="imprimirFormula(${f.id})" style="background:#6b7280">🖨️ Imprimir</button>
+        <button class="btn btn-gray btn-sm" onclick="imprimirFormula(${f.id})" style="background:#6E6A61">🖨️ Imprimir</button>
       </div>
       <div class="detalle-info" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 16px">
-        <span style="font-size:12px;color:#6b7280">${f.descripcion||''}</span>
+        <span style="font-size:12px;color:#6E6A61">${f.descripcion||''}</span>
         <div style="display:flex;align-items:center;gap:8px;margin-left:auto">
-          <span style="font-size:13px;font-weight:600;color:#1a2744">Producir:</span>
+          <span style="font-size:13px;font-weight:600;color:#21403C">Producir:</span>
           <input type="number" id="cant-kg-${f.id}" value="1" min="0.1" step="0.1" 
             style="width:80px;padding:5px 8px;border:2px solid var(--azul2);border-radius:5px;font-size:14px;font-weight:bold;text-align:center"
             onkeydown="if(event.key==='Enter')aplicarCantidad(${f.id})">
-          <span style="font-size:13px;font-weight:600;color:#1a2744">kg</span>
+          <span style="font-size:13px;font-weight:600;color:#21403C">kg</span>
           <button onclick="aplicarCantidad(${f.id})" 
             style="padding:5px 16px;background:var(--azul2);color:white;border:none;border-radius:5px;font-size:13px;font-weight:600;cursor:pointer">
             ✅ Aplicar
@@ -1207,11 +1221,11 @@ function renderDetalleFormula(id) {
           <thead><tr style="background:var(--azul);color:white">
             <th style="padding:6px 10px;text-align:left">Ingrediente</th>
             <th style="padding:6px 8px;text-align:center">Base 100</th>
-            <th style="padding:6px 8px;text-align:center;background:#0f2a5a">Peso(g)</th>
+            <th style="padding:6px 8px;text-align:center;background:#356B60">Peso(g)</th>
             <th style="padding:6px 8px;text-align:center">AZ</th>
             <th style="padding:6px 8px;text-align:center">MG</th>
             <th style="padding:6px 8px;text-align:center">OG</th>
-            <th style="padding:6px 8px;text-align:center;background:#1a3a6e">GT</th>
+            <th style="padding:6px 8px;text-align:center;background:#3C7B6F">GT</th>
             <th style="padding:6px 8px;text-align:center">SLNG</th>
             <th style="padding:6px 8px;text-align:center">PROT</th>
             <th style="padding:6px 8px;text-align:center">LACT</th>
@@ -1224,32 +1238,32 @@ function renderDetalleFormula(id) {
       <div style="padding:10px 16px 4px;font-size:13px;font-weight:bold;color:var(--azul)">Equilibrios:</div>
       <div style="padding:10px 16px">
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
-          <div style="background:#f0f7ff;border-radius:8px;padding:10px 14px;border-left:4px solid var(--azul2)">
-            <div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Total Azúcares</div>
+          <div style="background:#F0F7F3;border-radius:8px;padding:10px 14px;border-left:4px solid var(--azul2)">
+            <div style="font-size:10px;color:#6E6A61;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Total Azúcares</div>
             <div style="font-size:22px;font-weight:800">${ev(tot.az,lim.minAz,lim.maxAz)}</div>
           </div>
-          <div style="background:#f0f7ff;border-radius:8px;padding:10px 14px;border-left:4px solid #1e4d8c">
-            <div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Grasa Total (MG+OG)</div>
+          <div style="background:#F0F7F3;border-radius:8px;padding:10px 14px;border-left:4px solid #4E9184">
+            <div style="font-size:10px;color:#6E6A61;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Grasa Total (MG+OG)</div>
             <div style="font-size:22px;font-weight:800">${ev(tot.mg+tot.og,lim.minMg,lim.maxMg)}</div>
           </div>
-          <div style="background:#f0f7ff;border-radius:8px;padding:10px 14px;border-left:4px solid var(--azul2)">
-            <div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Total SLNG</div>
+          <div style="background:#F0F7F3;border-radius:8px;padding:10px 14px;border-left:4px solid var(--azul2)">
+            <div style="font-size:10px;color:#6E6A61;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Total SLNG</div>
             <div style="font-size:22px;font-weight:800">${ev(tot.esml,lim.minEsml,lim.maxEsml)}</div>
           </div>
-          <div style="background:#f0fdf4;border-radius:8px;padding:10px 14px;border-left:4px solid #16a34a">
-            <div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Sólidos Totales</div>
+          <div style="background:#EAF6EF;border-radius:8px;padding:10px 14px;border-left:4px solid #16a34a">
+            <div style="font-size:10px;color:#6E6A61;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Sólidos Totales</div>
             <div style="font-size:22px;font-weight:800">${ev(st,lim.minST,lim.maxST)}</div>
           </div>
           <div style="background:#fef9f0;border-radius:8px;padding:10px 14px;border-left:4px solid #f59e0b">
-            <div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">POD</div>
+            <div style="font-size:10px;color:#6E6A61;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">POD</div>
             <div style="font-size:22px;font-weight:800">${ev(tot.pod,lim.minPOD,lim.maxPOD)}</div>
           </div>
-          <div style="background:#fff0f0;border-radius:8px;padding:10px 14px;border-left:4px solid #dc2626">
-            <div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">PAC</div>
+          <div style="background:#FCEBEA;border-radius:8px;padding:10px 14px;border-left:4px solid #dc2626">
+            <div style="font-size:10px;color:#6E6A61;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">PAC</div>
             <div style="font-size:22px;font-weight:800">${ev(tot.pac,lim.minPAC,lim.maxPAC)}</div>
           </div>
         </div></div>
-      <div style="background:#1a2744;color:white;border-radius:0 0 8px 8px;padding:8px 16px;font-size:12px;font-weight:600;border-top:2px solid rgba(255,255,255,0.2);position:sticky;bottom:0;z-index:10" class="total-bar">
+      <div style="background:#21403C;color:white;border-radius:0 0 8px 8px;padding:8px 16px;font-size:12px;font-weight:600;border-top:2px solid rgba(255,255,255,0.2);position:sticky;bottom:0;z-index:10" class="total-bar">
         ${Math.abs(tot.pct-100)<0.01?'✅':'⚠️'} Total: <strong>${f2(tot.pct)}%</strong>
         &nbsp;|&nbsp; Peso total: <strong>${f1(totalGrams)}g</strong>
         &nbsp;|&nbsp; Kcal/100g: <strong>${f1(tot.kcal)}</strong>
@@ -1370,15 +1384,15 @@ function renderEfIngredientes() {
     tot.prot+=ing.proteinas*p; tot.lact+=ing.lactosa*p; tot.os+=ing.os*p;
     const alc_m_ef=ing.alcohol*p/100; const pacEff_ef=getPacEff(ing); const az_m_ef=ing.azucares*p/100; tot.pac+=pacEff_ef*az_m_ef+(-0.64)*(ing.lactosa*p/100)+(K_ALC)*alc_m_ef; tot.pod+=ing.pod*(ing.azucares*p/100)+16.62*(ing.lactosa*p/100); tot.pct+=fi.porcentaje;
     tot.st+=st_i;
-    return `<tr class="ef-ing-row" draggable="true" data-idx="${idx}" style="background:${idx%2?'#fafbfc':'white'}">
+    return `<tr class="ef-ing-row" draggable="true" data-idx="${idx}" style="background:${idx%2?'#FBFAF6':'white'}">
       <td class="drag-handle" title="Arrastra para reordenar">⠿</td>
       <td style="font-size:12px;padding:4px 6px">${ing.nombre}</td>
-      <td style="text-align:right;padding:3px 4px"><input type="number" step="0.1" min="0" value="${f2(fi.porcentaje)}" style="width:62px;padding:2px 5px;border:1.5px solid #0f2a5a;border-radius:3px;font-size:12px;font-weight:700;color:#0f2a5a;text-align:right" onchange="efIngredientes[${idx}].porcentaje=parseFloat(this.value)||0;renderEfIngredientes()" title="Cantidad base 100"></td>
-      <td style="text-align:right;font-weight:600;color:#1a3a6e;font-size:11px;padding:3px 4px">${f2(fi.porcentaje/sumaPesos*100)}%</td>
+      <td style="text-align:right;padding:3px 4px"><input type="number" step="0.1" min="0" value="${f2(fi.porcentaje)}" style="width:62px;padding:2px 5px;border:1.5px solid #356B60;border-radius:3px;font-size:12px;font-weight:700;color:#356B60;text-align:right" onchange="efIngredientes[${idx}].porcentaje=parseFloat(this.value)||0;renderEfIngredientes()" title="Cantidad base 100"></td>
+      <td style="text-align:right;font-weight:600;color:#3C7B6F;font-size:11px;padding:3px 4px">${f2(fi.porcentaje/sumaPesos*100)}%</td>
       <td style="text-align:right">${f2(ing.azucares*p)}</td>
       <td style="text-align:right">${f2(ing.mg*p)}</td>
       <td style="text-align:right">${f2(ing.og*p)}</td>
-      <td style="text-align:right;font-weight:700;color:#1e4d8c">${f2((ing.mg+ing.og)*p)}</td>
+      <td style="text-align:right;font-weight:700;color:#4E9184">${f2((ing.mg+ing.og)*p)}</td>
       <td style="text-align:right">${f2(ing.esml*p)}</td>
       <td style="text-align:right">${f2(ing.proteinas*p)}</td>
       <td style="text-align:right">${f2(ing.lactosa*p)}</td>
@@ -1403,12 +1417,12 @@ function renderEfIngredientes() {
     ' &nbsp;|&nbsp; ' + ck(tot.az,  lim.minAz,   lim.maxAz,   'AZ') +
     ' &nbsp;|&nbsp; MG: <strong>' + f2(tot.mg) + '</strong>' +
     ' &nbsp;|&nbsp; OG: <strong>' + f2(tot.og) + '</strong>' +
-    ' &nbsp;|&nbsp; ' + ck(tot.mg+tot.og, lim.minMg, lim.maxMg, 'GT', '#93c5fd') +
-    ' &nbsp;|&nbsp; ' + ck(tot.esml, lim.minEsml, lim.maxEsml, 'SLNG', '#93c5fd') +
+    ' &nbsp;|&nbsp; ' + ck(tot.mg+tot.og, lim.minMg, lim.maxMg, 'GT', '#A6D6C6') +
+    ' &nbsp;|&nbsp; ' + ck(tot.esml, lim.minEsml, lim.maxEsml, 'SLNG', '#A6D6C6') +
     ' &nbsp;|&nbsp; ' + ck(tot.prot, lim.minProt, lim.maxProt, 'PROT') +
     ' &nbsp;|&nbsp; ' + ck(tot.lact, lim.minLact, lim.maxLact, 'LACT') +
     ' &nbsp;|&nbsp; OS: <strong>' + f2(tot.os) + '</strong>' +
-    ' &nbsp;|&nbsp; <span style="color:#93c5fd;font-weight:800">ST: <strong>' + f2(tot.st) + '</strong></span>' +
+    ' &nbsp;|&nbsp; <span style="color:#A6D6C6;font-weight:800">ST: <strong>' + f2(tot.st) + '</strong></span>' +
     '</div>' +
     '<div style="padding:2px 0;border-top:1px solid rgba(255,255,255,0.2);margin-top:2px">' +
     ' &nbsp; Peso batch: <strong>' + pesoTotalBatch + 'g</strong>' +
@@ -1857,64 +1871,64 @@ function imprimirFormula(fid) {
     var p   = fi.porcentaje / sumaPesosI;
     var ing = fi.ing;
     var peso = fi.porcentaje * pesoG / 100;
-    var bg  = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
+    var bg  = idx % 2 === 0 ? '#ffffff' : '#F9F6F1';
     return '<tr style="background:'+bg+'">'
-      + '<td style="padding:6px 10px;border:1px solid #e2e8f0;font-weight:500">'+ing.nombre+'</td>'
-      + '<td style="padding:6px 8px;text-align:right;border:1px solid #e2e8f0">'+f2(fi.porcentaje)+'</td>'
-      + '<td style="padding:6px 8px;text-align:right;border:1px solid #e2e8f0;font-weight:800;color:#1a2744;font-size:14px">'+f1(peso)+'g</td>'
-      + '<td style="padding:6px 8px;text-align:right;border:1px solid #e2e8f0">'+f2(ing.azucares*p)+'</td>'
-      + '<td style="padding:6px 8px;text-align:right;border:1px solid #e2e8f0">'+f2(ing.mg*p)+'</td>'
-      + '<td style="padding:6px 8px;text-align:right;border:1px solid #e2e8f0">'+f2(ing.og*p)+'</td>'
-      + '<td style="padding:6px 8px;text-align:right;border:1px solid #e2e8f0;background:#eef2ff;font-weight:700">'+f2((ing.mg+ing.og)*p)+'</td>'
-      + '<td style="padding:6px 8px;text-align:right;border:1px solid #e2e8f0">'+f2(ing.esml*p)+'</td>'
-      + '<td style="padding:6px 8px;text-align:right;border:1px solid #e2e8f0">'+f2(ing.proteinas*p)+'</td>'
-      + '<td style="padding:6px 8px;text-align:right;border:1px solid #e2e8f0">'+f2(ing.lactosa*p)+'</td>'
-      + '<td style="padding:6px 8px;text-align:right;border:1px solid #e2e8f0">'+f2(ing.os*p)+'</td>'
-      + '<td style="padding:6px 8px;text-align:right;border:1px solid #e2e8f0">'+f2((ing.azucares+ing.mg+ing.og+ing.esml+ing.os)*p)+'</td>'
+      + '<td style="padding:6px 10px;border:1px solid #E3E0D8;font-weight:500">'+ing.nombre+'</td>'
+      + '<td style="padding:6px 8px;text-align:right;border:1px solid #E3E0D8">'+f2(fi.porcentaje)+'</td>'
+      + '<td style="padding:6px 8px;text-align:right;border:1px solid #E3E0D8;font-weight:800;color:#21403C;font-size:14px">'+f1(peso)+'g</td>'
+      + '<td style="padding:6px 8px;text-align:right;border:1px solid #E3E0D8">'+f2(ing.azucares*p)+'</td>'
+      + '<td style="padding:6px 8px;text-align:right;border:1px solid #E3E0D8">'+f2(ing.mg*p)+'</td>'
+      + '<td style="padding:6px 8px;text-align:right;border:1px solid #E3E0D8">'+f2(ing.og*p)+'</td>'
+      + '<td style="padding:6px 8px;text-align:right;border:1px solid #E3E0D8;background:#F0F7F3;font-weight:700">'+f2((ing.mg+ing.og)*p)+'</td>'
+      + '<td style="padding:6px 8px;text-align:right;border:1px solid #E3E0D8">'+f2(ing.esml*p)+'</td>'
+      + '<td style="padding:6px 8px;text-align:right;border:1px solid #E3E0D8">'+f2(ing.proteinas*p)+'</td>'
+      + '<td style="padding:6px 8px;text-align:right;border:1px solid #E3E0D8">'+f2(ing.lactosa*p)+'</td>'
+      + '<td style="padding:6px 8px;text-align:right;border:1px solid #E3E0D8">'+f2(ing.os*p)+'</td>'
+      + '<td style="padding:6px 8px;text-align:right;border:1px solid #E3E0D8">'+f2((ing.azucares+ing.mg+ing.og+ing.esml+ing.os)*p)+'</td>'
       + '</tr>';
   }).join('');
 
   var equilibrios = [
-    ['Azucares', f2(tot.az), '#1a2744'],
-    ['M.G. Total (MG+OG)', f2(tot.mg+tot.og), '#1a2744'],
-    ['SLNG', f2(tot.esml), '#1a2744'],
-    ['S.Totales', f2(tot.st), '#1a2744'],
+    ['Azucares', f2(tot.az), '#21403C'],
+    ['M.G. Total (MG+OG)', f2(tot.mg+tot.og), '#21403C'],
+    ['SLNG', f2(tot.esml), '#21403C'],
+    ['S.Totales', f2(tot.st), '#21403C'],
     ['POD', f2(tot.pod), '#b45309'],
     ['PAC', f2(tot.pac), '#dc2626'],
-    ['Proteinas', f2(tot.prot), '#4b5563'],
-    ['Lactosa', f2(tot.lact), '#4b5563'],
+    ['Proteinas', f2(tot.prot), '#55524A'],
+    ['Lactosa', f2(tot.lact), '#55524A'],
   ].map(function(x){
-    return '<div style="border:1px solid #e2e8f0;border-radius:6px;padding:10px 14px;border-left:4px solid '+x[2]+'">'
-      +'<div style="font-size:9px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">'+x[0]+'</div>'
+    return '<div style="border:1px solid #E3E0D8;border-radius:6px;padding:10px 14px;border-left:4px solid '+x[2]+'">'
+      +'<div style="font-size:9px;color:#6E6A61;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">'+x[0]+'</div>'
       +'<div style="font-size:22px;font-weight:800;color:'+x[2]+'">'+x[1]+'</div></div>';
   }).join('');
 
   var doc = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+f.nombre+'</title>'
     +'<style>'
-    +'body{font-family:Arial,sans-serif;margin:0;padding:0;color:#1a2744;font-size:13px}'
+    +'body{font-family:Arial,sans-serif;margin:0;padding:0;color:#21403C;font-size:13px}'
     +'table{border-collapse:collapse;width:100%}'
-    +'th{background:#1a2744;color:white;padding:7px 8px;font-size:11px;border:1px solid #0f1f3d}'
-    +'th.peso-col{background:#0f2a5a;font-size:12px}'
+    +'th{background:#21403C;color:white;padding:7px 8px;font-size:11px;border:1px solid #2A4A44}'
+    +'th.peso-col{background:#356B60;font-size:12px}'
     +'@media print{.no-print{display:none!important}}'
     +'</style></head><body>'
 
     // Toolbar
-    +'<div class="no-print" style="padding:10px 16px;background:#f1f5f9;border-bottom:2px solid #e2e8f0;display:flex;align-items:center;gap:8px">'
-    +'<button onclick="window.print()" style="background:#1a2744;color:white;border:none;padding:8px 20px;border-radius:5px;cursor:pointer;font-size:13px;font-weight:600">&#128438; Imprimir / Guardar PDF</button>'
-    +'<button onclick="window.close()" style="background:#6b7280;color:white;border:none;padding:8px 16px;border-radius:5px;cursor:pointer;font-size:13px">&#x2716; Cerrar</button>'
+    +'<div class="no-print" style="padding:10px 16px;background:#F2EFE9;border-bottom:2px solid #E3E0D8;display:flex;align-items:center;gap:8px">'
+    +'<button onclick="window.print()" style="background:#21403C;color:white;border:none;padding:8px 20px;border-radius:5px;cursor:pointer;font-size:13px;font-weight:600">&#4E9184; Imprimir / Guardar PDF</button>'
+    +'<button onclick="window.close()" style="background:#6E6A61;color:white;border:none;padding:8px 16px;border-radius:5px;cursor:pointer;font-size:13px">&#x2716; Cerrar</button>'
     +'</div>'
 
     +'<div style="padding:20px 24px;max-width:1050px;margin:0 auto">'
 
     // Cabecera
-    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;padding-bottom:12px;border-bottom:3px solid #1a2744">'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;padding-bottom:12px;border-bottom:3px solid #21403C">'
     +'<div>'
-    +'<div style="font-size:10px;font-weight:700;color:#6b7280;letter-spacing:2px;text-transform:uppercase;margin-bottom:3px">HELADOS ARTESANOS</div>'
-    +'<h1 style="margin:0;font-size:22px;color:#1a2744;font-weight:800">'+f.nombre.toUpperCase()+'</h1>'
-    +(f.descripcion ? '<p style="margin:4px 0 0;color:#6b7280;font-size:12px">'+f.descripcion+'</p>' : '')
+    +'<div style="font-size:10px;font-weight:700;color:#6E6A61;letter-spacing:2px;text-transform:uppercase;margin-bottom:3px">HELADOS ARTESANOS</div>'
+    +'<h1 style="margin:0;font-size:22px;color:#21403C;font-weight:800">'+f.nombre.toUpperCase()+'</h1>'
+    +(f.descripcion ? '<p style="margin:4px 0 0;color:#6E6A61;font-size:12px">'+f.descripcion+'</p>' : '')
     +'</div>'
-    +'<div style="text-align:right;font-size:11px;color:#6b7280;line-height:2">'
-    +'<strong style="font-size:14px;color:#1a2744">'+empresa+'</strong><br>'
+    +'<div style="text-align:right;font-size:11px;color:#6E6A61;line-height:2">'
+    +'<strong style="font-size:14px;color:#21403C">'+empresa+'</strong><br>'
     +'Peso: <strong>'+f1(pesoG)+'g ('+pesoKg+' kg)</strong><br>'
     +hoy
     +'</div>'
@@ -1923,9 +1937,9 @@ function imprimirFormula(fid) {
     // Fechas / Lote
     +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">'
     +['Fecha Pasteurización','Fecha Mantecación','Lote','Fecha Caducidad'].map(function(label){
-      return '<div style="border:1px solid #d1d5db;border-radius:6px;padding:8px 12px">'
-        +'<div style="font-size:9px;color:#9ca3af;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">'+label+'</div>'
-        +'<div style="border-bottom:1px dashed #d1d5db;min-height:24px;margin-top:2px"></div>'
+      return '<div style="border:1px solid #D6D2CA;border-radius:6px;padding:8px 12px">'
+        +'<div style="font-size:9px;color:#A39D93;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">'+label+'</div>'
+        +'<div style="border-bottom:1px dashed #D6D2CA;min-height:24px;margin-top:2px"></div>'
         +'</div>';
     }).join('')
     +'</div>'
@@ -1939,7 +1953,7 @@ function imprimirFormula(fid) {
     +'<th style="text-align:right;width:48px">AZ</th>'
     +'<th style="text-align:right;width:44px">MG</th>'
     +'<th style="text-align:right;width:44px">OG</th>'
-    +'<th style="text-align:right;width:48px;background:#162f66">GT</th>'
+    +'<th style="text-align:right;width:48px;background:#356B60">GT</th>'
     +'<th style="text-align:right;width:50px">SLNG</th>'
     +'<th style="text-align:right;width:44px">PROT</th>'
     +'<th style="text-align:right;width:50px">LACT</th>'
@@ -1947,19 +1961,19 @@ function imprimirFormula(fid) {
     +'<th style="text-align:right;width:48px">ST</th>'
     +'</tr></thead>'
     +'<tbody>'+rows+'</tbody>'
-    +'<tfoot><tr style="background:#1a2744;color:white;font-weight:700">'
-    +'<td style="padding:7px 10px;border:1px solid #0f1f3d">TOTALES</td>'
-    +'<td style="padding:7px 8px;text-align:right;border:1px solid #0f1f3d">100,00</td>'
-    +'<td style="padding:7px 8px;text-align:right;border:1px solid #0f2a5a;font-size:14px">'+f1(pesoG)+'g</td>'
-    +'<td style="padding:7px 8px;text-align:right;border:1px solid #0f1f3d">'+f2(tot.az)+'</td>'
-    +'<td style="padding:7px 8px;text-align:right;border:1px solid #0f1f3d">'+f2(tot.mg)+'</td>'
-    +'<td style="padding:7px 8px;text-align:right;border:1px solid #0f1f3d">'+f2(tot.og)+'</td>'
-    +'<td style="padding:7px 8px;text-align:right;border:1px solid #0f1f3d">'+f2(tot.mg+tot.og)+'</td>'
-    +'<td style="padding:7px 8px;text-align:right;border:1px solid #0f1f3d">'+f2(tot.esml)+'</td>'
-    +'<td style="padding:7px 8px;text-align:right;border:1px solid #0f1f3d">'+f2(tot.prot)+'</td>'
-    +'<td style="padding:7px 8px;text-align:right;border:1px solid #0f1f3d">'+f2(tot.lact)+'</td>'
-    +'<td style="padding:7px 8px;text-align:right;border:1px solid #0f1f3d">'+f2(tot.os)+'</td>'
-    +'<td style="padding:7px 8px;text-align:right;border:1px solid #0f1f3d">'+f2(tot.st)+'</td>'
+    +'<tfoot><tr style="background:#21403C;color:white;font-weight:700">'
+    +'<td style="padding:7px 10px;border:1px solid #2A4A44">TOTALES</td>'
+    +'<td style="padding:7px 8px;text-align:right;border:1px solid #2A4A44">100,00</td>'
+    +'<td style="padding:7px 8px;text-align:right;border:1px solid #356B60;font-size:14px">'+f1(pesoG)+'g</td>'
+    +'<td style="padding:7px 8px;text-align:right;border:1px solid #2A4A44">'+f2(tot.az)+'</td>'
+    +'<td style="padding:7px 8px;text-align:right;border:1px solid #2A4A44">'+f2(tot.mg)+'</td>'
+    +'<td style="padding:7px 8px;text-align:right;border:1px solid #2A4A44">'+f2(tot.og)+'</td>'
+    +'<td style="padding:7px 8px;text-align:right;border:1px solid #2A4A44">'+f2(tot.mg+tot.og)+'</td>'
+    +'<td style="padding:7px 8px;text-align:right;border:1px solid #2A4A44">'+f2(tot.esml)+'</td>'
+    +'<td style="padding:7px 8px;text-align:right;border:1px solid #2A4A44">'+f2(tot.prot)+'</td>'
+    +'<td style="padding:7px 8px;text-align:right;border:1px solid #2A4A44">'+f2(tot.lact)+'</td>'
+    +'<td style="padding:7px 8px;text-align:right;border:1px solid #2A4A44">'+f2(tot.os)+'</td>'
+    +'<td style="padding:7px 8px;text-align:right;border:1px solid #2A4A44">'+f2(tot.st)+'</td>'
     +'</tr></tfoot>'
     +'</table>'
 
@@ -1967,12 +1981,12 @@ function imprimirFormula(fid) {
     +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px">'+equilibrios+'</div>'
 
     // Observaciones
-    +(f.observaciones ? '<div style="border:1px solid #e2e8f0;border-radius:6px;padding:12px 16px;margin-bottom:14px">'
-      +'<div style="font-size:10px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Observaciones</div>'
+    +(f.observaciones ? '<div style="border:1px solid #E3E0D8;border-radius:6px;padding:12px 16px;margin-bottom:14px">'
+      +'<div style="font-size:10px;color:#6E6A61;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Observaciones</div>'
       +'<div style="font-size:13px">'+f.observaciones+'</div></div>' : '')
 
     // Pie
-    +'<div style="font-size:10px;color:#9ca3af;border-top:1px solid #e2e8f0;padding-top:8px;display:flex;justify-content:space-between">'
+    +'<div style="font-size:10px;color:#A39D93;border-top:1px solid #E3E0D8;padding-top:8px;display:flex;justify-content:space-between">'
     +'<span>Generado por Helatek I+D+I &mdash; Software de Formulaci&oacute;n de Helados</span>'
     +'<span>Gelat Mix v1.0</span>'
     +'</div>'

@@ -196,12 +196,19 @@
   .drag-handle {
     cursor: grab;
     color: #9B968C;
-    font-size: 16px;
-    padding: 0 6px;
+    font-size: 20px;
+    padding: 8px 10px;
     user-select: none;
     text-align: center;
   }
   .drag-handle:hover { color: var(--azul); }
+  /* Botón eliminar ingrediente — objetivo táctil más grande */
+  .btn-del-ing { background: var(--rojo); color: white; border: none; border-radius: 6px; cursor: pointer; padding: 7px 12px; font-size: 14px; line-height: 1; }
+  .btn-del-ing:hover { background: #b91c1c; }
+  @media (pointer: coarse) {
+    .drag-handle { font-size: 24px; padding: 12px 14px; }
+    .btn-del-ing { padding: 11px 16px; font-size: 16px; }
+  }
   .ef-row-dragging { opacity: 0.35; background: var(--celeste) !important; }
   .ef-row-over { border-top: 2px solid var(--azul2) !important; }
 
@@ -284,7 +291,7 @@
     <kbd>Alt+F</kbd> Fórmulas &nbsp; <kbd>Alt+I</kbd> Ingredientes<br>
     <kbd>Alt+N</kbd> Nueva fórmula &nbsp; <kbd>Esc</kbd> Cerrar
   </div>
-  <div class="sidebar-bottom">Helatek I+D+I v1.3.2 · DEMO</div>
+  <div class="sidebar-bottom">Helatek I+D+I v1.4 · DEMO</div>
 </div>
 
 <!-- MAIN -->
@@ -1089,13 +1096,38 @@ function eliminarIngredienteSelec() {
 // ============================================================
 // FORMULAS
 // ============================================================
+// Cálculo rápido de PAC y coste/kg para la lista de fórmulas
+function resumenRapido(f) {
+  const ings = (f.ingredientes||[]).map(fi => {
+    const ing = ingredientes.find(i=>i.id===fi.ing_id);
+    return ing ? {...fi, ing} : null;
+  }).filter(Boolean);
+  if (!ings.length) return null;
+  const totalPct = ings.reduce((s,fi)=>s+(fi.porcentaje||0),0) || 100;
+  let pacRaw=0, st=0, costeKg=0;
+  ings.forEach(fi=>{
+    const p=fi.porcentaje/totalPct;
+    const alc=fi.ing.alcohol*p/100;
+    pacRaw += getPacEff(fi.ing)*(fi.ing.azucares*p/100) + (-0.64)*(fi.ing.lactosa*p/100) + K_ALC*alc;
+    st += (fi.ing.azucares+fi.ing.mg+fi.ing.og+fi.ing.esml+fi.ing.os)*p;
+    if (fi.ing.precio>0) costeKg += fi.ing.precio*p;
+  });
+  const agua=(100-st)>0?(100-st)/100:1;
+  return { pac: pacRaw*100*agua, coste: costeKg };
+}
+
 function renderFormulas() {
   const busq = document.getElementById('form-buscar').value.toLowerCase();
   const lista = formulas.filter(f => !busq || f.nombre.toLowerCase().includes(busq))
     .sort((a,b)=>a.nombre.localeCompare(b.nombre));
-  document.getElementById('lista-formulas').innerHTML = lista.map(f =>
-    `<li id="fl-${f.id}" class="${formSelId===f.id?'sel':''}" onclick="selFormula(${f.id})">${f.nombre}</li>`
-  ).join('') || '<li style="color:var(--gris3);padding:16px">No hay fórmulas</li>';
+  const mon = cfg.moneda || '€';
+  document.getElementById('lista-formulas').innerHTML = lista.map(f => {
+    const r = resumenRapido(f);
+    const sub = r
+      ? `<div style="font-size:11px;color:#8AA69E;margin-top:2px">PAC ${f2(r.pac)}${r.coste>0?`  ·  ${f2(r.coste)} ${mon}/kg`:''}</div>`
+      : '';
+    return `<li id="fl-${f.id}" class="${formSelId===f.id?'sel':''}" onclick="selFormula(${f.id})" style="line-height:1.3">${f.nombre}${sub}</li>`;
+  }).join('') || '<li style="color:var(--gris3);padding:16px">No hay fórmulas</li>';
   if (formSelId) renderDetalleFormula(formSelId);
 }
 
@@ -1171,6 +1203,58 @@ function panelEscandallo(costeKg, sinPrecio, conPrecio) {
         </div>
       </div>
       ${aviso}
+    </div>`;
+}
+
+// ── FRANJA HERO: PAC / POD / estado destacados arriba del detalle ──
+function heroResultado(tot, lim, costeKg, sinPrecio) {
+  const mon = cfg.moneda || '€';
+  const tVit = (cfg.tempVitrina!=null ? cfg.tempVitrina : -13);
+  const idealMin = Math.min(lim.minPAC, lim.maxPAC), idealMax = Math.max(lim.minPAC, lim.maxPAC);
+  const centro = (idealMin+idealMax)/2;
+  const tempServ = tVit + (tot.pac - centro)*0.7;
+  // estado textura
+  let estado, colEstado, emoji;
+  if (tot.pac > idealMax+0.5)      { estado='Tiende a duro';   colEstado='#2563a8'; emoji='🧊'; }
+  else if (tot.pac < idealMin-0.5) { estado='Tiende a blando'; colEstado='#dc2626'; emoji='💧'; }
+  else                             { estado='Textura ideal';   colEstado='#16a34a'; emoji='🍦'; }
+  // nº de parámetros fuera de rango
+  const checks = [
+    [tot.az, lim.minAz, lim.maxAz], [tot.mg+tot.og, lim.minMg, lim.maxMg],
+    [tot.esml, lim.minEsml, lim.maxEsml], [tot.az+tot.mg+tot.og+tot.esml+tot.os, lim.minST, lim.maxST],
+    [tot.pod, lim.minPOD, lim.maxPOD], [tot.pac, lim.minPAC, lim.maxPAC]
+  ];
+  const fuera = checks.filter(([v,mn,mx]) => v<mn || v>mx).length;
+  const pacOk = tot.pac>=idealMin && tot.pac<=idealMax;
+  const podOk = tot.pod>=lim.minPOD && tot.pod<=lim.maxPOD;
+  const badge = fuera===0
+    ? `<span style="background:#EAF6EF;color:#16a34a;font-weight:800;font-size:13px;padding:6px 14px;border-radius:999px">✓ Todo en rango</span>`
+    : `<span style="background:#FCEBEA;color:#dc2626;font-weight:800;font-size:13px;padding:6px 14px;border-radius:999px">⚠️ ${fuera} parámetro${fuera>1?'s':''} fuera de rango</span>`;
+  return `
+    <div style="margin:10px 16px 0;background:#21403C;border-radius:14px;padding:16px 20px;color:#fff;box-shadow:0 3px 12px rgba(33,64,60,0.18)">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+        <div style="display:flex;gap:32px;flex-wrap:wrap">
+          <div>
+            <div style="font-size:11px;letter-spacing:1px;opacity:.75;text-transform:uppercase">PAC</div>
+            <div style="font-size:34px;font-weight:800;line-height:1;color:${pacOk?'#8FE0B6':'#FFB4A8'}">${f2(tot.pac)}</div>
+          </div>
+          <div>
+            <div style="font-size:11px;letter-spacing:1px;opacity:.75;text-transform:uppercase">POD</div>
+            <div style="font-size:34px;font-weight:800;line-height:1;color:${podOk?'#8FE0B6':'#FFCF8A'}">${f2(tot.pod)}</div>
+          </div>
+          <div style="border-left:1px solid rgba(255,255,255,.2);padding-left:32px">
+            <div style="font-size:11px;letter-spacing:1px;opacity:.75;text-transform:uppercase">Servicio</div>
+            <div style="font-size:22px;font-weight:700;line-height:1.3">${emoji} ${f1(tempServ)}°C</div>
+            <div style="font-size:12px;color:${colEstado==='#16a34a'?'#8FE0B6':'#FFCF8A'};font-weight:600">${estado}</div>
+          </div>
+          <div style="border-left:1px solid rgba(255,255,255,.2);padding-left:32px">
+            <div style="font-size:11px;letter-spacing:1px;opacity:.75;text-transform:uppercase">Coste / kg</div>
+            <div style="font-size:22px;font-weight:700;line-height:1.3">${f2(costeKg)} ${mon}</div>
+            <div style="font-size:12px;opacity:.75">PVP ${f2(costeKg*(cfg.multiplicador||1.8))} ${mon}${sinPrecio>0?' *':''}</div>
+          </div>
+        </div>
+        <div>${badge}</div>
+      </div>
     </div>`;
 }
 
@@ -1285,6 +1369,7 @@ function renderDetalleFormula(id) {
           <span id="cant-label-${f.id}" style="font-size:12px;color:#16a34a;font-weight:600"></span>
         </div>
       </div>
+      ${heroResultado(tot, lim, costeKg, ingSinPrecio)}
       <div style="padding:10px 16px 4px;font-size:13px;font-weight:bold;color:var(--azul)">Ingredientes:</div>
       <div style="overflow-x:auto;padding:0 16px">
         <table style="width:100%;font-size:12px;border-collapse:collapse;table-layout:fixed">
@@ -1482,7 +1567,7 @@ function renderEfIngredientes() {
       <td style="text-align:right">${f2(st_i)}</td>
       <td style="text-align:right">${f2((()=>{const am=ing.alcohol*p/100,azm=ing.azucares*p/100;return (getPacEff(ing)*azm+(-0.64)*(ing.lactosa*p/100)+(K_ALC)*am)*100;})(  ))}</td>
       <td style="text-align:right">${f2((ing.azucares>0)?ing.pod*p:0)}</td>
-      <td><button onclick="confirmarEliminarIng(${idx})" style="background:var(--rojo);color:white;border:none;border-radius:3px;cursor:pointer;padding:2px 6px;font-size:11px" title="Eliminar ingrediente">✖</button></td>
+      <td style="text-align:center"><button class="btn-del-ing" onclick="confirmarEliminarIng(${idx})" title="Eliminar ingrediente" aria-label="Eliminar ingrediente">✖</button></td>
     </tr>`;
   }).join('');
   document.getElementById('ef-ing-tbody').innerHTML = rows || '<tr><td colspan="9" style="text-align:center;color:var(--gris3);padding:10px">Sin ingredientes</td></tr>';
@@ -1493,27 +1578,26 @@ function renderEfIngredientes() {
   const pesoTotalBatch = f1(tot.pct * pesoKgEf * 1000 / 100);
   const agua_frac_ef = (100-tot.st) > 0 ? (100-tot.st)/100 : 1;
   tot.pac = tot.pac * 100 * agua_frac_ef;
+  const tServ = f1((cfg.tempVitrina!=null?cfg.tempVitrina:-13)+(tot.pac-((lim.minPAC+lim.maxPAC)/2))*0.7);
+  const mon = cfg.moneda||'€';
   document.getElementById('ef-totales').innerHTML =
-    '<div style="padding:2px 0">' +
-    (ok?'✅':'⚠️️ RECETA NO VÁLIDA') + ' <strong>Total: ' + f2(tot.pct) + '%</strong>' + (ok?'':' <span style="color:#fca5a5;font-size:11px">(debe ser 100% para calcular PAC/POD)</span>') +
-    ' &nbsp;|&nbsp; ' + ck(tot.az,  lim.minAz,   lim.maxAz,   'AZ') +
-    ' &nbsp;|&nbsp; MG: <strong>' + f2(tot.mg) + '</strong>' +
-    ' &nbsp;|&nbsp; OG: <strong>' + f2(tot.og) + '</strong>' +
-    ' &nbsp;|&nbsp; ' + ck(tot.mg+tot.og, lim.minMg, lim.maxMg, 'GT', '#A6D6C6') +
-    ' &nbsp;|&nbsp; ' + ck(tot.esml, lim.minEsml, lim.maxEsml, 'SLNG', '#A6D6C6') +
-    ' &nbsp;|&nbsp; ' + ck(tot.prot, lim.minProt, lim.maxProt, 'PROT') +
-    ' &nbsp;|&nbsp; ' + ck(tot.lact, lim.minLact, lim.maxLact, 'LACT') +
-    ' &nbsp;|&nbsp; OS: <strong>' + f2(tot.os) + '</strong>' +
-    ' &nbsp;|&nbsp; <span style="color:#A6D6C6;font-weight:800">ST: <strong>' + f2(tot.st) + '</strong></span>' +
+    // ── LÍNEA 1: COMPOSICIÓN (secundaria, atenuada) ──
+    '<div style="padding:1px 0;font-size:11px;opacity:.82">' +
+    (ok?'✅':'⚠️ RECETA NO VÁLIDA') + ' <strong>Total ' + f2(tot.pct) + '%</strong>' + (ok?'':' <span style="color:#fca5a5">(debe sumar 100%)</span>') +
+    ' &nbsp;·&nbsp; ' + ck(tot.az,lim.minAz,lim.maxAz,'AZ') +
+    ' &nbsp;·&nbsp; ' + ck(tot.mg+tot.og,lim.minMg,lim.maxMg,'GT','#A6D6C6') +
+    ' &nbsp;·&nbsp; ' + ck(tot.esml,lim.minEsml,lim.maxEsml,'SLNG','#A6D6C6') +
+    ' &nbsp;·&nbsp; ' + ck(tot.prot,lim.minProt,lim.maxProt,'PROT') +
+    ' &nbsp;·&nbsp; ' + ck(tot.lact,lim.minLact,lim.maxLact,'LACT') +
+    ' &nbsp;·&nbsp; <span style="color:#A6D6C6;font-weight:700">ST ' + f2(tot.st) + '</span>' +
+    ' &nbsp;·&nbsp; Batch ' + pesoTotalBatch + 'g (' + pesoKgEf + 'kg)' +
     '</div>' +
-    '<div style="padding:2px 0;border-top:1px solid rgba(255,255,255,0.2);margin-top:2px">' +
-    ' &nbsp; Peso batch: <strong>' + pesoTotalBatch + 'g</strong>' +
-    ' &nbsp; (' + pesoKgEf + ' kg)' +
-    '</div>' +
-    '<div style="padding:2px 0;border-top:1px solid rgba(255,255,255,0.2);margin-top:2px">' +
-    '<span style="font-size:15px;font-weight:800"> ' + ck(tot.pac, lim.minPAC, lim.maxPAC, 'PAC') +
-    '&nbsp;&nbsp;&nbsp;&nbsp;' + ck(tot.pod, lim.minPOD, lim.maxPOD, 'POD') + '</span>' +
-    (ok ? ('&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size:12px">🌡️ Servicio: <strong>'+f1((cfg.tempVitrina!=null?cfg.tempVitrina:-13)+(tot.pac-((lim.minPAC+lim.maxPAC)/2))*0.7)+'°C</strong>'+'&nbsp;&nbsp;💰 <strong>'+f2(costeKgEf)+(cfg.moneda||'€')+'/kg</strong>'+' → PVP <strong>'+f2(costeKgEf*(cfg.multiplicador||1.8))+(cfg.moneda||'€')+'</strong>'+(sinPrecioEf>0?' <span style="color:#fca5a5">('+sinPrecioEf+' sin precio)</span>':'')+'</span>') : '') +
+    // ── LÍNEA 2: DECISIÓN (destacada) ──
+    '<div style="padding:5px 0 1px;border-top:1px solid rgba(255,255,255,0.22);margin-top:3px;display:flex;align-items:baseline;gap:22px;flex-wrap:wrap">' +
+    '<span style="font-size:18px;font-weight:800">' + ck(tot.pac,lim.minPAC,lim.maxPAC,'PAC') + '</span>' +
+    '<span style="font-size:18px;font-weight:800">' + ck(tot.pod,lim.minPOD,lim.maxPOD,'POD') + '</span>' +
+    (ok ? ('<span style="font-size:13px">🌡️ <strong>'+tServ+'°C</strong></span>' +
+           '<span style="font-size:13px">💰 <strong>'+f2(costeKgEf)+' '+mon+'/kg</strong> → PVP <strong>'+f2(costeKgEf*(cfg.multiplicador||1.8))+' '+mon+'</strong>'+(sinPrecioEf>0?' <span style="color:#fca5a5;font-size:11px">('+sinPrecioEf+' sin precio)</span>':'')+'</span>') : '') +
     '</div>';
 }
 

@@ -284,7 +284,7 @@
     <kbd>Alt+F</kbd> Fórmulas &nbsp; <kbd>Alt+I</kbd> Ingredientes<br>
     <kbd>Alt+N</kbd> Nueva fórmula &nbsp; <kbd>Esc</kbd> Cerrar
   </div>
-  <div class="sidebar-bottom">Helatek I+D+I v1.3.1 · DEMO</div>
+  <div class="sidebar-bottom">Helatek I+D+I v1.3.2 · DEMO</div>
 </div>
 
 <!-- MAIN -->
@@ -1195,7 +1195,7 @@ function renderDetalleFormula(id) {
     tot.lact += fi.ing.lactosa*p;
     tot.os   += fi.ing.os*p;
     const alc_m_det=fi.ing.alcohol*p/100; const pacEff_det=getPacEff(fi.ing); const az_m_det=fi.ing.azucares*p/100; tot.pac  += pacEff_det * az_m_det + (-0.64)*(fi.ing.lactosa*p/100) + (K_ALC)*alc_m_det;
-    tot.pod  += fi.ing.pod * (fi.ing.azucares*p/100) + 16.62*(fi.ing.lactosa*p/100);
+    tot.pod  += fi.ing.pod * ((fi.ing.azucares+fi.ing.lactosa)*p/100);
     tot.kcal += fi.ing.kcal*p;
     tot.pct  += fi.porcentaje;
   });
@@ -1463,7 +1463,7 @@ function renderEfIngredientes() {
     const st_i = (ing.azucares+ing.mg+ing.og+ing.esml+ing.os)*p;
     tot.az+=ing.azucares*p; tot.mg+=ing.mg*p; tot.og+=ing.og*p; tot.esml+=ing.esml*p;
     tot.prot+=ing.proteinas*p; tot.lact+=ing.lactosa*p; tot.os+=ing.os*p;
-    const alc_m_ef=ing.alcohol*p/100; const pacEff_ef=getPacEff(ing); const az_m_ef=ing.azucares*p/100; tot.pac+=pacEff_ef*az_m_ef+(-0.64)*(ing.lactosa*p/100)+(K_ALC)*alc_m_ef; tot.pod+=ing.pod*(ing.azucares*p/100)+16.62*(ing.lactosa*p/100); tot.pct+=fi.porcentaje;
+    const alc_m_ef=ing.alcohol*p/100; const pacEff_ef=getPacEff(ing); const az_m_ef=ing.azucares*p/100; tot.pac+=pacEff_ef*az_m_ef+(-0.64)*(ing.lactosa*p/100)+(K_ALC)*alc_m_ef; tot.pod+=ing.pod*((ing.azucares+ing.lactosa)*p/100); tot.pct+=fi.porcentaje;
     if(ing.precio>0) costeKgEf+=ing.precio*p; else if(fi.porcentaje>0) sinPrecioEf++;
     tot.st+=st_i;
     return `<tr class="ef-ing-row" draggable="true" data-idx="${idx}" style="background:${idx%2?'#FBFAF6':'white'}">
@@ -1948,7 +1948,7 @@ function imprimirFormula(fid) {
     tot.lact += fi.ing.lactosa*p;
     tot.os   += fi.ing.os*p;
     var alc_m_impr=fi.ing.alcohol*p/100; var pacEff_impr=getPacEff(fi.ing); var az_m_impr=fi.ing.azucares*p/100; tot.pac  += pacEff_impr*az_m_impr+(-0.64)*(fi.ing.lactosa*p/100)+(K_ALC)*alc_m_impr;
-    tot.pod  += fi.ing.pod*(fi.ing.azucares*p/100)+16.62*(fi.ing.lactosa*p/100);
+    tot.pod  += fi.ing.pod*((fi.ing.azucares+fi.ing.lactosa)*p/100);
     tot.kcal += fi.ing.kcal*p;
     tot.pct  += fi.porcentaje;
     tot.st   += (fi.ing.azucares+fi.ing.mg+fi.ing.og+fi.ing.esml+fi.ing.os)*p;

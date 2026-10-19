@@ -180,6 +180,7 @@
     box-shadow: 0 0 0 2px rgba(37,99,168,0.2) !important;
   }
   #ef-ing-tbody td { padding: 6px 8px !important; }
+  #ef-ing-tbody tr.ef-tot-row td { background:#21403C !important; color:#fff; }
   /* eq-val colores */
   .eq-val.ok { color: var(--verde) !important; }
   .eq-val.bad { color: var(--rojo) !important; font-weight:900 !important; }
@@ -1581,7 +1582,7 @@ function renderEfIngredientes() {
   // ── Fila TOTALES (suma de cada columna, como en GelatMix) ──
   if (efIngredientes.length > 0) {
     const gtTot = tot.mg + tot.og;
-    const totRow = '<tr style="background:#21403C;color:#fff;font-weight:800;border-top:2px solid #4E9184">' +
+    const totRow = '<tr class="ef-tot-row" style="background:#21403C;color:#fff;font-weight:800;border-top:2px solid #4E9184">' +
       '<td></td>' +
       '<td style="font-size:12px;padding:6px 6px;letter-spacing:.6px">TOTALES</td>' +
       '<td style="text-align:right;padding:3px 4px">' + f2(tot.pct) + '</td>' +

@@ -181,6 +181,16 @@
   }
   #ef-ing-tbody td { padding: 6px 8px !important; }
   #ef-ing-tbody tr.ef-tot-row td { background:#21403C !important; color:#fff; }
+  .cmp-sel { min-width:190px; padding:7px 10px; border:1.5px solid #CFE0D9; border-radius:7px; font-size:13px; background:white; color:#21403C; font-weight:600; cursor:pointer; }
+  .cmp-sel:focus { outline:none; border-color:#3C7B6F; }
+  #cmp-tabla { width:100%; border-collapse:collapse; font-size:13px; }
+  #cmp-tabla th, #cmp-tabla td { padding:9px 12px; border-bottom:1px solid #ECE8E0; text-align:right; }
+  #cmp-tabla th:first-child, #cmp-tabla td:first-child { text-align:left; font-weight:600; color:#21403C; }
+  #cmp-tabla thead th { background:#21403C; color:#fff; text-align:center; position:sticky; top:0; }
+  #cmp-tabla tr.cmp-grp td { background:#F4F1EA; font-weight:800; color:#3C7B6F; font-size:11px; letter-spacing:.5px; text-transform:uppercase; }
+  .cmp-hi { background:#EEF3F1; font-weight:800; }
+  .cmp-lo { background:#F4F1EA; }
+  .cmp-out { color:#c0392b; font-weight:800; }
   /* eq-val colores */
   .eq-val.ok { color: var(--verde) !important; }
   .eq-val.bad { color: var(--rojo) !important; font-weight:900 !important; }
@@ -285,6 +295,7 @@
   <button class="nav-btn active" onclick="showPage('inicio')">🏠  Inicio</button>
   <button class="nav-btn" onclick="showPage('ingredientes')">🧪  Ingredientes</button>
   <button class="nav-btn" onclick="showPage('formulas')">📋  Fórmulas</button>
+  <button class="nav-btn" onclick="showPage('comparar')">⚖️  Comparar</button>
   <button class="nav-btn" onclick="showPage('familias')">👨‍👩‍👧  Familias</button>
   <button class="nav-btn" onclick="showPage('config')">⚙️  Configuración</button>
   <div class="sidebar-atajos">
@@ -292,7 +303,7 @@
     <kbd>Alt+F</kbd> Fórmulas &nbsp; <kbd>Alt+I</kbd> Ingredientes<br>
     <kbd>Alt+N</kbd> Nueva fórmula &nbsp; <kbd>Esc</kbd> Cerrar
   </div>
-  <div class="sidebar-bottom">Helatek I+D+I v1.4 · DEMO</div>
+  <div class="sidebar-bottom">Helatek I+D+I v1.6 · DEMO</div>
 </div>
 
 <!-- MAIN -->
@@ -363,8 +374,8 @@
       <button class="btn btn-green" onclick="abrirNuevaFormula()">➕ Nueva Fórmula</button>
       <input type="text" id="form-buscar" placeholder="🔍 Buscar..." oninput="renderFormulas()" style="width:200px">
       <div style="margin-left:auto;display:flex;gap:8px">
-        <button class="btn btn-blue" onclick="exportarFormulas()" title="Guardar fórmulas en archivo JSON externo">💾 Exportar</button>
-        <label class="btn btn-green" style="cursor:pointer" title="Cargar fórmulas desde JSON y actualizar con ingredientes actuales">
+        <button class="btn btn-blue" onclick="exportarFormulas()" title="Copia de seguridad: guarda fórmulas + configuración en un archivo JSON externo">💾 Exportar</button>
+        <label class="btn btn-green" style="cursor:pointer" title="Restaurar desde JSON: carga fórmulas y configuración, y reenlaza con los ingredientes actuales">
           📂 Importar
           <input type="file" accept=".json" style="display:none" onchange="importarFormulas(event)">
         </label>
@@ -384,6 +395,27 @@
         <div style="padding:40px;text-align:center;color:var(--gris3)">Selecciona una fórmula para ver su detalle</div>
       </div>
     </div>
+  </div>
+
+  <!-- COMPARAR -->
+  <div id="pg-comparar" class="page">
+    <div class="page-header"><h2>⚖️ Comparar Fórmulas</h2><span>Dos o tres recetas lado a lado, con los valores fuera de rango y las diferencias resaltadas</span><span class="demo-badge">DEMO</span></div>
+    <div class="toolbar" style="flex-wrap:wrap;gap:10px">
+      <div style="display:flex;align-items:center;gap:6px">
+        <span style="font-size:12px;font-weight:700;color:var(--azul)">A</span>
+        <select id="cmp-a" class="cmp-sel" onchange="compararRecetas()"></select>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span style="font-size:12px;font-weight:700;color:var(--azul)">B</span>
+        <select id="cmp-b" class="cmp-sel" onchange="compararRecetas()"></select>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span style="font-size:12px;font-weight:700;color:var(--azul)">C</span>
+        <select id="cmp-c" class="cmp-sel" onchange="compararRecetas()"></select>
+      </div>
+      <button class="btn btn-blue btn-sm" style="margin-left:auto" onclick="limpiarComparador()">🧹 Limpiar</button>
+    </div>
+    <div id="cmp-resultado" style="margin-top:10px"></div>
   </div>
 
   <!-- FAMILIAS -->
@@ -951,6 +983,7 @@ function showPage(id) {
   if (id==='inicio') renderInicio();
   if (id==='ingredientes') renderIngredientes();
   if (id==='formulas') renderFormulas();
+  if (id==='comparar') renderComparador();
   if (id==='familias') renderFamilias();
   if (id==='config') renderConfig();
 }
@@ -1115,6 +1148,119 @@ function resumenRapido(f) {
   });
   const agua=(100-st)>0?(100-st)/100:1;
   return { pac: pacRaw*100*agua, coste: costeKg };
+}
+
+// ── Cálculo COMPLETO de una fórmula (mismo modelo que el editor) ──
+function calcularTotales(f) {
+  const ings = (f.ingredientes||[]).map(fi => {
+    const ing = ingredientes.find(i=>i.id===fi.ing_id);
+    return ing ? {...fi, ing} : null;
+  }).filter(Boolean);
+  const t = {az:0,mg:0,og:0,gt:0,esml:0,prot:0,lact:0,os:0,st:0,pac:0,pod:0,coste:0,pvp:0,pct:0,sinPrecio:0,nIng:ings.length};
+  if (!ings.length) return t;
+  const sumaPesos = ings.reduce((s,fi)=>s+(fi.porcentaje||0),0) || 100;
+  ings.forEach(fi=>{
+    const p = fi.porcentaje/sumaPesos, ing = fi.ing;
+    t.az+=ing.azucares*p; t.mg+=ing.mg*p; t.og+=ing.og*p; t.esml+=ing.esml*p;
+    t.prot+=ing.proteinas*p; t.lact+=ing.lactosa*p; t.os+=ing.os*p;
+    t.st+=(ing.azucares+ing.mg+ing.og+ing.esml+ing.os)*p;
+    const alc=ing.alcohol*p/100;
+    t.pac+=getPacEff(ing)*(ing.azucares*p/100)+(-0.64)*(ing.lactosa*p/100)+K_ALC*alc;
+    t.pod+=ing.pod*((ing.azucares+ing.lactosa)*p/100);
+    if(ing.precio>0) t.coste+=ing.precio*p; else if(fi.porcentaje>0) t.sinPrecio++;
+    t.pct+=fi.porcentaje;
+  });
+  const agua=(100-t.st)>0?(100-t.st)/100:1;
+  t.pac = t.pac*100*agua;
+  t.gt = t.mg+t.og;
+  t.pvp = t.coste*(cfg.multiplicador||1.8);
+  return t;
+}
+
+// ── COMPARADOR DE RECETAS ──
+function renderComparador() {
+  const opts = formulas.slice().sort((a,b)=>a.nombre.localeCompare(b.nombre));
+  ['cmp-a','cmp-b','cmp-c'].forEach((id,i)=>{
+    const sel = document.getElementById(id); if(!sel) return;
+    const prev = sel.value;
+    sel.innerHTML = '<option value="">— elegir receta —</option>' +
+      opts.map(f=>`<option value="${f.id}">${f.nombre}</option>`).join('');
+    if (prev && opts.find(f=>String(f.id)===prev)) sel.value = prev;
+    else if (i===0 && formSelId && opts.find(f=>f.id===formSelId)) sel.value = String(formSelId);
+    else if (i===0 && opts[0]) sel.value = String(opts[0].id);
+    else if (i===1 && opts[1]) sel.value = String(opts[1].id);
+  });
+  compararRecetas();
+}
+
+function limpiarComparador() {
+  ['cmp-b','cmp-c'].forEach(id=>{ const s=document.getElementById(id); if(s) s.value=''; });
+  compararRecetas();
+}
+
+function compararRecetas() {
+  const mon = cfg.moneda || '€';
+  const lim = cfg.limites;
+  const sel = ['cmp-a','cmp-b','cmp-c']
+    .map(id=>document.getElementById(id))
+    .filter(Boolean).map(s=>s.value).filter(Boolean);
+  // Evitar duplicados manteniendo orden
+  const ids = [...new Set(sel)];
+  const recetas = ids.map(id=>formulas.find(f=>String(f.id)===String(id))).filter(Boolean);
+  const cont = document.getElementById('cmp-resultado');
+  if (recetas.length < 2) {
+    cont.innerHTML = '<div style="padding:34px;text-align:center;color:var(--gris3);background:white;border:1px dashed #CFE0D9;border-radius:12px">Selecciona al menos <strong>2 recetas</strong> para compararlas.</div>';
+    return;
+  }
+  const datos = recetas.map(f=>({f, t:calcularTotales(f)}));
+  const grupos = [
+    {grp:'Decisión', filas:[
+      {lab:'PAC', key:'pac', dec:2, min:lim.minPAC, max:lim.maxPAC},
+      {lab:'POD', key:'pod', dec:2, min:lim.minPOD, max:lim.maxPOD},
+    ]},
+    {grp:'Composición (%)', filas:[
+      {lab:'Azúcares (AZ)', key:'az', dec:2, min:lim.minAz, max:lim.maxAz},
+      {lab:'Grasa total (GT)', key:'gt', dec:2, min:lim.minMg, max:lim.maxMg},
+      {lab:'Sól. magros leche (SLNG)', key:'esml', dec:2, min:lim.minEsml, max:lim.maxEsml},
+      {lab:'Proteínas', key:'prot', dec:2, min:lim.minProt, max:lim.maxProt},
+      {lab:'Lactosa', key:'lact', dec:2, min:lim.minLact, max:lim.maxLact},
+      {lab:'Sólidos totales (ST)', key:'st', dec:2, min:lim.minST, max:lim.maxST},
+    ]},
+    {grp:'Coste', filas:[
+      {lab:'Coste '+mon+'/kg', key:'coste', dec:2},
+      {lab:'PVP '+mon+'/kg', key:'pvp', dec:2},
+    ]},
+    {grp:'Ficha', filas:[
+      {lab:'Nº ingredientes', key:'nIng', dec:0},
+      {lab:'Total %', key:'pct', dec:2},
+    ]},
+  ];
+  let html = '<div style="overflow-x:auto;background:white;border:1px solid #ECE8E0;border-radius:12px"><table id="cmp-tabla"><thead><tr><th>Parámetro</th>' +
+    datos.map((d,i)=>`<th>${'ABC'[i]} · ${d.f.nombre}</th>`).join('') + '</tr></thead><tbody>';
+  grupos.forEach(g=>{
+    html += `<tr class="cmp-grp"><td colspan="${datos.length+1}">${g.grp}</td></tr>`;
+    g.filas.forEach(fila=>{
+      const vals = datos.map(d=>d.t[fila.key]);
+      let mx=-Infinity, mn=Infinity;
+      vals.forEach(v=>{ if(v>mx)mx=v; if(v<mn)mn=v; });
+      const difieren = (mx-mn) > 1e-9;
+      html += `<tr><td>${fila.lab}</td>`;
+      vals.forEach(v=>{
+        const fuera = (fila.min!==undefined && v<fila.min) || (fila.max!==undefined && v>fila.max);
+        let cls = [];
+        if (difieren && Math.abs(v-mx)<1e-9) cls.push('cmp-hi');
+        else if (difieren && Math.abs(v-mn)<1e-9) cls.push('cmp-lo');
+        let marca = '';
+        if (difieren && fila.key!=='nIng') { if(Math.abs(v-mx)<1e-9) marca=' ▲'; else if(Math.abs(v-mn)<1e-9) marca=' ▼'; }
+        const txt = (fila.dec===0 ? v : f2(v)) + (fuera?' <span class="cmp-out">⚠️</span>':'') + marca;
+        html += `<td class="${cls.join(' ')}"${fuera?' style="color:#c0392b;font-weight:800"':''}>${txt}</td>`;
+      });
+      html += '</tr>';
+    });
+  });
+  html += '</tbody></table></div>';
+  html += '<div style="font-size:11px;color:var(--gris3);margin-top:8px;padding:0 4px">▲ valor más alto · ▼ más bajo (en cada fila) · <span style="color:#c0392b;font-weight:700">⚠️ fuera del rango configurado</span>. El rango lo defines en Configuración.</div>';
+  cont.innerHTML = html;
 }
 
 function renderFormulas() {
@@ -1866,9 +2012,10 @@ function exportarFormulas() {
   // observaciones y los ingredientes con su NOMBRE (no id) y porcentaje.
   // Así son independientes de los IDs y se actualizan al importar.
   const exportData = {
-    version: '1.0',
+    version: '1.1',
     fecha: new Date().toISOString().split('T')[0],
     app: 'Helatek I+D+I',
+    config: cfg,
     formulas: formulas.map(f => ({
       nombre: f.nombre,
       descripcion: f.descripcion || '',
@@ -1888,10 +2035,10 @@ function exportarFormulas() {
   const a = document.createElement('a');
   a.href = url;
   const fecha = new Date().toISOString().split('T')[0];
-  a.download = `Helatek_Formulas_${fecha}.json`;
+  a.download = `Helatek_Backup_${fecha}.json`;
   a.click();
   URL.revokeObjectURL(url);
-  alert('✅ ' + formulas.length + ' fórmulas exportadas correctamente.\n\nGuarda este archivo en un lugar seguro. Puedes importarlo en cualquier momento aunque borres el caché del navegador.');
+  alert('✅ Copia de seguridad creada.\n\n• ' + formulas.length + ' fórmulas\n• Configuración (límites PAC/POD, moneda, PVP, temperatura de vitrina)\n\nGuarda este archivo en un lugar seguro. Puedes importarlo en cualquier momento aunque borres el caché del navegador.');
 }
 
 function importarFormulas(event) {
@@ -1949,6 +2096,15 @@ function importarFormulas(event) {
           if (!existe) formulas.push(nf);
         });
       }
+      // Restaurar configuración si el backup la incluye (retrocompatible)
+      let configRestaurada = false;
+      if (data.config && typeof data.config === 'object') {
+        const limImp = data.config.limites || {};
+        cfg = Object.assign({}, cfg, data.config);
+        cfg.limites = Object.assign({}, cfg.limites, limImp);
+        saveConfig();
+        configRestaurada = true;
+      }
       let recortadas = 0;
       if (formulas.length > DEMO_MAX_FORMULAS) {
         recortadas = formulas.length - DEMO_MAX_FORMULAS;
@@ -1956,7 +2112,9 @@ function importarFormulas(event) {
       }
       saveData();
       renderFormulas();
+      if (typeof renderConfig === 'function' && document.getElementById('pg-config') && document.getElementById('pg-config').classList.contains('active')) renderConfig();
       let msg = `✅ Importación completada.`;
+      if (configRestaurada) msg += `\n\n⚙️ Configuración restaurada (límites, moneda, PVP, temperatura).`;
       if (recortadas > 0) msg += `\n\n🔒 Versión DEMO: solo se han conservado ${DEMO_MAX_FORMULAS} fórmulas (${recortadas} descartadas).`;
       if (noEncontradas.length > 0) {
         msg += '\n\n⚠️ ' + noEncontradas.length + ' ingrediente(s) no encontrado(s):\n' + noEncontradas.slice(0,5).join('\n');

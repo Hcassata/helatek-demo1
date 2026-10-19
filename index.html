@@ -1570,7 +1570,7 @@ function renderEfIngredientes() {
       <td style="text-align:center"><button class="btn-del-ing" onclick="confirmarEliminarIng(${idx})" title="Eliminar ingrediente" aria-label="Eliminar ingrediente">✖</button></td>
     </tr>`;
   }).join('');
-  document.getElementById('ef-ing-tbody').innerHTML = rows || '<tr><td colspan="9" style="text-align:center;color:var(--gris3);padding:10px">Sin ingredientes</td></tr>';
+  document.getElementById('ef-ing-tbody').innerHTML = rows || '<tr><td colspan="16" style="text-align:center;color:var(--gris3);padding:10px">Sin ingredientes</td></tr>';
   const pctNorm = sumaPesos > 0 ? 100 : 0;
   const ok = efIngredientes.length > 0;
   var btnNorm = document.getElementById('btn-normalizar');
@@ -1578,6 +1578,29 @@ function renderEfIngredientes() {
   const pesoTotalBatch = f1(tot.pct * pesoKgEf * 1000 / 100);
   const agua_frac_ef = (100-tot.st) > 0 ? (100-tot.st)/100 : 1;
   tot.pac = tot.pac * 100 * agua_frac_ef;
+  // ── Fila TOTALES (suma de cada columna, como en GelatMix) ──
+  if (efIngredientes.length > 0) {
+    const gtTot = tot.mg + tot.og;
+    const totRow = '<tr style="background:#21403C;color:#fff;font-weight:800;border-top:2px solid #4E9184">' +
+      '<td></td>' +
+      '<td style="font-size:12px;padding:6px 6px;letter-spacing:.6px">TOTALES</td>' +
+      '<td style="text-align:right;padding:3px 4px">' + f2(tot.pct) + '</td>' +
+      '<td style="text-align:right;color:#A6D6C6">100%</td>' +
+      '<td style="text-align:right">' + f2(tot.az) + '</td>' +
+      '<td style="text-align:right">' + f2(tot.mg) + '</td>' +
+      '<td style="text-align:right">' + f2(tot.og) + '</td>' +
+      '<td style="text-align:right;color:#A6D6C6">' + f2(gtTot) + '</td>' +
+      '<td style="text-align:right">' + f2(tot.esml) + '</td>' +
+      '<td style="text-align:right">' + f2(tot.prot) + '</td>' +
+      '<td style="text-align:right">' + f2(tot.lact) + '</td>' +
+      '<td style="text-align:right">' + f2(tot.os) + '</td>' +
+      '<td style="text-align:right;color:#A6D6C6">' + f2(tot.st) + '</td>' +
+      '<td style="text-align:right">' + f2(tot.pac) + '</td>' +
+      '<td style="text-align:right">' + f2(tot.pod) + '</td>' +
+      '<td></td>' +
+    '</tr>';
+    document.getElementById('ef-ing-tbody').insertAdjacentHTML('beforeend', totRow);
+  }
   const tServ = f1((cfg.tempVitrina!=null?cfg.tempVitrina:-13)+(tot.pac-((lim.minPAC+lim.maxPAC)/2))*0.7);
   const mon = cfg.moneda||'€';
   document.getElementById('ef-totales').innerHTML =

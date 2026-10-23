@@ -16,10 +16,10 @@
     --sidebar-active: #5CA394;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { display: flex; height: 100vh; overflow: hidden; background: var(--gris); font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; color: #21403C; }
+  body { display: flex; height: 100vh; height: 100dvh; overflow: hidden; background: var(--gris); font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; color: #21403C; }
 
   /* SIDEBAR */
-  #sidebar { width: 200px; min-width: 200px; background: linear-gradient(180deg,#3C7B6F 0%,#356B60 55%,#2A4A44 100%); display: flex; flex-direction: column; height: 100vh; overflow-y: auto; padding: 0; flex-shrink: 0; }
+  #sidebar { width: 200px; min-width: 200px; background: linear-gradient(180deg,#3C7B6F 0%,#356B60 55%,#2A4A44 100%); display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow-y: auto; padding: 0; flex-shrink: 0; }
   .logo { text-align: center; padding: 20px 10px 12px; color: white; border-bottom: 1px solid var(--gris2); }
   .logo .ico { font-size: 40px; }
   .logo h1 { font-size: 20px; font-weight: bold;   color: white; }
@@ -94,7 +94,7 @@
   #lista-formulas li { padding: 10px 16px; cursor: pointer; border-bottom: 1px solid #F6F3EE; font-size: 13px; }
   #lista-formulas li:hover { background: #FBF3EC; }
   #lista-formulas li.sel { background: var(--celeste); font-weight: 500; color: var(--azul2); border-right: 3px solid var(--azul2); }
-  .form-lista-btns { padding: 8px 12px; display: flex; gap: 6px; border-top: 1px solid var(--gris2); flex-wrap: wrap; }
+  .form-lista-btns { padding: 8px 12px calc(8px + env(safe-area-inset-bottom)); display: flex; gap: 6px; border-top: 1px solid var(--gris2); flex-wrap: wrap; flex-shrink: 0; }
   .form-detalle { flex: 1; overflow-y: auto; background: var(--gris); }
   .detalle-box { background: white; margin: 12px; }
   .detalle-hdr { background: var(--azul); color: white; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; }
@@ -337,7 +337,7 @@
     <kbd>Alt+F</kbd> Fórmulas &nbsp; <kbd>Alt+I</kbd> Ingredientes<br>
     <kbd>Alt+N</kbd> Nueva fórmula &nbsp; <kbd>Esc</kbd> Cerrar
   </div>
-  <div class="sidebar-bottom">Helatek I+D+I v2.1 · DEMO</div>
+  <div class="sidebar-bottom">Helatek I+D+I v2.2 · DEMO</div>
 </div>
 
 <!-- MAIN -->
@@ -1802,9 +1802,13 @@ function renderDetalleFormula(id) {
     <div class="detalle-box">
       <div class="detalle-hdr" style="background:var(--azul);padding:12px 16px">
         <h3>📋 ${f.nombre}</h3>
-        <button class="btn btn-blue btn-sm" onclick="editarFormula()" data-i18n="btn.editRecipe">✏️ Editar Fórmula</button>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">
+        <button class="btn btn-blue btn-sm" onclick="editarFormula()" data-i18n="btn.edit">✏️ Editar</button>
+        <button class="btn btn-orange btn-sm" onclick="duplicarFormula()" data-i18n="btn.duplicate">📄 Duplicar</button>
+        <button class="btn btn-red btn-sm" onclick="eliminarFormula()" data-i18n="btn.delete">🗑️ Eliminar</button>
         <button class="btn btn-green btn-sm" onclick="abrirObrador(${f.id})" data-i18n="btn.obrador">👷 Obrador</button>
         <button class="btn btn-gray btn-sm" onclick="imprimirFormula(${f.id})" style="background:#6E6A61" data-i18n="btn.print">🖨️ Imprimir</button>
+        </div>
       </div>
       <div class="detalle-info" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 16px">
         <span style="font-size:12px;color:#6E6A61">${f.descripcion||''}</span>

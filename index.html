@@ -337,7 +337,7 @@
     <kbd>Alt+F</kbd> Fórmulas &nbsp; <kbd>Alt+I</kbd> Ingredientes<br>
     <kbd>Alt+N</kbd> Nueva fórmula &nbsp; <kbd>Esc</kbd> Cerrar
   </div>
-  <div class="sidebar-bottom">Helatek I+D+I v2.0 · DEMO</div>
+  <div class="sidebar-bottom">Helatek I+D+I v2.1 · DEMO</div>
 </div>
 
 <!-- MAIN -->
@@ -777,7 +777,7 @@ const DEFAULT_INGREDIENTES = [
   ["Leche Entera 3,5 MG", "Lacteos", 0, 3.5, 0, 9, 3.5, 5.5, 0, -0.64, 15, 0.684, 0.85, 0, 342, ""],
   ["Leche Polvo 1% MG", "Lacteos", 0, 1, 0, 87, 35, 52, 8, -0.64, 15, 3.88, 3, 1, 342, ""],
   ["Maltodextrina 18", "Azucares", 95, 0, 0, 0, 0, 0, 0, -0.2176, 21, 3.8, 2.4, 2, 1000, ""],
-  ["Nata 35 MG", "Lacteos", 0, 35, 0, 6, 2.4, 3.6, 0, -0.64, 15, 3.39, 3, 1, 342, ""],
+  ["Nata 35 MG", "Lacteos", 0, 35, 0, 6, 2.4, 3.6, 0, -0.64, 15, 3.39, 3, 4, 342, ""],
   ["Turron 70%", "Frutos Secos", 26.5, 0, 38, 0, 0, 0, 30, -0.93, 112.5, 4.48, 13, 3, 261, ""],
   ["Yema", "Huevos", 0, 0, 32, 0, 0, 0, 18, 0, 0, 3.6, 5.55, 2, 1, ""],
   ["Jarabe Glucosa 62 DE", "Azucares", 80, 0, 0, 0, 0, 0, 0, -0.75, 60, 3.2, 1.7, 2, 290, ""],
@@ -914,7 +914,7 @@ const DEFAULT_INGREDIENTES = [
   ["COCO AROTZ", "Frutas", 9.01, 0, 22.08, 0, 0, 0, 11, -0.64, 100, 0, 4.95, 4, 342, ""],
   ["Pure Melocoton Arotz", "Frutas", 15.8, 0, 0, 0, 0, 0, 1.3, -0.64, 100, 66, 3.1, 4, 342, ""],
   ["Piña Arotz", "Frutas", 18.1, 0, 0, 0, 0, 0, 1.1, -0.64, 100, 0, 3.98, 4, 342, ""],
-  ["CALLEBAUT 811", "Chocolates", 42.8, 0, 36.6, 0, 0, 0, 20.6, -0.64, 100, 5.5, 7.54, 4, 342, "56%"],
+  ["CALLEBAUT 811", "Chocolates", 42.8, 0, 36.6, 0, 0, 0, 20.6, -0.64, 100, 5.5, 7.54, 3, 342, "56%"],
   ["Polidextrosa", "Fibra", 96, 0, 0, 0, 0, 0, 0, -0.64, 0, 1, 0, 2, 2000, "Aunque el peso molecular es 2000 , tendriamos que poner 342, a efectos practicos"],
   ["Grasa Coco Hidrogenada", "Grasas", 0, 0, 100, 0, 0, 0, 0, 0, 0, 9, 3, 4, 1, ""],
   ["Maltodextrina 5 DE", "Azucares", 95, 0, 0, 0, 0, 0, 0, -0.064, 6, 0, 0, 2, 3600, ""],
@@ -926,10 +926,10 @@ const DEFAULT_INGREDIENTES = [
   ["Jarabe Glucosa 25 DE", "Azucares", 80, 0, 0, 0, 0, 0, 0, -0.3, 28, 3.2, 0, 2, 720, ""],
   ["Jarabe Alta Fructosa 55%", "Azucares", 77, 0, 0, 0, 0, 0, 0, -1.1, 125, 0, 0, 2, 185, ""],
   ["Leche polvo 26% rectificada", "Lacteos", 0, 26, 0, 66, 25, 36, 7, -0.64, 15, 0, 3, 1, 342, ""],
-  ["CALLEBAUT VELVET BLANCO", "Chocolates", 44, 6, 34, 16, 7, 9, 0, -0.64, 79.6, 0, 0, 0, 342, "Antes: azucares 42, MG4, Otras grasas 31, SLNG 23, proteina 8,6, Lactosa 12,98 Pod 79,6"],
+  ["CALLEBAUT VELVET BLANCO", "Chocolates", 44, 6, 34, 16, 7, 9, 0, -0.64, 79.6, 0, 0, 3, 342, "Antes: azucares 42, MG4, Otras grasas 31, SLNG 23, proteina 8,6, Lactosa 12,98 Pod 79,6"],
   ["CACAO ARIBA 22/24", "Varios", 0.7, 0, 23, 0, 0, 0, 76.3, 0, 0, 0, 7.19, 3, 1, ""],
   ["COBERTURA RUBY CALLEBAUT", "Chocolates", 48.6, 0, 35.9, 0, 0, 0, 14.15, -0.64, 80, 0, 0, 3, 342, ""],
-  ["COBERTURA GOLD CALLEBAUT", "Chocolates", 30, 7.1, 30, 28.3, 8, 20.3, 4.6, -0.64, 66, 5.71, 10, 4, 342, ""],
+  ["COBERTURA GOLD CALLEBAUT", "Chocolates", 30, 7.1, 30, 28.3, 8, 20.3, 4.6, -0.64, 66, 5.71, 10, 3, 342, ""],
   ["PULPA MANZANA GRANNU SMITH AROTZ", "Frutas", 13.8, 0, 0, 0, 0, 0, 1.9, -0.9, 125, 51, 0, 4, 200, ""],
   ["ZUMON LIMON NATURAL +10", "Frutas", 12.4, 0, 0, 0, 0, 0, 5.6, -1.22, 125, 0, 0, 4, 180, ""],
   ["PALETA BASE LECHE PREMIUM", "Bases", 18.65, 9.02, 0, 9.36, 3.76, 5.6, 1.22, -0.56, 58, 0, 0, 1, 1, ""],
@@ -940,9 +940,9 @@ const DEFAULT_INGREDIENTES = [
   ["PALETA VEGANA BASE", "Varios", 25.17, 0, 12.9, 0, 0.38, 0, 0.87, 0.495, 70, 0, 0, 1, 342, ""],
   ["Crema de Coco Nature Fruits", "Frutas", 2.5, 0, 23.75, 0, 0, 0, 0, -0.64, 100, 0, 0, 4, 342, ""],
   ["Pasas marecadas", "Frutos Secos", 80, 0, 35, 0, 0, 0, 0, -0.64, 100, 0, 0, 3, 0.342, "Alcohol:16%"],
-  ["CALLEBAUT 70-30-38", "Chocolates", 30, 0, 38, 0, 0, 0, 32, -0.64, 100, 0, 0, 4, 342, "72,5%"],
-  ["CALLEBAUT POWER 80", "Chocolates", 15.9, 0, 44.5, 0, 0, 0, 39.6, -0.64, 100, 0, 0, 4, 342, "82,5% ------- NO MUY ADECUADA PARA HACER HELADO O RETOCAR"],
-  ["CALLEBAUT W2NV BLANCO", "Chocolates", 49, 0, 29, 16, 7, 9, 0, -0.64, 80, 0, 0, 4, 342, ""],
+  ["CALLEBAUT 70-30-38", "Chocolates", 30, 0, 38, 0, 0, 0, 32, -0.64, 100, 0, 0, 3, 342, "72,5%"],
+  ["CALLEBAUT POWER 80", "Chocolates", 15.9, 0, 44.5, 0, 0, 0, 39.6, -0.64, 100, 0, 0, 3, 342, "82,5% ------- NO MUY ADECUADA PARA HACER HELADO O RETOCAR"],
+  ["CALLEBAUT W2NV BLANCO", "Chocolates", 49, 0, 29, 16, 7, 9, 0, -0.64, 80, 0, 0, 3, 342, ""],
   ["Galleta Maria", "Varios", 25.5, 0, 19, 0, 0, 0, 55.5, -0.64, 100, 0, 0, 4, 342, ""],
   ["PASTA DE CACAHUETE", "Frutos Secos", 0, 0, 53, 0, 0, 0, 44, -0.64, 100, 0, 0, 4, 1, ""],
   ["Pasta Lotus", "Varios", 36.8, 0, 38.1, 0, 0, 0, 24.44, -0.64, 100, 0, 0, 4, 342, ""],
@@ -954,7 +954,7 @@ const DEFAULT_INGREDIENTES = [
   ["TARTA DE QUESO HORNEADA", "Quesos", 0, 26.5, 0, 9.5, 6, 3.5, 4, -0.64, 30, 2.5, 0, 4, 342, ""],
   ["smart mascarpone", "Varios", 34.1, 6.4, 6.8, 10, 17, 7, 7, -0.22, 21, 0, 0, 2, 1000, ""],
   ["Pasta pistacho 1", "Frutos Secos", 0, 0, 53, 0, 0, 0, 39.9, -0.64, 100, 0, 0, 3, 1, ""],
-  ["COBERTURA ARIBA 72", "Chocolates", 28, 0, 40, 0, 0, 0, 32, -0.64, 100, 0, 0, 4, 342, "72/"]
+  ["COBERTURA ARIBA 72", "Chocolates", 28, 0, 40, 0, 0, 0, 32, -0.64, 100, 0, 0, 3, 342, "72/"]
 ];
 
 // ============================================================

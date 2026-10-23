@@ -337,7 +337,7 @@
     <kbd>Alt+F</kbd> Fórmulas &nbsp; <kbd>Alt+I</kbd> Ingredientes<br>
     <kbd>Alt+N</kbd> Nueva fórmula &nbsp; <kbd>Esc</kbd> Cerrar
   </div>
-  <div class="sidebar-bottom">Helatek I+D+I v2.2 · DEMO</div>
+  <div class="sidebar-bottom">Helatek I+D+I v2.3 · DEMO</div>
 </div>
 
 <!-- MAIN -->
@@ -1159,8 +1159,36 @@ const I18N = {
   'past.toggle':['🌡️ Orden de pasteurización','🌡️ Pasteurization order','🌡️ Ordine di pastorizzazione','🌡️ Pasteurisier-Reihenfolge'],
   'past.on':['automático','auto','auto','auto'],
   'past.off':['manual','manual','manuale','manuell'],
-  'past.hint':['Los ingredientes se ordenan solos según cuándo se añaden al pasteurizar (agua arriba).','Ingredients auto-sort by when they go into the pasteurizer (water on top).','Gli ingredienti si ordinano da soli in base a quando si aggiungono nel pastorizzatore (acqua in alto).','Zutaten sortieren sich nach dem Zeitpunkt der Zugabe beim Pasteurisieren (Wasser oben).']
+  'past.hint':['Los ingredientes se ordenan solos según cuándo se añaden al pasteurizar (agua arriba).','Ingredients auto-sort by when they go into the pasteurizer (water on top).','Gli ingredienti si ordinano da soli in base a quando si aggiungono nel pastorizzatore (acqua in alto).','Zutaten sortieren sich nach dem Zeitpunkt der Zugabe beim Pasteurisieren (Wasser oben).'],
+  'fc.title':['❄️ Curva de congelación','❄️ Freezing curve','❄️ Curva di congelamento','❄️ Gefrierkurve'],
+  'fc.initFreeze':['Punto de congelación inicial','Initial freezing point','Punto di congelamento iniziale','Anfangsgefrierpunkt'],
+  'fc.frozenAtVitrina':['Agua congelada en vitrina','Water frozen in display','Acqua congelata in vetrina','Wasser gefroren in Vitrine'],
+  'fc.axisFrozen':['% agua congelada','% water frozen','% acqua congelata','% Wasser gefroren'],
+  'fc.scoopZone':['zona típica de servicio','typical serving zone','zona tipica di servizio','typischer Servierbereich'],
+  'fc.note':['Modelo simplificado a partir de la masa molecular de los azúcares (crioscopía). Más azúcares de bajo peso molecular (dextrosa, glucosa) → congela más tarde y más blando. Orientativo.','Simplified model from the sugars’ molecular weight (cryoscopy). More low-molecular-weight sugars (dextrose, glucose) → freezes later and softer. Indicative.','Modello semplificato dalle masse molecolari degli zuccheri (crioscopia). Più zuccheri a basso peso molecolare (destrosio, glucosio) → congela più tardi e più morbido. Indicativo.','Vereinfachtes Modell aus den Molmassen der Zucker (Kryoskopie). Mehr niedermolekulare Zucker (Dextrose, Glukose) → gefriert später und weicher. Richtwert.'],
+  'fc.noData':['Añade azúcares y agua para ver la curva.','Add sugars and water to see the curve.','Aggiungi zuccheri e acqua per vedere la curva.','Zucker und Wasser hinzufügen, um die Kurve zu sehen.']
 };
+
+// ── CURVA DE CONGELACIÓN (crioscopía) ──
+const KF_AGUA = 1.86; // constante crioscópica del agua (°C·kg/mol)
+function puntoCongelacionInicial(ings, totalPct) {
+  let moles = 0, st = 0;
+  ings.forEach(fi => {
+    const p = fi.porcentaje/totalPct, ing = fi.ing;
+    const pm = (ing.peso_mol_az && ing.peso_mol_az > 0) ? ing.peso_mol_az : 342;
+    moles += (ing.azucares*p)/pm + (ing.lactosa*p)/342; // moles de solutos / 100 g mezcla
+    st += (ing.azucares+ing.mg+ing.og+ing.esml+ing.os)*p;
+  });
+  const aguaKg = (100 - st)/1000;
+  if (aguaKg <= 0 || moles <= 0) return null;
+  const dTf = KF_AGUA * (moles/aguaKg);
+  return { Tf: -dTf, dTf: dTf };
+}
+// fracción de agua congelada (0..1) a temperatura T (°C) dado Tf (°C, negativo)
+function fraccionCongelada(T, Tf) {
+  if (T >= Tf) return 0;
+  return Math.max(0, Math.min(0.98, 1 - Tf/T));
+}
 function t(k){ const e=I18N[k]; return e ? (e[LANG]||e[0]) : k; }
 function setLang(code){
   const i = LANGS.indexOf(code); if (i<0) return;
@@ -1707,6 +1735,34 @@ function analisisSensibilidad(f, ings, totalPct, tot) {
     </div>`;
 }
 
+function curvaCongelacion(ings, totalPct) {
+  const wrap = inner => `<div style="margin-top:12px;background:white;border:1px solid #ECE8E0;border-radius:12px;padding:14px 16px;box-shadow:0 2px 8px rgba(33,64,60,0.05)"><div style="font-size:12px;font-weight:800;color:var(--azul);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">${t('fc.title')}</div>${inner}</div>`;
+  const res = puntoCongelacionInicial(ings, totalPct);
+  if (!res) return wrap(`<div style="padding:16px;text-align:center;color:var(--gris3);font-size:12px">${t('fc.noData')}</div>`);
+  const Tf = res.Tf;
+  const tVit = (cfg.tempVitrina!=null ? cfg.tempVitrina : -13);
+  const Tmax=-20, x0=42,x1=306,y0=14,y1=170;
+  const xForT = T => x0 + (T/Tmax)*(x1-x0);
+  const yForP = p => y1 - (p/100)*(y1-y0);
+  let pts=[];
+  for (let T=0; T>=-20.0001; T-=0.5){ pts.push(xForT(T).toFixed(1)+','+yForP(fraccionCongelada(T,Tf)*100).toFixed(1)); }
+  let grid='';
+  [25,50,75,100].forEach(p=>{ const y=yForP(p); grid+=`<line x1="${x0}" y1="${y.toFixed(1)}" x2="${x1}" y2="${y.toFixed(1)}" stroke="#EFEBE3" stroke-width="1"/><text x="${x0-5}" y="${(y+3).toFixed(1)}" text-anchor="end" font-size="9" fill="#9B968C">${p}%</text>`; });
+  [0,-5,-10,-15,-20].forEach(T=>{ const x=xForT(T); grid+=`<line x1="${x.toFixed(1)}" y1="${y0}" x2="${x.toFixed(1)}" y2="${y1}" stroke="#F4F1EA" stroke-width="1"/><text x="${x.toFixed(1)}" y="${(y1+13).toFixed(1)}" text-anchor="middle" font-size="9" fill="#9B968C">${T}°</text>`; });
+  const yb1=yForP(78), yb2=yForP(60);
+  const banda=`<rect x="${x0}" y="${yb1.toFixed(1)}" width="${x1-x0}" height="${(yb2-yb1).toFixed(1)}" fill="#E7F3EE" opacity="0.7"/><text x="${x1-4}" y="${(yb1+11).toFixed(1)}" text-anchor="end" font-size="8.5" fill="#2E7D64" font-weight="700">${t('fc.scoopZone')}</text>`;
+  const xTf=xForT(Tf), yTf=yForP(0);
+  const tfMark = (Tf>Tmax) ? `<circle cx="${xTf.toFixed(1)}" cy="${yTf.toFixed(1)}" r="3" fill="#E3A85C"/><text x="${xTf.toFixed(1)}" y="${(yTf-6).toFixed(1)}" text-anchor="middle" font-size="9" font-weight="700" fill="#d08c3a">${f1(Tf)}°</text>` : '';
+  const pVit = fraccionCongelada(tVit,Tf)*100;
+  const xV=xForT(Math.max(Tmax,Math.min(0,tVit))), yV=yForP(pVit);
+  const vit = `<line x1="${xV.toFixed(1)}" y1="${y0}" x2="${xV.toFixed(1)}" y2="${y1}" stroke="#21403C" stroke-width="1.5" stroke-dasharray="3,2"/><circle cx="${xV.toFixed(1)}" cy="${yV.toFixed(1)}" r="4" fill="#21403C"/>`;
+  const svg = `<svg viewBox="0 0 320 190" style="width:100%;max-width:430px;height:auto;display:block;margin:0 auto">${banda}${grid}<polyline points="${pts.join(' ')}" fill="none" stroke="#2E7D64" stroke-width="2.5" stroke-linejoin="round"/>${tfMark}${vit}</svg>`;
+  const readout = `<div style="display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-top:2px;font-size:12px">
+    <span>${t('fc.initFreeze')}: <strong style="color:#d08c3a">${f1(Tf)} °C</strong></span>
+    <span>${t('fc.frozenAtVitrina')} (${tVit}°C): <strong style="color:#21403C">${f1(pVit)}%</strong></span></div>`;
+  return wrap(svg + readout + `<div style="font-size:11px;color:var(--gris3);margin-top:6px">${t('fc.note')}</div>`);
+}
+
 function renderDetalleFormula(id) {
   const f = formulas.find(x=>x.id===id);
   if (!f) return;
@@ -1882,6 +1938,7 @@ function renderDetalleFormula(id) {
           </div>
         </div>
         ${termometroServicio(tot.pac)}
+        ${curvaCongelacion(ings, totalPct)}
         ${panelEscandallo(costeKg, ingSinPrecio, ingConPrecio)}
         ${radarEquilibrio([
           {lab:'PAC', v:tot.pac, lo:lim.minPAC, hi:lim.maxPAC},

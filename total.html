@@ -2886,7 +2886,7 @@ function instalarIconos(){
     const meta=(n,c)=>{const m=document.createElement('meta');m.setAttribute('name',n);m.setAttribute('content',c);head.appendChild(m);};
     meta('apple-mobile-web-app-capable','yes'); meta('mobile-web-app-capable','yes');
     meta('apple-mobile-web-app-title',APP_NAME); meta('theme-color','#2A4A44');
-    const manifest={name:APP_NAME,short_name:APP_NAME,start_url:'.',display:'standalone',background_color:'#F5F3EE',theme_color:'#2A4A44',icons:[{src:APP_ICON,sizes:'512x512',type:'image/png'}]};
+    const manifest={name:APP_NAME,short_name:APP_NAME,id:location.pathname,start_url:location.href,scope:location.href.replace(/[^/]*$/,''),display:'standalone',background_color:'#F5F3EE',theme_color:'#2A4A44',icons:[{src:APP_ICON,sizes:'512x512',type:'image/png'}]};
     addLink({rel:'manifest',href:URL.createObjectURL(new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'}))});
   }catch(e){}
 }
